@@ -1,7 +1,9 @@
 # Phase 2 — Xcode app scaffold
 
-Status: **implementation prepared; Mac package resolution, build, and launch pending.**
-The user authorized Phase 2 while the Phase 1 Mac report was still outstanding.
+Status: **implementation prepared; Mac inventory received; package resolution, build, and launch pending.**
+The Mac report identifies Xcode 27.1, Swift 6.4, 16 GiB RAM, and an installed iOS
+27.0 runtime. The first destination is the booted iPhone 18 Pro. The report does
+not contain a project build or launch result.
 This phase does not restore datasets/models or claim the full analysis MVP works.
 Pause for the Mac validation checkpoint before Phase 3.
 
@@ -53,8 +55,9 @@ The project uses exact root requirements reviewed against the supplied API usage
 
 Tag existence and upstream API/manifests were checked over verified HTTPS/Git.
 These checks do not establish successful SwiftPM resolution or app compilation.
-Use full Xcode with a compatible compiler (at least the manifests' tools 5.10
-requirement; Xcode 16 is a reasonable starting point, subject to the Mac report).
+The reported Swift 6.4 compiler exceeds the inspected manifests' declared tools
+5.10 floor. Compatibility of the older package sources with Xcode 27.1's compiler
+and SDK still requires a real build; a higher compiler version alone is not proof.
 The app remains in Swift 5 language mode with targeted concurrency checking;
 this is not a Swift 6 migration.
 
@@ -80,21 +83,32 @@ success or upgrade package versions automatically.
 
 ## Mac validation checkpoint
 
-From an updated checkout on the user's Mac:
+The inventory is already received. Start with this single build on the reported
+booted iPhone 18 Pro:
 
 ```bash
-bash scripts/check-xcode-environment.sh
+git pull --ff-only
+bash scripts/build-simulator.sh 89CA5AC4-8662-4AB0-8D53-0F1B7A355A30 build
+```
+
+Share the first actual error and surrounding output, or the final build success.
+This helper invokes Xcode with the candidate locked versions and simulator
+signing disabled. It does not claim to have resolved or built the app until
+Xcode returns that result. No extra runtime installation is needed before trying
+the available iOS 27.0 destination with the reported iOS 27.1 SDK.
+
+For targeted project/package/destination diagnostics if needed:
+
+```bash
 xcodebuild -list -project FoodAdditiveLens.xcodeproj
 xcodebuild -resolvePackageDependencies -project FoodAdditiveLens.xcodeproj -scheme FoodAdditiveLens-MLX -onlyUsePackageVersionsFromResolvedFile
 xcodebuild -project FoodAdditiveLens.xcodeproj -scheme FoodAdditiveLens -showdestinations
 ```
 
-Send the inventory output and any package/project errors here. Use an available
-iPhone simulator UDID from that report to build, then test:
+After a successful build, test the same destination:
 
 ```bash
-bash scripts/build-simulator.sh YOUR_SIMULATOR_UDID build
-bash scripts/build-simulator.sh YOUR_SIMULATOR_UDID test
+bash scripts/build-simulator.sh 89CA5AC4-8662-4AB0-8D53-0F1B7A355A30 test
 ```
 
 Then open the project, choose `FoodAdditiveLens` and that simulator, and use

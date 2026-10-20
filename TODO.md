@@ -40,20 +40,20 @@ Reference source locations: sample loader near line 189; Llama loader near 2197�
 
 ## Phase 1 — Establish the Mac/Xcode and simulator baseline
 
-**Status:** independent inspection and baseline documentation completed; Mac validation is pending. The user confirmed access to an Apple silicon Mac and subsequently authorized Phase 2 preparation while the report remains outstanding. See [Phase 1 results and Mac instructions](docs/PHASE1-XCODE-BASELINE.md) and run `bash scripts/check-xcode-environment.sh` on that Mac.
+**Status:** Mac host baseline recorded from the user's inventory: Apple silicon MacBook Air, macOS 26.6.2, Xcode 27.1, Swift 6.4, 16 GiB RAM, about 240 GiB free, iOS 27.1 SDK, and an installed iOS 27.0 runtime. See [Phase 1 results](docs/PHASE1-XCODE-BASELINE.md). This closes the inventory checkpoint, not the app build/runtime checks; minimum-iOS-17 coverage remains a documented gap.
 
-- [ ] Use a Mac with an Xcode-supported macOS version, full Xcode, command-line tools, and an installed iOS Simulator runtime. Prefer Apple silicon for the original MLX workflow; confirm RAM, free storage, and the pinned packages' actual requirements before downloading large models.
-- [ ] Record the chosen Xcode/Swift versions, iOS deployment target, SDK, and simulator runtimes. Start by investigating iOS 17 or later because the source uses Observation and `#Preview`; finalize the minimum after dependency resolution and a real build.
-- [ ] Enumerate available simulators with `xcrun simctl list devices available` and runtimes with `xcrun simctl list runtimes`. Install needed compatible runtimes through Xcode and document destination selection in Xcode and by simulator UDID.
-- [x] Define the initial test matrix: a small-screen iPhone, a larger iPhone, and the lowest supported plus current supported iOS runtime where Xcode offers them. The proposed matrix is documented in the Phase 1 results; actual runtime names/UDIDs and execution remain pending. Additional compatible iPhone simulators should be selectable without editing application code.
+- [x] Record the user's Apple silicon Mac, working full-Xcode tool queries, installed iOS runtime, RAM, and free storage. Confirm app/package compatibility and real model memory behavior in their later build/inference checks; no large model download is needed now.
+- [x] Record Xcode 27.1 / Swift 6.4, the scaffold's iOS 17 deployment target, iOS 27.1 device/Simulator SDKs, and the installed iOS 27.0 runtime. Final minimum-OS compatibility still needs build/runtime validation.
+- [x] Enumerate available simulator devices/runtimes from the supplied command output. Record the booted iPhone 18 Pro UDID as the first destination; no additional runtime installation is required for the first attempt.
+- [x] Record an initial matrix using iPhone 18 Pro, iPhone 17e, and iPhone 18 Pro Max on iOS 27.0 with their real UDIDs. Layout tests remain unrun, and no iOS 17 runtime was reported; retain that coverage gap. Additional compatible iPhone simulators should be selectable without editing application code.
 - [x] Separate simulator availability from MLX inference support. MLX Swift 0.32.3 explicitly documents iOS Simulator inference as unsupported because the required Metal GPU family is unavailable. The baseline therefore excludes MLX initialization/inference on simulators, with full inference reserved for a supported physical device. Package pins, actual hardware, and real-device inference remain unverified; see the Phase 1 sources.
-- [ ] Record physical-device signing requirements separately; confirm unsigned simulator builds without requiring an Apple Developer account or signing credentials.
+- [x] Document simulator versus physical-device signing requirements and configure the simulator helper without signing. The actual unsigned simulator build remains a required Phase 2 check; no personal signing/account setup is requested for this attempt.
 
 **Exit:** a documented Mac toolchain and available simulator destinations; explicit limitations for the current Linux environment and inference hardware.
 
 ## Phase 2 — Create the minimal Xcode application
 
-**Status:** scaffold and platform separation implemented; Mac resolution/build/run pending. See [Phase 2 implementation and checkpoint](docs/PHASE2-XCODE-SCAFFOLD.md). Checked items below mean source/project artifacts are implemented, not that an Xcode build or runtime test has passed. Pause for Mac results before Phase 3.
+**Status:** scaffold and platform separation implemented; Mac inventory received; first package resolution/build result pending on the booted iPhone 18 Pro. See [Phase 2 implementation and checkpoint](docs/PHASE2-XCODE-SCAFFOLD.md). Checked items below mean source/project artifacts are implemented, not that an Xcode build or runtime test has passed. Pause for Mac results before Phase 3.
 
 - [x] Add a native SwiftUI iOS application project, `FoodAdditiveLens.xcodeproj`, with a shared `FoodAdditiveLens` scheme, app target, unit-test target, and UI-test target. The additional `FoodAdditiveLens-MLX` scheme uses the same app source for supported hardware. The existing checkout is retained.
 - [x] Add the `@main` app entry and inject the Core Data managed-object context into `ContentView` and history. Implement the missing persistence controller with a persistent store and an in-memory preview/test store.

@@ -41,7 +41,7 @@ run_check 'Selected iOS Simulator SDK version:' xcrun --sdk iphonesimulator --sh
 run_check 'Installed simulator runtimes:' xcrun simctl list runtimes
 run_check 'Available simulator devices / UDIDs:' xcrun simctl list devices available
 
-printf '\n%s\n' 'Share this report in the project chat before Phase 2.'
+printf '\n%s\n' 'Share this report in the project chat when checking Xcode setup or build problems.'
 printf '%s\n' 'Query success does not prove a usable runtime, app build, simulator launch, or MLX inference.'
-printf '%s\n' 'MLX simulator inference is excluded from the Phase 1 baseline; physical-device validation is separate.'
+printf '%s\n' 'MLX simulator inference is excluded; inference validation requires supported hardware.'
 exit "$phase1_status"

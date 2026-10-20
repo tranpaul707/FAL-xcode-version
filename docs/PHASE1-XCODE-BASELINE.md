@@ -1,27 +1,49 @@
 # Phase 1 — Xcode host and simulator baseline
 
-Status: **awaiting user-side Mac checks.** Inspection performed October 20, 2026. The user confirmed access to an Apple silicon Mac; macOS, Xcode, RAM, free disk space, and installed runtimes are not yet known. The user subsequently authorized Phase 2 scaffold preparation while this report remains pending; see [Phase 2](PHASE2-XCODE-SCAFFOLD.md).
+Status: **Mac host baseline recorded from the user's inventory report.** The user ran the inventory script on the Apple silicon Mac and supplied the results below. Phase 2 package resolution, compilation, tests, and app launch remain unverified; see [Phase 2](PHASE2-XCODE-SCAFFOLD.md). The Mac is not remotely connected to this cloud task.
 
-## Verified in this task
+## User-reported Mac inventory
+
+| Check | Reported result |
+| --- | --- |
+| Mac | Apple silicon MacBook Air; process architecture `arm64`; hardware arm64 capability `1` |
+| macOS | `26.6.2` |
+| Memory | 17,179,869,184 bytes = 16 GiB |
+| Free space on checkout volume | Approximately 240 GiB |
+| Developer directory | `/Applications/Xcode.app/Contents/Developer` |
+| Xcode | `27.1`, build `27A9275` |
+| Swift | Apple Swift `6.4`, driver `1.168.6` |
+| iOS device / Simulator SDK | `27.1` / `27.1` |
+| Installed iOS Simulator runtime | iOS `27.0`, build `24A434` |
+| Initial simulator | iPhone 18 Pro, already reported booted |
+
+The script output contains successful responses for every inventory query and no
+query-failure messages. This establishes the reported host/tool availability,
+not project or model compatibility. The Simulator SDK and installed runtime have
+different version numbers; that alone does not establish a fault or a need for
+another download. Confirm this destination through the Phase 2 build. No additional
+runtime or model download is required for the first app-shell attempt.
+
+## Cloud inspection and remaining verification limits
 
 | Check | Result |
 | --- | --- |
 | Attached cloud host | Debian GNU/Linux 13, x86_64 |
 | Apple development tools | `xcodebuild`, `xcrun`, and `swift` not found |
-| App build / Simulator launch | Not run; requires macOS/Xcode and the Phase 2 project |
-| App project's current state | No Xcode project, app entry point, package resolution, or test targets |
-| Mac access | Apple silicon Mac confirmed by the user; not connected to this task |
+| App build / launch | Not yet reported; the Mac report shows a booted simulator but does not show this app running |
+| App project's current state | Phase 2 scaffold and candidate dependency lock are present; no Xcode validation result yet |
+| Mac access | User-side command output supplied; the cloud task cannot execute commands on that Mac |
 | MLX simulator support | MLX Swift 0.32.3 documentation explicitly says iOS Simulator is unsupported because it does not provide the required modern Metal GPU family |
 
 Installing Linux Swift does not provide Xcode, Apple's iOS SDKs, CoreSimulator, or the UIKit/Vision/Core Data runtime needed by this app. No attempt was made to install those tools or large models on this cloud host.
 
-## Proposed baseline, pending the Mac report
+## Baseline selected from the Mac report
 
-- **Development host:** the user's Apple silicon Mac with full Xcode supported by its installed macOS. Command Line Tools alone are insufficient. The Mac's actual versions determine the Xcode/package compatibility decision.
+- **Development host:** the user's Apple silicon MacBook Air with the reported macOS 26.6.2, full Xcode 27.1, and Swift 6.4. Tool queries succeeded; compatibility of the app's older pinned packages with this compiler/SDK is a Phase 2 build check.
 - **App target:** native iPhone application; provisional minimum iOS 17 because of the source's Observation/preview usage and inspected MLX package platform declarations. Finalize after resolving compatible tagged dependencies and building in Phase 2.
 - **Simulator scope:** original UI, manual/sample input when data is available, Vision photo OCR, genuine knowledge lookup, and Core Data history. Core ML category prediction is a separate capability to validate after its artifacts are recovered. The original MLX LLM features remain unavailable on simulator; do not load their backend or substitute fabricated results.
 - **Full AI validation:** supported physical iPhone or compatible Apple silicon iOS-on-Mac execution with the genuine model bundle and adequate memory. The original source's device-name whitelist is not a hardware certification. Exact device/inference checks belong to the model phase; owning a physical phone is not a prerequisite for the first simulator MVP. Direct-Mac execution was added to the proposed validation route after discussion with the user; it remains untested.
-- **Resource budget:** collect actual RAM/free space before selecting package versions and downloading models. Allow space for Xcode, SDK/runtime downloads, build caches, and model files. No numeric memory/disk minimum or successful inference claim has been established from this repository.
+- **Resource budget:** the Mac reports 16 GiB RAM and about 240 GiB free on the checkout volume. Record these for later model planning; neither number proves the original model can load/generate successfully. No model weights are needed for the initial simulator shell.
 
 The inspected tags are requirement evidence, **not selected app dependencies**:
 
@@ -34,18 +56,23 @@ Do not select these tags just because they exist. The supplied 2025 source may n
 
 ## Initial simulator matrix
 
-Choose device types actually offered by the user's Xcode. Record runtime versions and simulator UDIDs after the Mac report; all execution is pending.
+These destinations are selected from the user's actual available-device list.
+Every app build/test/run remains pending; a booted simulator is not an app result.
 
-| Destination | Purpose | Runtime |
+| Destination / UDID | Purpose | Runtime / inventory state |
 | --- | --- | --- |
-| Standard-size available iPhone | Main launch and MVP acceptance flow | Current installed stable compatible iOS runtime |
-| Smallest available supported iPhone | Ingredient entry, scrolling, sheets, and results on a narrow screen | Same runtime |
-| Large-screen available iPhone / Pro Max | Results, history, and photo-picker layout | Same runtime |
-| One available iPhone on the oldest testable supported runtime | Deployment-boundary coverage | iOS 17 if installable in the chosen Xcode; otherwise record the oldest offered runtime and retain an explicit minimum-OS test gap |
+| iPhone 18 Pro — `89CA5AC4-8662-4AB0-8D53-0F1B7A355A30` | First build and launch; main MVP flow later | iOS 27.0 / booted |
+| iPhone 17e — `3B5A92D6-0357-443E-988B-6E986AF5213A` | Alternate iPhone layout; confirm viewport for narrow-screen coverage | iOS 27.0 / shutdown |
+| iPhone 18 Pro Max — `599D5E89-FE53-454F-A7B4-A6DF1B8400FE` | Larger layout, history, results, and picker checks | iOS 27.0 / shutdown |
+| iOS 17 deployment boundary | Minimum-OS compatibility | Not covered: no iOS 17 runtime was reported installed |
+
+The user also reported an available iPhone Air and iPad device profiles. Those
+are not needed for the first iPhone app-shell build. No iPad feature expansion
+or broad simulator matrix execution is part of this checkpoint.
 
 Reuse a destination when it satisfies multiple rows. Add other compatible iPhone simulator devices by destination selection, without application-code changes. Do not raise the app's deployment minimum merely to hide an unavailable old simulator runtime, or imply that every historical simulator is installable in a current Xcode.
 
-## Action required on the user's Mac
+## Inventory instructions (completed by the user)
 
 1. Install full Xcode if needed, launch it, finish its first-launch/license/component setup, and install at least one compatible iOS Simulator runtime through Xcode Settings. Apple's Settings labels may vary by Xcode release.
 2. In Xcode Settings → Locations, select the intended Xcode Command Line Tools version if needed. If using `xcode-select` instead, point it at the actual full Xcode application's developer directory; do not copy an assumed application path blindly.
@@ -71,13 +98,24 @@ For an existing clean `main` checkout, use `git pull --ff-only` before running t
 
 ## Signing and accounts
 
-- The first target is an iOS Simulator build/run. This normally does not require a paid Apple Developer membership or device provisioning. The actual unsigned app build remains a Phase 2 check because no project exists yet.
+- The first target is an iOS Simulator build/run. This normally does not require a paid Apple Developer membership or device provisioning. The scaffold's simulator helper disables signing; the actual unsigned app build remains a Phase 2 check.
 - Physical-device runs later require a signing team/account, an enabled device-development setup as applicable to that iOS version, and provisioning appropriate to the installation method. A personal team may suffice for local development; do not assume paid distribution membership is required for the simulator MVP.
 - No account credentials or certificates are needed at this checkpoint.
 
-## Checkpoint before Phase 2
+## Checkpoint: first Phase 2 build
 
-The original checkpoint requested the user's Mac report before Phase 2. The user subsequently authorized independent scaffold preparation, so use that report to record the actual Xcode/Swift/SDK/runtime versions, device UDIDs, resources, and setup errors before validating the Phase 2 build. No simulator boot, Mac package resolution, or model download has executed in this task. Phase 2's implementation and remaining build checkpoint are recorded separately.
+The inventory prerequisite is now supplied. On the Mac, update the checkout and
+attempt only the first simulator build:
+
+```bash
+git pull --ff-only
+bash scripts/build-simulator.sh 89CA5AC4-8662-4AB0-8D53-0F1B7A355A30 build
+```
+
+Share the first actual error and its surrounding output, or the final
+`BUILD SUCCEEDED` result. Resolve package/project/compiler errors before running
+tests or calling Phase 2 complete. The cloud task cannot run this command on the
+user's Mac. Phase 3 remains paused.
 
 ## Sources and verification limits
 
