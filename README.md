@@ -5,8 +5,9 @@ The repository for research paper titled 'Food Additive Lens: An on-device AI ap
 
 ## Xcode development
 
-The Phase 2 project scaffold is present. **It has not yet been compiled or run in
-Xcode:** this cloud task runs on Linux. Mac build validation is the next checkpoint.
+The Phase 2 simulator scaffold has a **user-reported successful Xcode build** on
+the iPhone 18 Pro destination with Xcode 27.1. Tests and app launch are the next
+checkpoint. The MLX target and genuine inference remain unverified.
 The original source credit and Apache license are retained.
 
 On an Apple silicon Mac with full Xcode and an installed iOS Simulator runtime:
