@@ -1,6 +1,6 @@
 # Phase 1 — Xcode host and simulator baseline
 
-Status: **awaiting user-side Mac checks; Phase 2 has not started.** Inspection performed October 20, 2026. The user confirmed access to an Apple silicon Mac; macOS, Xcode, RAM, free disk space, and installed runtimes are not yet known.
+Status: **awaiting user-side Mac checks.** Inspection performed October 20, 2026. The user confirmed access to an Apple silicon Mac; macOS, Xcode, RAM, free disk space, and installed runtimes are not yet known. The user subsequently authorized Phase 2 scaffold preparation while this report remains pending; see [Phase 2](PHASE2-XCODE-SCAFFOLD.md).
 
 ## Verified in this task
 
@@ -20,7 +20,7 @@ Installing Linux Swift does not provide Xcode, Apple's iOS SDKs, CoreSimulator, 
 - **Development host:** the user's Apple silicon Mac with full Xcode supported by its installed macOS. Command Line Tools alone are insufficient. The Mac's actual versions determine the Xcode/package compatibility decision.
 - **App target:** native iPhone application; provisional minimum iOS 17 because of the source's Observation/preview usage and inspected MLX package platform declarations. Finalize after resolving compatible tagged dependencies and building in Phase 2.
 - **Simulator scope:** original UI, manual/sample input when data is available, Vision photo OCR, genuine knowledge lookup, and Core Data history. Core ML category prediction is a separate capability to validate after its artifacts are recovered. The original MLX LLM features remain unavailable on simulator; do not load their backend or substitute fabricated results.
-- **Full AI validation:** supported physical iPhone with the genuine model bundle and adequate memory. The original source's device-name whitelist is not a hardware certification. Exact device/inference checks belong to the model phase; owning a physical phone is not a prerequisite for the first simulator MVP.
+- **Full AI validation:** supported physical iPhone or compatible Apple silicon iOS-on-Mac execution with the genuine model bundle and adequate memory. The original source's device-name whitelist is not a hardware certification. Exact device/inference checks belong to the model phase; owning a physical phone is not a prerequisite for the first simulator MVP. Direct-Mac execution was added to the proposed validation route after discussion with the user; it remains untested.
 - **Resource budget:** collect actual RAM/free space before selecting package versions and downloading models. Allow space for Xcode, SDK/runtime downloads, build caches, and model files. No numeric memory/disk minimum or successful inference claim has been established from this repository.
 
 The inspected tags are requirement evidence, **not selected app dependencies**:
@@ -77,7 +77,7 @@ For an existing clean `main` checkout, use `git pull --ff-only` before running t
 
 ## Checkpoint before Phase 2
 
-Waiting for the user's Mac report. Use it to record the actual Xcode/Swift/SDK/runtime versions, device UDIDs, resources, and any setup errors. Then confirm the proposed simulator-first baseline with the user before starting Phase 2. No app scaffold, package installation, simulator boot, or model download has been performed in this phase.
+The original checkpoint requested the user's Mac report before Phase 2. The user subsequently authorized independent scaffold preparation, so use that report to record the actual Xcode/Swift/SDK/runtime versions, device UDIDs, resources, and setup errors before validating the Phase 2 build. No simulator boot, Mac package resolution, or model download has executed in this task. Phase 2's implementation and remaining build checkpoint are recorded separately.
 
 ## Sources and verification limits
 

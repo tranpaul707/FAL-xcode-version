@@ -1,0 +1,77 @@
+{
+  "pins": [
+    {
+      "identity": "gzipswift",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/1024jp/GzipSwift",
+      "state": {
+        "revision": "731037f6cc2be2ec01562f6597c1d0aa3fe6fd05",
+        "version": "6.0.1"
+      }
+    },
+    {
+      "identity": "jinja",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/johnmai-dev/Jinja",
+      "state": {
+        "revision": "9c0bbbc7f553932661fc791d2c5664311af09583",
+        "version": "1.1.0"
+      }
+    },
+    {
+      "identity": "mlx-swift",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/ml-explore/mlx-swift.git",
+      "state": {
+        "revision": "b94473af8c50010edba87a48bbd60c3d7f949852",
+        "version": "0.25.4"
+      }
+    },
+    {
+      "identity": "mlx-swift-lm",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/ml-explore/mlx-swift-lm.git",
+      "state": {
+        "revision": "6633cc42c2db685cbbc052c157d50e7ba26683ac",
+        "version": "2.25.4"
+      }
+    },
+    {
+      "identity": "swift-argument-parser",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/apple/swift-argument-parser",
+      "state": {
+        "revision": "0fbc8848e389af3bb55c182bc19ca9d5dc2f255b",
+        "version": "1.4.0"
+      }
+    },
+    {
+      "identity": "swift-collections",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/apple/swift-collections",
+      "state": {
+        "revision": "671108c96644956dddcd89dd59c203dcdb36cec7",
+        "version": "1.1.4"
+      }
+    },
+    {
+      "identity": "swift-numerics",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/apple/swift-numerics",
+      "state": {
+        "revision": "0c0290ff6b24942dadb83a929ffaaa1481df04a2",
+        "version": "1.1.1"
+      }
+    },
+    {
+      "identity": "swift-transformers",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/huggingface/swift-transformers.git",
+      "state": {
+        "revision": "c2f302a74cca59cbde683b1425ab43c05685515a",
+        "version": "0.1.21"
+      }
+    }
+  ],
+  "version": 2
+}

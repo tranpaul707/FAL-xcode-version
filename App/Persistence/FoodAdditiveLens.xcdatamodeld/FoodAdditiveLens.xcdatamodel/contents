@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Item" representedClassName="Item" syncable="YES">
+        <attribute name="analysisResult" optional="YES" attributeType="String"/>
+        <attribute name="explanations" optional="YES" attributeType="String"/>
+        <attribute name="identifiedAdditives" optional="YES" attributeType="String"/>
+        <attribute name="ingredientText" optional="YES" attributeType="String"/>
+        <attribute name="knowledgeData" optional="YES" attributeType="String"/>
+        <attribute name="stage" optional="YES" attributeType="String"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+    </entity>
+    <elements>
+        <element name="Item" positionX="-63" positionY="-18" width="128" height="134"/>
+    </elements>
+</model>

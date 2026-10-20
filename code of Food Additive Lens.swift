@@ -9,10 +9,13 @@
 
 import SwiftUI
 import CoreData
+import Observation
+#if FAL_ENABLE_MLX && !targetEnvironment(simulator)
 import MLX
 import MLXRandom
 import MLXLLM
 import MLXLMCommon
+#endif
 import Foundation
 import CoreML
 import NaturalLanguage
@@ -21,6 +24,7 @@ import Vision
 import UIKit
 
 // MARK: - ContentView
+@MainActor
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @State private var identifier = MLXAdditiveIdentifier()
@@ -119,6 +123,7 @@ struct ContentView: View {
                         .background(Color.blue.opacity(0.1))
                         .cornerRadius(20)
                     }
+                    .accessibilityIdentifier("historyButton")
                 }
             }
             .sheet(isPresented: $showingHistory) {
@@ -520,20 +525,26 @@ struct ContentView: View {
                 .background(Color.green.opacity(0.1))
                 .cornerRadius(12)
             } else {
-                // Prominent loading banner
+                // Missing resources are unavailable, not perpetually loading.
                 VStack(spacing: 16) {
                     HStack {
-                        ProgressView()
-                            .scaleEffect(1.2)
-                            .frame(width: 30, height: 30)
+                        if isInitializingServices {
+                            ProgressView()
+                                .scaleEffect(1.2)
+                                .frame(width: 30, height: 30)
+                        } else {
+                            Image(systemName: "info.circle")
+                                .font(.title2)
+                                .foregroundColor(.orange)
+                        }
                         
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("Loading AI Models...")
+                            Text(isInitializingServices ? "Loading AI Models..." : "Some Features Are Unavailable")
                                 .font(.headline)
                                 .fontWeight(.semibold)
                                 .foregroundColor(.orange)
                             
-                            Text("Please wait while we initialize the app")
+                            Text(isInitializingServices ? "Please wait while we initialize the app" : "You can enter ingredients, choose a photo, or open history.")
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
                         }
@@ -557,21 +568,21 @@ struct ContentView: View {
                             title: "Knowledge Base",
                             isReady: knowledgeManager.isReady,
                             isLoading: knowledgeManager.isLoading,
-                            detail: "Food additive database"
+                            detail: knowledgeManager.isReady || knowledgeManager.isLoading ? "Food additive database" : "Food additive data is unavailable."
                         )
                         
                         statusRow(
                             title: "Food Classifier",
                             isReady: foodClassifier.isLoaded,
                             isLoading: foodClassifier.isLoading,
-                            detail: "Category prediction model"
+                            detail: foodClassifier.isLoaded || foodClassifier.isLoading ? "Category prediction model" : "Category prediction is unavailable."
                         )
                         
                         statusRow(
                             title: "CFR Database",
                             isReady: cfrManager.isLoaded,
                             isLoading: cfrManager.isLoading,
-                            detail: "Federal regulations database"
+                            detail: cfrManager.isLoaded || cfrManager.isLoading ? "Federal regulations database" : "Regulation data is unavailable."
                         )
                     }
                     .padding()
@@ -581,6 +592,10 @@ struct ContentView: View {
                 }
             }
         }
+    }
+
+    private var isInitializingServices: Bool {
+        identifier.isLoading || knowledgeManager.isLoading || foodClassifier.isLoading || cfrManager.isLoading
     }
 
     private func statusRow(title: String, isReady: Bool, isLoading: Bool, detail: String) -> some View {
@@ -629,6 +644,7 @@ struct ContentView: View {
                             action: resetAppContent,
                             disabled: !canReset
                         )
+                        .accessibilityIdentifier("resetButton")
                         
                         Menu {
                             Button(action: { showingCameraPicker = true }) {
@@ -672,7 +688,7 @@ struct ContentView: View {
                     HStack(spacing: 6) {
                         Image(systemName: "dice")
                             .font(.caption)
-                        Text(isLoadingIngredients ? "Loading..." : "Random Sample")
+                        Text(isLoadingIngredients ? "Loading..." : (availableFoodRecords.isEmpty ? "Example" : "Random Sample"))
                             .font(.caption)
                             .fontWeight(.medium)
                     }
@@ -683,6 +699,7 @@ struct ContentView: View {
                     .cornerRadius(20)
                 }
                 .disabled(isLoadingIngredients)
+                .accessibilityIdentifier("sampleButton")
             }
             
             // Text Editor section (unchanged)
@@ -698,6 +715,7 @@ struct ContentView: View {
                             .stroke(isTextEditorFocused ? Color.blue : Color.clear, lineWidth: 2)
                     )
                     .focused($isTextEditorFocused)
+                    .accessibilityIdentifier("ingredientTextEditor")
             }
             .frame(maxHeight: 200)
         }
@@ -1973,6 +1991,7 @@ struct ClassificationResultRow: View {
 }
 
 // MARK: - History View
+@MainActor
 struct HistoryView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.dismiss) private var dismiss
@@ -2183,6 +2202,7 @@ private let itemFormatter: DateFormatter = {
 
 // MARK: - MLX Additive Identifier Service
 
+#if FAL_ENABLE_MLX && !targetEnvironment(simulator)
 @Observable
 @MainActor
 class MLXAdditiveIdentifier {
@@ -2190,7 +2210,7 @@ class MLXAdditiveIdentifier {
     var isLoading = false
     var isModelLoaded = false
     var errorMessage: String?
-    var modelInfo = ""
+    var modelInfo = "Preparing on-device AI..."
     var stat = ""
     var currentStage: String = ""
     let generateParameters = GenerateParameters(maxTokens: 1000, temperature: 0.3)
@@ -2205,6 +2225,11 @@ class MLXAdditiveIdentifier {
     var generationTask: Task<Void, Error>?
     
     init() {
+        guard UIDevice.supportsMLX() else {
+            modelInfo = "On-device AI requires supported hardware."
+            errorMessage = modelInfo
+            return
+        }
         // Use higher priority and regular Task instead of Task.detached
         Task(priority: .userInitiated) { [weak self] in
             await self?.initializeModel()
@@ -2222,6 +2247,7 @@ class MLXAdditiveIdentifier {
             print("❌ MLXAdditiveIdentifier: Initialization failed with error: \(error)")
             await MainActor.run { [weak self] in
                 self?.errorMessage = "Init failed: \(error.localizedDescription)"
+                self?.modelInfo = "The local AI model is unavailable."
                 self?.isLoading = false
             }
         }
@@ -2236,9 +2262,6 @@ class MLXAdditiveIdentifier {
                 isLoading = true
             }
             
-            // Set memory limits for iOS
-            MLX.GPU.set(cacheLimit: 20 * 1024 * 1024)
-            
             // Get the bundled model directory URL
             guard let bundleResourceURL = Bundle.main.resourceURL else {
                 throw MLXError.modelNotFound("Bundle resource URL not found")
@@ -2250,6 +2273,9 @@ class MLXAdditiveIdentifier {
             guard FileManager.default.fileExists(atPath: modelDirectoryURL.path) else {
                 throw MLXError.modelNotFound("Bundled model directory not found at path: \(modelDirectoryURL.path)")
             }
+
+            // Do not initialize the GPU when the local model has not been restored.
+            MLX.GPU.set(cacheLimit: 20 * 1024 * 1024)
             
             // Create model configuration
             let modelConfiguration = ModelConfiguration(directory: modelDirectoryURL)
@@ -2343,7 +2369,7 @@ class MLXAdditiveIdentifier {
         knowledge: [AdditiveKnowledgeManager.AdditiveKnowledge],
         foodInfo: String,
         originalIngredients: String,
-        streamingUpdate: @escaping (String) -> Void
+        streamingUpdate: @escaping @MainActor @Sendable (String) -> Void
     ) async -> String? {
         print("📝 MLX Explain: Starting additive explanation generation...")
         
@@ -2399,7 +2425,7 @@ class MLXAdditiveIdentifier {
         systemPrompt: String,
         userPrompt: String,
         stage: String,
-        streamingUpdate: ((String) -> Void)? = nil
+        streamingUpdate: (@MainActor @Sendable (String) -> Void)? = nil
     ) async throws -> String {
         // Update the current stage
         await MainActor.run {
@@ -2420,12 +2446,13 @@ class MLXAdditiveIdentifier {
             print("=====================================")
         }
         
-        // Collect response chunks
-        var responseChunks: [String] = []
-        var finalStat = ""
+        // Capture the Sendable parameters before crossing to the model actor.
+        let parameters = generateParameters
         
         print("🚀 MLX \(stage): Starting model inference...")
-        try await modelContainer.perform { context in
+        let (fullResponse, finalStat) = try await modelContainer.perform { context in
+            var responseChunks: [String] = []
+            var finalStat = ""
             print("⚙️ MLX \(stage): Preparing input...")
             let input = try await context.processor.prepare(input: UserInput(prompt: combinedPrompt))
             print("✅ MLX \(stage): Input prepared successfully")
@@ -2433,7 +2460,7 @@ class MLXAdditiveIdentifier {
             print("🔥 MLX \(stage): Starting generation stream...")
             let stream = try MLXLMCommon.generate(
                 input: input,
-                parameters: generateParameters,
+                parameters: parameters,
                 context: context
             )
             
@@ -2446,9 +2473,7 @@ class MLXAdditiveIdentifier {
                     
                     // Call streaming update if provided
                     if let streamingUpdate = streamingUpdate {
-                        await MainActor.run {
-                            streamingUpdate(responseChunks.joined())
-                        }
+                        await streamingUpdate(responseChunks.joined())
                     }
                     
                     if chunkCount % 10 == 0 {
@@ -2462,6 +2487,7 @@ class MLXAdditiveIdentifier {
                 }
             }
             print("✅ MLX \(stage): Generation stream completed. Total chunks: \(chunkCount)")
+            return (responseChunks.joined(), finalStat)
         }
         
         // Clear the current stage when done
@@ -2476,8 +2502,6 @@ class MLXAdditiveIdentifier {
             }
         }
         
-        // Combine response chunks
-        let fullResponse = responseChunks.joined()
         print("📋 MLX \(stage): Full response length: \(fullResponse.count) characters")
         
         // 🔍 Print the complete LLM response for debugging
@@ -2624,6 +2648,7 @@ class MLXAdditiveIdentifier {
         isLoading = false
     }
 }
+#endif
 
 // MARK: - Custom Errors
 
@@ -4088,11 +4113,7 @@ extension UIDevice {
         let identifier = getDeviceIdentifier()
         
         // Check for Mac first
-        if identifier.contains("Mac") {
-            return "Mac (Designed for iPhone)"
-        }
-        // Mac (Designed for iPhone) uses this string
-        if identifier.contains("iPad8,6") {
+        if isRunningOnMac() {
             return "Mac (Designed for iPhone)"
         }
         
@@ -4136,13 +4157,13 @@ extension UIDevice {
     }
     
     static func supportsMLX() -> Bool {
+        #if !FAL_ENABLE_MLX || targetEnvironment(simulator)
+        return false
+        #else
         let identifier = getDeviceIdentifier()
         
         // Mac (designed for iPhone) supports MLX
-        if identifier.contains("Mac") {
-            return true
-        }
-        if identifier.contains("iPad8,6") {
+        if isRunningOnMac() {
             return true
         }
         // Check if iPhone model is >= iPhone14,7 (iPhone 14 or newer)
@@ -4169,10 +4190,11 @@ extension UIDevice {
         
         // Default to false for safety if we can't determine the model
         return false
+        #endif
     }
     
     static func isRunningOnMac() -> Bool {
-        return getDeviceIdentifier().contains("Mac")
+        return ProcessInfo.processInfo.isiOSAppOnMac
     }
 }
 // MARK: - CFR (Code of Federal Regulations) Manager

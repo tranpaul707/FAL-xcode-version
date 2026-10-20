@@ -11,11 +11,11 @@ Deliver in two steps:
 
 Do not add accounts, a backend, cloud inference, barcode scanning, health/safety scores, dietary recommendations, new model architectures, or unrelated UI redesign. Research retraining and paper-wide evaluations are not prerequisites for the first app launch. Preserve the Apache license, Yihang Feng's source credit, and existing acknowledgments; check model/data terms separately.
 
-This document is an inspected implementation plan. No Xcode project, app build, or simulator run has been completed yet.
+The Phase 2 Xcode scaffold is now prepared. No Xcode package resolution, app build, or simulator run has executed in this Linux task; those checks require the user's Mac.
 
 **Execution checkpoints:** work one phase at a time. Report results and any action needed from the user at each phase boundary, and pause before starting the next phase. For intermediate work that requires the user's machine, configuration, access, or a decision, ask for that prerequisite and pause the dependent work while finishing independent checks.
 
-## Repository findings
+## Initial repository findings (before Phase 2)
 
 - The app is a single 4,450-line file, `code of Food Additive Lens.swift`. The README describes the app and research paper but supplies no build instructions.
 - No `.xcodeproj`/workspace, shared scheme, `@main` app entry, asset catalog, Core Data model, persistence controller, package manifest/resolution, or test target is present.
@@ -40,7 +40,7 @@ Reference source locations: sample loader near line 189; Llama loader near 2197�
 
 ## Phase 1 — Establish the Mac/Xcode and simulator baseline
 
-**Status:** independent inspection and baseline documentation completed; Mac validation is pending. The user confirmed access to an Apple silicon Mac. See [Phase 1 results and Mac instructions](docs/PHASE1-XCODE-BASELINE.md) and run `bash scripts/check-xcode-environment.sh` on that Mac. Phase 2 has not started.
+**Status:** independent inspection and baseline documentation completed; Mac validation is pending. The user confirmed access to an Apple silicon Mac and subsequently authorized Phase 2 preparation while the report remains outstanding. See [Phase 1 results and Mac instructions](docs/PHASE1-XCODE-BASELINE.md) and run `bash scripts/check-xcode-environment.sh` on that Mac.
 
 - [ ] Use a Mac with an Xcode-supported macOS version, full Xcode, command-line tools, and an installed iOS Simulator runtime. Prefer Apple silicon for the original MLX workflow; confirm RAM, free storage, and the pinned packages' actual requirements before downloading large models.
 - [ ] Record the chosen Xcode/Swift versions, iOS deployment target, SDK, and simulator runtimes. Start by investigating iOS 17 or later because the source uses Observation and `#Preview`; finalize the minimum after dependency resolution and a real build.
@@ -53,13 +53,15 @@ Reference source locations: sample loader near line 189; Llama loader near 2197�
 
 ## Phase 2 — Create the minimal Xcode application
 
-- [ ] Add a native SwiftUI iOS application project, tentatively `FoodAdditiveLens.xcodeproj`, with a shared `FoodAdditiveLens` scheme, app target, unit-test target, and UI-test target. Keep the existing checkout; no extra Git worktree is needed.
-- [ ] Add the `@main` app entry and inject the Core Data managed-object context into `ContentView` and history. Implement the missing persistence controller with a persistent store and an in-memory preview/test store.
-- [ ] Add the Core Data `Item` entity with the attributes listed above, matching the existing save/fetch/delete code and choosing one managed-object code-generation approach.
-- [ ] Include the supplied Swift source exactly once in the app target. Make only build/integration fixes initially; split views/services into smaller files only where required for platform separation, dependency injection, or testing.
-- [ ] Select compatible tagged releases for `mlx-swift` and the package supplying `MLXLLM`/`MLXLMCommon` (currently `mlx-swift-lm`). Verify the supplied API usage against those releases and commit the resulting package resolution. Do not track upstream `main` or independently choose incompatible MLX versions.
-- [ ] Ensure the simulator configuration can compile even where the selected inference packages cannot. If required, isolate their imports, linked products, and implementation in a supported build target/configuration while sharing the same UI, knowledge, and persistence code. Do not load MLX on an unsupported destination.
-- [ ] Configure bundle identifier, deployment/device-family settings, Info.plist generation, camera/photo-library usage descriptions, and basic app assets. Supply referenced named colors or retain equivalent existing fallback colors; avoid branding/design expansion.
+**Status:** scaffold and platform separation implemented; Mac resolution/build/run pending. See [Phase 2 implementation and checkpoint](docs/PHASE2-XCODE-SCAFFOLD.md). Checked items below mean source/project artifacts are implemented, not that an Xcode build or runtime test has passed. Pause for Mac results before Phase 3.
+
+- [x] Add a native SwiftUI iOS application project, `FoodAdditiveLens.xcodeproj`, with a shared `FoodAdditiveLens` scheme, app target, unit-test target, and UI-test target. The additional `FoodAdditiveLens-MLX` scheme uses the same app source for supported hardware. The existing checkout is retained.
+- [x] Add the `@main` app entry and inject the Core Data managed-object context into `ContentView` and history. Implement the missing persistence controller with a persistent store and an in-memory preview/test store.
+- [x] Add the Core Data `Item` entity with the attributes listed above, matching the existing save/fetch/delete code and choosing manual managed-object code generation.
+- [x] Include the supplied Swift source exactly once in each app target. Make only build/integration fixes initially; the existing model prompts and retrieval/classification logic are retained.
+- [ ] Validate the selected exact MLX 0.25.4 / MLX LM 2.25.4 / Transformers 0.1.21 requirements and complete candidate package lock with Xcode's resolver on the Mac. Tag revisions and matching upstream APIs/manifests were inspected; the prepared eight-package lock is not yet resolver-verified. Do not track upstream `main` or upgrade versions to hide a build error.
+- [x] Separate MLX imports, linked products, and initialization from the simulator target with a conditional unavailable backend and a distinct device/iOS-on-Mac inference target. The actual simulator compile remains part of the pending Mac check; no simulator inference is claimed.
+- [x] Configure bundle identifiers, iOS 17/iPhone settings, generated Info.plist, camera/photo-library usage descriptions, named colors, and iOS-on-Mac capability. Device/Mac signing and destination availability remain untested; no personal signing team is committed.
 - [ ] Build on the Mac and resolve actual package/API, actor-isolation, SwiftUI, and Core Data compile failures. Verify SwiftUI previews use their preview store. No additional compiler defects are established until this build runs.
 
 **Exit:** Xcode opens the shared scheme, resolves packages, and builds/launches an app shell on a selected simulator without model-resource crashes.
@@ -97,7 +99,7 @@ Reference source locations: sample loader near line 189; Llama loader near 2197�
 - [ ] Identify and obtain the intended MLX-compatible Llama 3.2 3B Instruct 4-bit export, complete config/tokenizer/weights, exact revision, checksums, and applicable license. Check source access before requesting any missing credential; never store credentials in the repo.
 - [ ] Preserve the `Llama-3.2-3B-Instruct-4bit/` directory structure during bundling or document a minimal explicit resource-path adjustment. Verify all required files and Metal resources before starting inference; provide actionable missing-resource/load errors.
 - [ ] Restore the original direct-match plus LLM additive identification, retrieval, and streamed contextual explanation flow. Preserve prompts, matching behavior, category context, and generation settings initially. Check UI responsiveness, error recovery, and repeated use within device memory limits.
-- [ ] Run genuine inference on a supported physical iPhone and record actual outcomes. The Phase 1 MLX documentation excludes simulator inference, so keep the simulator MVP's MLX features unavailable. Revisit only if upstream documentation and a real compatibility check establish support for the chosen backend; do not introduce a remote inference service to bridge the gap.
+- [ ] Run genuine inference on a supported physical iPhone or compatible Apple silicon iOS-on-Mac destination and record actual outcomes. The direct-Mac route was agreed with the user and the Phase 2 MLX scheme prepares that path, but it is not runtime-verified. The Phase 1 MLX documentation excludes simulator inference, so keep the simulator MVP's MLX features unavailable. Revisit only if upstream documentation and a real compatibility check establish support for the chosen backend; do not introduce a remote inference service to bridge the gap.
 - [ ] Restore and verify authentic sample browsing and CFR links still blocked after Phase 3. Confirm generated links correspond to real source citations; browser access to eCFR is distinct from offline analysis.
 
 **Parity acceptance:** authentic samples/input/photo → real category prediction and selection → direct plus LLM additive identification → knowledge/CFR → genuine generated explanations → persisted history. Record which steps pass on simulator versus physical device. Missing original model/CFR artifacts remain parity blockers.

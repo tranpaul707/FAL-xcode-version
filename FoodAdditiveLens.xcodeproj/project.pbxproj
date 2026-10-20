@@ -1,0 +1,872 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+		FBF46BFE2A068DE37ABD0D2F = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = "code of Food Additive Lens.swift";
+			sourceTree = "<group>";
+		};
+		DEFE145AEAEE046EEF1B7D63 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = FoodAdditiveLensApp.swift;
+			sourceTree = "<group>";
+		};
+		85BEE17C412D4BD1D08788B6 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = PersistenceController.swift;
+			sourceTree = "<group>";
+		};
+		06342C962716D1105DDE73A7 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = Item.swift;
+			sourceTree = "<group>";
+		};
+		29611E151F6BEB9DAFFE3A50 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = MLXUnavailableIdentifier.swift;
+			sourceTree = "<group>";
+		};
+		BBA228EEA97BAFEE5D598C7B = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.xcdatamodel;
+			path = FoodAdditiveLens.xcdatamodel;
+			sourceTree = "<group>";
+		};
+		501C53C90DB0089513B9C7A9 = {
+			isa = XCVersionGroup;
+			children = (
+				BBA228EEA97BAFEE5D598C7B,
+			);
+			currentVersion = BBA228EEA97BAFEE5D598C7B;
+			path = FoodAdditiveLens.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+		9A042DC2632DEA864EF21E43 = {
+			isa = PBXFileReference;
+			lastKnownFileType = folder.assetcatalog;
+			path = Assets.xcassets;
+			sourceTree = "<group>";
+		};
+		90BC2B2D9DAE367DC13D2040 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = PersistenceTests.swift;
+			sourceTree = "<group>";
+		};
+		647BA35A13CB22AE3E08D5A2 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = AppLaunchTests.swift;
+			sourceTree = "<group>";
+		};
+		E1FEBCA6F9E0924D72F31D0C = {
+			isa = PBXFileReference;
+			lastKnownFileType = net.daringfireball.markdown;
+			path = README.md;
+			sourceTree = "<group>";
+		};
+		F3C3BD04BB7CB25B078C2DB7 = {
+			isa = PBXFileReference;
+			lastKnownFileType = net.daringfireball.markdown;
+			path = README.md;
+			sourceTree = "<group>";
+		};
+		BB5665C3834047DD6FD64689 = {
+			isa = PBXFileReference;
+			lastKnownFileType = net.daringfireball.markdown;
+			path = TODO.md;
+			sourceTree = "<group>";
+		};
+		2A5529FA03839C0F89FA6ED1 = {
+			isa = PBXGroup;
+			children = (
+				85BEE17C412D4BD1D08788B6,
+				06342C962716D1105DDE73A7,
+				501C53C90DB0089513B9C7A9,
+			);
+			sourceTree = "<group>";
+			path = Persistence;
+		};
+		E614CDC4FF26F6704468C892 = {
+			isa = PBXGroup;
+			children = (
+				29611E151F6BEB9DAFFE3A50,
+			);
+			sourceTree = "<group>";
+			path = Services;
+		};
+		B5DA903F4EE3DB011CF7AB09 = {
+			isa = PBXGroup;
+			children = (
+				E1FEBCA6F9E0924D72F31D0C,
+			);
+			sourceTree = "<group>";
+			path = Resources;
+		};
+		A9D73767095D381BB4E5867E = {
+			isa = PBXGroup;
+			children = (
+				DEFE145AEAEE046EEF1B7D63,
+				2A5529FA03839C0F89FA6ED1,
+				E614CDC4FF26F6704468C892,
+				9A042DC2632DEA864EF21E43,
+				B5DA903F4EE3DB011CF7AB09,
+			);
+			sourceTree = "<group>";
+			path = App;
+		};
+		772ACBBC52D03349E6781DAB = {
+			isa = PBXGroup;
+			children = (
+				90BC2B2D9DAE367DC13D2040,
+			);
+			sourceTree = "<group>";
+			path = FoodAdditiveLensTests;
+		};
+		C3D8F3F6A75E036F977CC7C6 = {
+			isa = PBXGroup;
+			children = (
+				647BA35A13CB22AE3E08D5A2,
+			);
+			sourceTree = "<group>";
+			path = FoodAdditiveLensUITests;
+		};
+		9B7069D6B5D33DC4C0F9AFEF = {
+			isa = PBXGroup;
+			children = (
+				772ACBBC52D03349E6781DAB,
+				C3D8F3F6A75E036F977CC7C6,
+			);
+			sourceTree = "<group>";
+			path = Tests;
+		};
+		9EE6FA9C97B3F909F8309F9F = {
+			isa = PBXFileReference;
+			explicitFileType = wrapper.application;
+			includeInIndex = 0;
+			path = FoodAdditiveLens.app;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		95B1ECA5972B39E7CE4D73B4 = {
+			isa = PBXFileReference;
+			explicitFileType = wrapper.application;
+			includeInIndex = 0;
+			path = FoodAdditiveLensMLX.app;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		29B4EA6659D1709C9132BD61 = {
+			isa = PBXFileReference;
+			explicitFileType = wrapper.cfbundle;
+			includeInIndex = 0;
+			path = FoodAdditiveLensTests.xctest;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		CDD1E9FEF69B213C6AC6FB8F = {
+			isa = PBXFileReference;
+			explicitFileType = wrapper.cfbundle;
+			includeInIndex = 0;
+			path = FoodAdditiveLensUITests.xctest;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		793E0CDCBE58365E097689E1 = {
+			isa = PBXGroup;
+			children = (
+				9EE6FA9C97B3F909F8309F9F,
+				95B1ECA5972B39E7CE4D73B4,
+				29B4EA6659D1709C9132BD61,
+				CDD1E9FEF69B213C6AC6FB8F,
+			);
+			sourceTree = "<group>";
+			name = Products;
+		};
+		A80809E4DD9A604151C63CF9 = {
+			isa = PBXGroup;
+			children = (
+				A9D73767095D381BB4E5867E,
+				FBF46BFE2A068DE37ABD0D2F,
+				9B7069D6B5D33DC4C0F9AFEF,
+				F3C3BD04BB7CB25B078C2DB7,
+				BB5665C3834047DD6FD64689,
+				793E0CDCBE58365E097689E1,
+			);
+			sourceTree = "<group>";
+		};
+		8BFBF966774F24488E9BEB02 = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ml-explore/mlx-swift.git";
+			requirement = {
+				kind = exactVersion;
+				version = 0.25.4;
+			};
+		};
+		060344618405EDA785F309E2 = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ml-explore/mlx-swift-lm.git";
+			requirement = {
+				kind = exactVersion;
+				version = 2.25.4;
+			};
+		};
+		290700FF982CA7A5B64D6A4E = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/huggingface/swift-transformers.git";
+			requirement = {
+				kind = exactVersion;
+				version = 0.1.21;
+			};
+		};
+		90E80BBC17FF0D043B1E0E04 = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8BFBF966774F24488E9BEB02;
+			productName = MLX;
+		};
+		6682DA7FD137F224950BE5A4 = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8BFBF966774F24488E9BEB02;
+			productName = MLXRandom;
+		};
+		47068198CF3E9DEDDCFC7232 = {
+			isa = XCSwiftPackageProductDependency;
+			package = 060344618405EDA785F309E2;
+			productName = MLXLLM;
+		};
+		5EF15D510AEE6353FAC1753F = {
+			isa = XCSwiftPackageProductDependency;
+			package = 060344618405EDA785F309E2;
+			productName = MLXLMCommon;
+		};
+		A4FBAEB46FFCC89A74186FA6 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				SWIFT_STRICT_CONCURRENCY = targeted;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+			};
+			name = Debug;
+		};
+		CF8EA20594C0AF26438D86E1 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				SWIFT_STRICT_CONCURRENCY = targeted;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		E0DF7411D42BDD0A633EC51D = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A4FBAEB46FFCC89A74186FA6,
+				CF8EA20594C0AF26438D86E1,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FD93BA83AB95481969870AB1 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Food Additive Lens";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Take a photo of an ingredient label to read its text.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Choose an ingredient-label photo to read its text.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tranpaul707.foodadditivelens;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_MODULE_NAME = FoodAdditiveLens;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		AE3F6999AC9018BC50930623 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Food Additive Lens";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Take a photo of an ingredient label to read its text.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Choose an ingredient-label photo to read its text.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tranpaul707.foodadditivelens;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_MODULE_NAME = FoodAdditiveLens;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		FD9138A214EF252FB2425B69 = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FD93BA83AB95481969870AB1,
+				AE3F6999AC9018BC50930623,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		307AB4315E1FA83C963B2C3E = {
+			isa = PBXBuildFile;
+			fileRef = FBF46BFE2A068DE37ABD0D2F;
+		};
+		2A54B024D5062F37832549C1 = {
+			isa = PBXBuildFile;
+			fileRef = DEFE145AEAEE046EEF1B7D63;
+		};
+		86D923E3BC3801C190A31987 = {
+			isa = PBXBuildFile;
+			fileRef = 85BEE17C412D4BD1D08788B6;
+		};
+		14341D469B43742CEFC02AEF = {
+			isa = PBXBuildFile;
+			fileRef = 06342C962716D1105DDE73A7;
+		};
+		0817925BDA831FC11557F4A6 = {
+			isa = PBXBuildFile;
+			fileRef = 29611E151F6BEB9DAFFE3A50;
+		};
+		B7CF4FE4CE5D3F4E254474A2 = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				307AB4315E1FA83C963B2C3E,
+				2A54B024D5062F37832549C1,
+				86D923E3BC3801C190A31987,
+				14341D469B43742CEFC02AEF,
+				0817925BDA831FC11557F4A6,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CBA3B72E0F558AA1DF39ED3E = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B76402A771D58A4510AD9BC5 = {
+			isa = PBXBuildFile;
+			fileRef = 501C53C90DB0089513B9C7A9;
+		};
+		5851641441B0F733C0493729 = {
+			isa = PBXBuildFile;
+			fileRef = 9A042DC2632DEA864EF21E43;
+		};
+		1B4DE1A015CA52DF95A37CCE = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B76402A771D58A4510AD9BC5,
+				5851641441B0F733C0493729,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		92AD6C79DF64563406AE5E05 = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FD9138A214EF252FB2425B69;
+			buildPhases = (
+				B7CF4FE4CE5D3F4E254474A2,
+				CBA3B72E0F558AA1DF39ED3E,
+				1B4DE1A015CA52DF95A37CCE,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FoodAdditiveLens;
+			packageProductDependencies = (
+			);
+			productName = FoodAdditiveLens;
+			productReference = 9EE6FA9C97B3F909F8309F9F;
+			productType = "com.apple.product-type.application";
+		};
+		36A706A9743A478CAE8D607F = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Food Additive Lens";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Take a photo of an ingredient label to read its text.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Choose an ingredient-label photo to read its text.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tranpaul707.foodadditivelens.mlx;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_MODULE_NAME = FoodAdditiveLensMLX;
+				SUPPORTED_PLATFORMS = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) FAL_ENABLE_MLX";
+			};
+			name = Debug;
+		};
+		1C84BD3D5C21F0D30EC18756 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Food Additive Lens";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Take a photo of an ingredient label to read its text.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Choose an ingredient-label photo to read its text.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tranpaul707.foodadditivelens.mlx;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_MODULE_NAME = FoodAdditiveLensMLX;
+				SUPPORTED_PLATFORMS = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) FAL_ENABLE_MLX";
+			};
+			name = Release;
+		};
+		E28B4F9165234510F8773C91 = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				36A706A9743A478CAE8D607F,
+				1C84BD3D5C21F0D30EC18756,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		283C78AFADE615CA3186BEC8 = {
+			isa = PBXBuildFile;
+			fileRef = FBF46BFE2A068DE37ABD0D2F;
+		};
+		4BFBF8CEE4053E9FF07CF25F = {
+			isa = PBXBuildFile;
+			fileRef = DEFE145AEAEE046EEF1B7D63;
+		};
+		F806B09E8B9F009377DF8921 = {
+			isa = PBXBuildFile;
+			fileRef = 85BEE17C412D4BD1D08788B6;
+		};
+		1A54427D38E15D9D42D542F9 = {
+			isa = PBXBuildFile;
+			fileRef = 06342C962716D1105DDE73A7;
+		};
+		090C3FE28BC2A5E975EC252A = {
+			isa = PBXBuildFile;
+			fileRef = 29611E151F6BEB9DAFFE3A50;
+		};
+		1E91B43DBD692F9B4A2F1C50 = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				283C78AFADE615CA3186BEC8,
+				4BFBF8CEE4053E9FF07CF25F,
+				F806B09E8B9F009377DF8921,
+				1A54427D38E15D9D42D542F9,
+				090C3FE28BC2A5E975EC252A,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		57675A6D8F5B447D1E793C0B = {
+			isa = PBXBuildFile;
+			productRef = 90E80BBC17FF0D043B1E0E04;
+		};
+		BF1342EEEDE699463FB4AFD8 = {
+			isa = PBXBuildFile;
+			productRef = 6682DA7FD137F224950BE5A4;
+		};
+		DF9E4143412144EF6F822AA3 = {
+			isa = PBXBuildFile;
+			productRef = 47068198CF3E9DEDDCFC7232;
+		};
+		D9E7DA0294B273C43E431966 = {
+			isa = PBXBuildFile;
+			productRef = 5EF15D510AEE6353FAC1753F;
+		};
+		BF2AB6D75F78300FA35F3C2C = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				57675A6D8F5B447D1E793C0B,
+				BF1342EEEDE699463FB4AFD8,
+				DF9E4143412144EF6F822AA3,
+				D9E7DA0294B273C43E431966,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		41602541959789FA2A703D2A = {
+			isa = PBXBuildFile;
+			fileRef = 501C53C90DB0089513B9C7A9;
+		};
+		AD5E3B52E952E191DB90B355 = {
+			isa = PBXBuildFile;
+			fileRef = 9A042DC2632DEA864EF21E43;
+		};
+		E0756F55AB5245BD07FF006E = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				41602541959789FA2A703D2A,
+				AD5E3B52E952E191DB90B355,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B7F06D7D20B4FAA55B5F2439 = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E28B4F9165234510F8773C91;
+			buildPhases = (
+				1E91B43DBD692F9B4A2F1C50,
+				BF2AB6D75F78300FA35F3C2C,
+				E0756F55AB5245BD07FF006E,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FoodAdditiveLensMLX;
+			packageProductDependencies = (
+				90E80BBC17FF0D043B1E0E04,
+				6682DA7FD137F224950BE5A4,
+				47068198CF3E9DEDDCFC7232,
+				5EF15D510AEE6353FAC1753F,
+			);
+			productName = FoodAdditiveLensMLX;
+			productReference = 95B1ECA5972B39E7CE4D73B4;
+			productType = "com.apple.product-type.application";
+		};
+		61D0DA334212DE0A3C4354C4 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tranpaul707.foodadditivelens.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FoodAdditiveLens.app/FoodAdditiveLens";
+				BUNDLE_LOADER = "$(TEST_HOST)";
+			};
+			name = Debug;
+		};
+		5C4B053BB283E75D0CD5A913 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tranpaul707.foodadditivelens.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FoodAdditiveLens.app/FoodAdditiveLens";
+				BUNDLE_LOADER = "$(TEST_HOST)";
+			};
+			name = Release;
+		};
+		35EC1B0423551FD4E06F27EC = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				61D0DA334212DE0A3C4354C4,
+				5C4B053BB283E75D0CD5A913,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		260034102A4B0BEA75CC4FAE = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 052354C156575DC326F3601A;
+			proxyType = 1;
+			remoteGlobalIDString = 92AD6C79DF64563406AE5E05;
+			remoteInfo = FoodAdditiveLens;
+		};
+		44128DFBC24BCE89C58C73AD = {
+			isa = PBXTargetDependency;
+			target = 92AD6C79DF64563406AE5E05;
+			targetProxy = 260034102A4B0BEA75CC4FAE;
+		};
+		3C53998C25C088A61DDFA53C = {
+			isa = PBXBuildFile;
+			fileRef = 90BC2B2D9DAE367DC13D2040;
+		};
+		172B0CF735423DF2DB21BA0F = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3C53998C25C088A61DDFA53C,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B9E2425A2B5E6AE47DE2C9A0 = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CBC1D3A7E0C9FD3A3684EBFD = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0DC19C78A6749B41BB1959E3 = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 35EC1B0423551FD4E06F27EC;
+			buildPhases = (
+				172B0CF735423DF2DB21BA0F,
+				B9E2425A2B5E6AE47DE2C9A0,
+				CBC1D3A7E0C9FD3A3684EBFD,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				44128DFBC24BCE89C58C73AD,
+			);
+			name = FoodAdditiveLensTests;
+			productName = FoodAdditiveLensTests;
+			productReference = 29B4EA6659D1709C9132BD61;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		77417A09AF8AAB7053B10E68 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tranpaul707.foodadditivelens.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				TEST_TARGET_NAME = FoodAdditiveLens;
+			};
+			name = Debug;
+		};
+		3356E39F983B89AB196B4AFD = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tranpaul707.foodadditivelens.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				TEST_TARGET_NAME = FoodAdditiveLens;
+			};
+			name = Release;
+		};
+		615DB45D27CFDF2050733774 = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				77417A09AF8AAB7053B10E68,
+				3356E39F983B89AB196B4AFD,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		22DC61B5268551B34B8C305A = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 052354C156575DC326F3601A;
+			proxyType = 1;
+			remoteGlobalIDString = 92AD6C79DF64563406AE5E05;
+			remoteInfo = FoodAdditiveLens;
+		};
+		ED2951942F343ED27612C6FD = {
+			isa = PBXTargetDependency;
+			target = 92AD6C79DF64563406AE5E05;
+			targetProxy = 22DC61B5268551B34B8C305A;
+		};
+		E1469543E6502EDEFD4ED252 = {
+			isa = PBXBuildFile;
+			fileRef = 647BA35A13CB22AE3E08D5A2;
+		};
+		403DD2BD7B86DC84C09F68EB = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E1469543E6502EDEFD4ED252,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		289ACA1C4CEF27A9752FFCDB = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E429232A98EF0C9D8C3060C9 = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D66860E9ABC5A4D545F786B3 = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 615DB45D27CFDF2050733774;
+			buildPhases = (
+				403DD2BD7B86DC84C09F68EB,
+				289ACA1C4CEF27A9752FFCDB,
+				E429232A98EF0C9D8C3060C9,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				ED2951942F343ED27612C6FD,
+			);
+			name = FoodAdditiveLensUITests;
+			productName = FoodAdditiveLensUITests;
+			productReference = CDD1E9FEF69B213C6AC6FB8F;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		052354C156575DC326F3601A = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				TargetAttributes = {
+					0DC19C78A6749B41BB1959E3 = {
+						TestTargetID = 92AD6C79DF64563406AE5E05;
+					};
+					D66860E9ABC5A4D545F786B3 = {
+						TestTargetID = 92AD6C79DF64563406AE5E05;
+					};
+				};
+			};
+			buildConfigurationList = E0DF7411D42BDD0A633EC51D;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A80809E4DD9A604151C63CF9;
+			packageReferences = (
+				8BFBF966774F24488E9BEB02,
+				060344618405EDA785F309E2,
+				290700FF982CA7A5B64D6A4E,
+			);
+			productRefGroup = 793E0CDCBE58365E097689E1;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				92AD6C79DF64563406AE5E05,
+				B7F06D7D20B4FAA55B5F2439,
+				0DC19C78A6749B41BB1959E3,
+				D66860E9ABC5A4D545F786B3,
+			);
+		};
+	};
+	rootObject = 052354C156575DC326F3601A;
+}
