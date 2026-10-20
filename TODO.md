@@ -13,6 +13,8 @@ Do not add accounts, a backend, cloud inference, barcode scanning, health/safety
 
 This document is an inspected implementation plan. No Xcode project, app build, or simulator run has been completed yet.
 
+**Execution checkpoints:** work one phase at a time. Report results and any action needed from the user at each phase boundary, and pause before starting the next phase. For intermediate work that requires the user's machine, configuration, access, or a decision, ask for that prerequisite and pause the dependent work while finishing independent checks.
+
 ## Repository findings
 
 - The app is a single 4,450-line file, `code of Food Additive Lens.swift`. The README describes the app and research paper but supplies no build instructions.
@@ -38,11 +40,13 @@ Reference source locations: sample loader near line 189; Llama loader near 2197�
 
 ## Phase 1 — Establish the Mac/Xcode and simulator baseline
 
+**Status:** independent inspection and baseline documentation completed; Mac validation is pending. The user confirmed access to an Apple silicon Mac. See [Phase 1 results and Mac instructions](docs/PHASE1-XCODE-BASELINE.md) and run `bash scripts/check-xcode-environment.sh` on that Mac. Phase 2 has not started.
+
 - [ ] Use a Mac with an Xcode-supported macOS version, full Xcode, command-line tools, and an installed iOS Simulator runtime. Prefer Apple silicon for the original MLX workflow; confirm RAM, free storage, and the pinned packages' actual requirements before downloading large models.
 - [ ] Record the chosen Xcode/Swift versions, iOS deployment target, SDK, and simulator runtimes. Start by investigating iOS 17 or later because the source uses Observation and `#Preview`; finalize the minimum after dependency resolution and a real build.
 - [ ] Enumerate available simulators with `xcrun simctl list devices available` and runtimes with `xcrun simctl list runtimes`. Install needed compatible runtimes through Xcode and document destination selection in Xcode and by simulator UDID.
-- [ ] Define the initial test matrix: a small-screen iPhone, a larger iPhone, and the lowest supported plus current supported iOS runtime where Xcode offers them. Additional compatible iPhone simulators should be selectable without editing application code.
-- [ ] Separate simulator availability from MLX inference support. Investigate the pinned MLX packages, Metal availability, architecture, and memory on each inference destination. Do not promise every historical iOS runtime, Intel configuration, or simulator supports the original 3B model.
+- [x] Define the initial test matrix: a small-screen iPhone, a larger iPhone, and the lowest supported plus current supported iOS runtime where Xcode offers them. The proposed matrix is documented in the Phase 1 results; actual runtime names/UDIDs and execution remain pending. Additional compatible iPhone simulators should be selectable without editing application code.
+- [x] Separate simulator availability from MLX inference support. MLX Swift 0.32.3 explicitly documents iOS Simulator inference as unsupported because the required Metal GPU family is unavailable. The baseline therefore excludes MLX initialization/inference on simulators, with full inference reserved for a supported physical device. Package pins, actual hardware, and real-device inference remain unverified; see the Phase 1 sources.
 - [ ] Record physical-device signing requirements separately; confirm unsigned simulator builds without requiring an Apple Developer account or signing credentials.
 
 **Exit:** a documented Mac toolchain and available simulator destinations; explicit limitations for the current Linux environment and inference hardware.
@@ -93,7 +97,7 @@ Reference source locations: sample loader near line 189; Llama loader near 2197�
 - [ ] Identify and obtain the intended MLX-compatible Llama 3.2 3B Instruct 4-bit export, complete config/tokenizer/weights, exact revision, checksums, and applicable license. Check source access before requesting any missing credential; never store credentials in the repo.
 - [ ] Preserve the `Llama-3.2-3B-Instruct-4bit/` directory structure during bundling or document a minimal explicit resource-path adjustment. Verify all required files and Metal resources before starting inference; provide actionable missing-resource/load errors.
 - [ ] Restore the original direct-match plus LLM additive identification, retrieval, and streamed contextual explanation flow. Preserve prompts, matching behavior, category context, and generation settings initially. Check UI responsiveness, error recovery, and repeated use within device memory limits.
-- [ ] Run genuine inference on supported hardware. Attempt the same backend on compatible simulators only after verifying package/platform support; record actual outcomes. If unsupported, retain the functional simulator MVP and validate full AI behavior on a supported iPhone. Do not introduce a remote inference service to bridge the gap.
+- [ ] Run genuine inference on a supported physical iPhone and record actual outcomes. The Phase 1 MLX documentation excludes simulator inference, so keep the simulator MVP's MLX features unavailable. Revisit only if upstream documentation and a real compatibility check establish support for the chosen backend; do not introduce a remote inference service to bridge the gap.
 - [ ] Restore and verify authentic sample browsing and CFR links still blocked after Phase 3. Confirm generated links correspond to real source citations; browser access to eCFR is distinct from offline analysis.
 
 **Parity acceptance:** authentic samples/input/photo → real category prediction and selection → direct plus LLM additive identification → knowledge/CFR → genuine generated explanations → persisted history. Record which steps pass on simulator versus physical device. Missing original model/CFR artifacts remain parity blockers.
