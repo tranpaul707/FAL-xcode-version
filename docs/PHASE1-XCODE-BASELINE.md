@@ -1,6 +1,6 @@
 # Phase 1 — Xcode host and simulator baseline
 
-Status: **Mac host baseline recorded from the user's inventory report.** The user ran the inventory script on the Apple silicon Mac and supplied the results below. Phase 2 package resolution, compilation, tests, and app launch remain unverified; see [Phase 2](PHASE2-XCODE-SCAFFOLD.md). The Mac is not remotely connected to this cloud task.
+Status: **Mac host baseline recorded from the user's inventory report.** The user ran the inventory script on the Apple silicon Mac and supplied the results below. The first Phase 2 build stopped during package loading; its corrected dependency source awaits retry. No app compilation, test, or launch is verified; see [Phase 2](PHASE2-XCODE-SCAFFOLD.md). The Mac is not remotely connected to this cloud task.
 
 ## User-reported Mac inventory
 
@@ -30,7 +30,7 @@ runtime or model download is required for the first app-shell attempt.
 | --- | --- |
 | Attached cloud host | Debian GNU/Linux 13, x86_64 |
 | Apple development tools | `xcodebuild`, `xcrun`, and `swift` not found |
-| App build / launch | Not yet reported; the Mac report shows a booted simulator but does not show this app running |
+| App build / launch | First Mac build failed during package loading; no app compilation or launch result |
 | App project's current state | Phase 2 scaffold and candidate dependency lock are present; no Xcode validation result yet |
 | Mac access | User-side command output supplied; the cloud task cannot execute commands on that Mac |
 | MLX simulator support | MLX Swift 0.32.3 documentation explicitly says iOS Simulator is unsupported because it does not provide the required modern Metal GPU family |

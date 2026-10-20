@@ -1,9 +1,10 @@
 # Phase 2 — Xcode app scaffold
 
-Status: **implementation prepared; Mac inventory received; package resolution, build, and launch pending.**
+Status: **first Mac build stopped during package resolution; dependency source corrected; retry pending.**
 The Mac report identifies Xcode 27.1, Swift 6.4, 16 GiB RAM, and an installed iOS
 27.0 runtime. The first destination is the booted iPhone 18 Pro. The report does
-not contain a project build or launch result.
+not initially contain a project build or launch result. The subsequent build
+attempt failed at package loading, before app compilation; details are below.
 This phase does not restore datasets/models or claim the full analysis MVP works.
 Pause for the Mac validation checkpoint before Phase 3.
 
@@ -50,7 +51,7 @@ The project uses exact root requirements reviewed against the supplied API usage
 | Package | Tag | Evidence |
 | --- | --- | --- |
 | `ml-explore/mlx-swift` | `0.25.4` | Declares Swift tools 5.10; exposes `GPU.set(cacheLimit:)` and required products |
-| `ml-explore/mlx-swift-lm` | `2.25.4` | Matches the existing directory-based `loadContainer(configuration:)`, model-context `perform`, and streamed `generate` API; permits MLX `>=0.25.4, <0.26.0` |
+| `ml-explore/mlx-swift-examples` | `2.25.4` | Supplies `MLXLLM`/`MLXLMCommon` with the existing directory-based `loadContainer(configuration:)`, model-context `perform`, and streamed `generate` API; permits MLX `>=0.25.4, <0.26.0` |
 | `huggingface/swift-transformers` | `0.1.21` | Pins the tokenizer dependency within LM's permitted range, retaining the same-era API/toolchain |
 
 Tag existence and upstream API/manifests were checked over verified HTTPS/Git.
@@ -74,6 +75,33 @@ swift-numerics 1.1.1. Their inspected manifests' normal dependency ranges admit
 these versions; this avoids silently selecting newer transitive packages with
 newer compiler requirements. Documentation-only dependencies are not included.
 All eight package tags/commit IDs were read from their actual remotes.
+
+### First Mac failure and correction
+
+The user ran the simulator build on Xcode 27.1. Package checkout succeeded, but
+SwiftPM stopped with `invalid custom path 'Libraries/StableDiffusion' for target
+'StableDiffusion'`. No app compilation, test, or launch result was produced.
+
+The original selection used the split `mlx-swift-lm` repository's 2.25.4 tag.
+That tag's manifest still declares `StableDiffusion` and `MLXMNIST` targets whose
+directories are absent from the split checkout. The initial manifest/API review
+missed this invalid package layout.
+
+The corrected source is the original full `mlx-swift-examples` repository's
+2.25.4 tag, commit `8e41311a3c17e902441cfcaa46629244c9758afd`. Its manifest is
+byte-identical to the split tag's, and all seven declared custom target paths
+exist, including `Libraries/StableDiffusion` and `Libraries/MLXMNIST`. The used
+`MLXLLM` and `MLXLMCommon` trees (26 and 20 files) are byte-identical between the
+two checkouts. This changes the package source and locked commit while keeping
+the library API/version and the other seven package selections unchanged.
+The unused example targets are package metadata, not new app features.
+
+The user's command display also joined `DerivedData` and the locked-version
+switch. The prior helper preserved separate arguments in a controlled launcher
+test, so that displayed formatting was not reproduced here. The helper now uses
+an explicit Bash argument array and prints the intended output directory.
+Argument boundaries and underlying exit-status propagation are checked with
+stubbed tools, not presented as an actual Xcode build.
 
 The Mac must validate this complete candidate with Xcode's real resolver before
 it is considered a verified lock. The simulator helper requests only the recorded
@@ -144,9 +172,11 @@ help, invalid-input, build-on-Linux, and test-on-Linux paths returned their
 documented statuses. These are structural/negative-path checks, not app test
 results or evidence of a successful Apple-platform compilation.
 
-No Xcode build, XCTest suite, UI test, simulator boot, direct-Mac run, preview,
-or real model inference has executed in this Linux task. Those remain required
-before Phase 2 can be considered complete.
+The user has attempted an Xcode build, which failed before compilation at the
+dependency-loading step described above. No successful app build, XCTest suite,
+UI test, app launch, direct-Mac run, preview, or real model inference is verified.
+The corrected package graph still needs the user's Mac retry before Phase 2 can
+be considered complete.
 
 ## Remaining resource work
 

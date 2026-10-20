@@ -11,7 +11,7 @@ Deliver in two steps:
 
 Do not add accounts, a backend, cloud inference, barcode scanning, health/safety scores, dietary recommendations, new model architectures, or unrelated UI redesign. Research retraining and paper-wide evaluations are not prerequisites for the first app launch. Preserve the Apache license, Yihang Feng's source credit, and existing acknowledgments; check model/data terms separately.
 
-The Phase 2 Xcode scaffold is now prepared. No Xcode package resolution, app build, or simulator run has executed in this Linux task; those checks require the user's Mac.
+The Phase 2 Xcode scaffold is prepared. The first user-side Mac build failed during package loading, before compilation; its dependency source has been corrected and a retry is pending. No successful app build, test suite, or app launch is verified. The cloud task remains on Linux.
 
 **Execution checkpoints:** work one phase at a time. Report results and any action needed from the user at each phase boundary, and pause before starting the next phase. For intermediate work that requires the user's machine, configuration, access, or a decision, ask for that prerequisite and pause the dependent work while finishing independent checks.
 
@@ -53,13 +53,13 @@ Reference source locations: sample loader near line 189; Llama loader near 2197â
 
 ## Phase 2 â€” Create the minimal Xcode application
 
-**Status:** scaffold and platform separation implemented; Mac inventory received; first package resolution/build result pending on the booted iPhone 18 Pro. See [Phase 2 implementation and checkpoint](docs/PHASE2-XCODE-SCAFFOLD.md). Checked items below mean source/project artifacts are implemented, not that an Xcode build or runtime test has passed. Pause for Mac results before Phase 3.
+**Status:** scaffold and platform separation implemented; first Mac build failed during package loading because the split LM release omitted declared target directories. The source is corrected to the original full upstream 2.25.4 tag; retry pending on the booted iPhone 18 Pro. See [Phase 2 implementation and checkpoint](docs/PHASE2-XCODE-SCAFFOLD.md). Checked items below mean source/project artifacts are implemented, not that an Xcode build or runtime test has passed. Pause for Mac results before Phase 3.
 
 - [x] Add a native SwiftUI iOS application project, `FoodAdditiveLens.xcodeproj`, with a shared `FoodAdditiveLens` scheme, app target, unit-test target, and UI-test target. The additional `FoodAdditiveLens-MLX` scheme uses the same app source for supported hardware. The existing checkout is retained.
 - [x] Add the `@main` app entry and inject the Core Data managed-object context into `ContentView` and history. Implement the missing persistence controller with a persistent store and an in-memory preview/test store.
 - [x] Add the Core Data `Item` entity with the attributes listed above, matching the existing save/fetch/delete code and choosing manual managed-object code generation.
 - [x] Include the supplied Swift source exactly once in each app target. Make only build/integration fixes initially; the existing model prompts and retrieval/classification logic are retained.
-- [ ] Validate the selected exact MLX 0.25.4 / MLX LM 2.25.4 / Transformers 0.1.21 requirements and complete candidate package lock with Xcode's resolver on the Mac. Tag revisions and matching upstream APIs/manifests were inspected; the prepared eight-package lock is not yet resolver-verified. Do not track upstream `main` or upgrade versions to hide a build error.
+- [ ] Validate the selected exact MLX 0.25.4 / MLX libraries from `mlx-swift-examples` 2.25.4 / Transformers 0.1.21 requirements and complete candidate package lock with Xcode's resolver on the Mac. The original split `mlx-swift-lm` 2.25.4 checkout had invalid target paths; the corrected full upstream tag has all seven target directories and identical used library source. The revised eight-package lock still needs a successful Mac resolution. Do not track upstream `main` or upgrade versions to hide a build error.
 - [x] Separate MLX imports, linked products, and initialization from the simulator target with a conditional unavailable backend and a distinct device/iOS-on-Mac inference target. The actual simulator compile remains part of the pending Mac check; no simulator inference is claimed.
 - [x] Configure bundle identifiers, iOS 17/iPhone settings, generated Info.plist, camera/photo-library usage descriptions, named colors, and iOS-on-Mac capability. Device/Mac signing and destination availability remain untested; no personal signing team is committed.
 - [ ] Build on the Mac and resolve actual package/API, actor-isolation, SwiftUI, and Core Data compile failures. Verify SwiftUI previews use their preview store. No additional compiler defects are established until this build runs.

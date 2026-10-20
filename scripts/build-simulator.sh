@@ -40,12 +40,16 @@ fi
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
-exec xcodebuild \
-    -project "$repo_root/FoodAdditiveLens.xcodeproj" \
-    -scheme FoodAdditiveLens \
-    -configuration Debug \
-    -destination "platform=iOS Simulator,id=$simulator_udid" \
-    -derivedDataPath "$repo_root/DerivedData" \
-    -onlyUsePackageVersionsFromResolvedFile \
-    CODE_SIGNING_ALLOWED=NO \
+# Keep paths and switches as separate arguments without line continuations.
+xcodebuild_arguments=(
+    -project "$repo_root/FoodAdditiveLens.xcodeproj"
+    -scheme FoodAdditiveLens
+    -configuration Debug
+    -destination "platform=iOS Simulator,id=$simulator_udid"
+    -derivedDataPath "$repo_root/DerivedData"
+    -onlyUsePackageVersionsFromResolvedFile
+    CODE_SIGNING_ALLOWED=NO
     "$action"
+)
+printf 'Build output directory: %s\n' "$repo_root/DerivedData"
+exec xcodebuild "${xcodebuild_arguments[@]}"

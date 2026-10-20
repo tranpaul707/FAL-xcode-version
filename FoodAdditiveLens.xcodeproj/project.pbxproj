@@ -211,7 +211,7 @@
 		};
 		060344618405EDA785F309E2 = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ml-explore/mlx-swift-lm.git";
+			repositoryURL = "https://github.com/ml-explore/mlx-swift-examples.git";
 			requirement = {
 				kind = exactVersion;
 				version = 2.25.4;

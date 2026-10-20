@@ -28,11 +28,11 @@
       }
     },
     {
-      "identity": "mlx-swift-lm",
+      "identity": "mlx-swift-examples",
       "kind": "remoteSourceControl",
-      "location": "https://github.com/ml-explore/mlx-swift-lm.git",
+      "location": "https://github.com/ml-explore/mlx-swift-examples.git",
       "state": {
-        "revision": "6633cc42c2db685cbbc052c157d50e7ba26683ac",
+        "revision": "8e41311a3c17e902441cfcaa46629244c9758afd",
         "version": "2.25.4"
       }
     },
