@@ -5,9 +5,10 @@ The repository for research paper titled 'Food Additive Lens: An on-device AI ap
 
 ## Xcode development
 
-The Phase 2 simulator scaffold has a **user-reported successful Xcode build** on
-the iPhone 18 Pro destination with Xcode 27.1. Tests and app launch are the next
-checkpoint. The MLX target and genuine inference remain unverified.
+The Phase 2 simulator scaffold has **user-reported build and test-command success**
+on the iPhone 18 Pro destination with Xcode 27.1. Detailed test counts are pending.
+The next checks cover the separate MLX target and app/preview review; genuine
+inference still requires the missing model resources.
 The original source credit and Apache license are retained.
 
 On an Apple silicon Mac with full Xcode and an installed iOS Simulator runtime:
@@ -33,7 +34,8 @@ bash scripts/build-simulator.sh YOUR_SIMULATOR_UDID test
 
 Replace `YOUR_SIMULATOR_UDID` with a UUID from the device list. The helper disables
 signing only for the simulator and keeps output in ignored `DerivedData/`.
-The persistence and UI tests are written but have not been executed on a Mac yet.
+The user reported `TEST SUCCEEDED`; confirmation that both persistence tests and
+the UI smoke test executed, including their counts/results, is still pending.
 
 The shared **FoodAdditiveLens-MLX** scheme builds the same UI with the original MLX
 implementation for supported physical hardware. On an Apple silicon Mac, try the

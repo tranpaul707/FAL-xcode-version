@@ -11,7 +11,7 @@ Deliver in two steps:
 
 Do not add accounts, a backend, cloud inference, barcode scanning, health/safety scores, dietary recommendations, new model architectures, or unrelated UI redesign. Research retraining and paper-wide evaluations are not prerequisites for the first app launch. Preserve the Apache license, Yihang Feng's source credit, and existing acknowledgments; check model/data terms separately.
 
-The user reported `BUILD SUCCEEDED` for the corrected Phase 2 simulator scaffold after the initial package-source failure. Test execution, app launch, previews, and the MLX target remain unverified. The cloud task remains on Linux; Mac validation is performed by the user.
+The user reported `BUILD SUCCEEDED` and then `TEST SUCCEEDED` for the corrected Phase 2 simulator scaffold. Detailed test counts, manual app/preview review, and the separate MLX target build remain pending. The cloud task remains on Linux; Mac validation is performed by the user.
 
 **Execution checkpoints:** work one phase at a time. Report results and any action needed from the user at each phase boundary, and pause before starting the next phase. For intermediate work that requires the user's machine, configuration, access, or a decision, ask for that prerequisite and pause the dependent work while finishing independent checks.
 
@@ -53,7 +53,7 @@ Reference source locations: sample loader near line 189; Llama loader near 2197â
 
 ## Phase 2 â€” Create the minimal Xcode application
 
-**Status:** the corrected `FoodAdditiveLens` simulator build is reported successful on the iPhone 18 Pro. The next checkpoint is two persistence tests and one app-launch UI test, followed by manual launch/preview and the separate MLX target checks. See [Phase 2 implementation and checkpoint](docs/PHASE2-XCODE-SCAFFOLD.md). Build success does not establish runtime or inference behavior. Pause before Phase 3.
+**Status:** the corrected `FoodAdditiveLens` simulator build and test command are reported successful on the iPhone 18 Pro. Confirm the three intended tests ran, compile the separate MLX target, and review app/preview behavior before closing Phase 2. See [Phase 2 implementation and checkpoint](docs/PHASE2-XCODE-SCAFFOLD.md). The simulator checks exclude MLX inference. Pause before Phase 3.
 
 - [x] Add a native SwiftUI iOS application project, `FoodAdditiveLens.xcodeproj`, with a shared `FoodAdditiveLens` scheme, app target, unit-test target, and UI-test target. The additional `FoodAdditiveLens-MLX` scheme uses the same app source for supported hardware. The existing checkout is retained.
 - [x] Add the `@main` app entry and inject the Core Data managed-object context into `ContentView` and history. Implement the missing persistence controller with a persistent store and an in-memory preview/test store.
@@ -63,7 +63,9 @@ Reference source locations: sample loader near line 189; Llama loader near 2197â
 - [x] Separate MLX imports, linked products, and initialization from the simulator target with a conditional unavailable backend and a distinct device/iOS-on-Mac inference target. The simulator compile now passes by user report; the separate MLX target is still unverified and no simulator inference is claimed.
 - [x] Configure bundle identifiers, iOS 17/iPhone settings, generated Info.plist, camera/photo-library usage descriptions, named colors, and iOS-on-Mac capability. Device/Mac signing and destination availability remain untested; no personal signing team is committed.
 - [x] Build the non-MLX simulator app on the user's Mac; `BUILD SUCCEEDED` was reported after correcting the dependency source. The simulator app's SwiftUI/Core Data source now has a real build result.
-- [ ] Execute the two persistence tests and one UI smoke test on the same simulator, and inspect the counts/results. Confirm app launch and the preview store behavior. Check the MLX target separately on a supported destination before claiming its code compiles or inference works.
+- [x] Run the simulator test command: the user reports `TEST SUCCEEDED`. This records the runner outcome without inventing counts or per-test results.
+- [ ] Confirm the two persistence tests and one UI smoke test actually executed and inspect passed/failed/skipped counts. Review the app shell and preview store behavior.
+- [ ] Compile `FoodAdditiveLens-MLX` separately with the iPhoneOS SDK and signing disabled. A generic iOS build requires neither a connected iPhone nor model weights. Actual direct-Mac destination availability, signing/install, and inference are separate checks.
 
 **Exit:** Xcode opens the shared scheme, resolves packages, and builds/launches an app shell on a selected simulator without model-resource crashes.
 

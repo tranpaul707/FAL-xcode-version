@@ -1,6 +1,6 @@
 # Phase 1 — Xcode host and simulator baseline
 
-Status: **Mac host baseline recorded from the user's inventory report.** The user ran the inventory script on the Apple silicon Mac and supplied the results below. After the first dependency-source failure was corrected, the user reported a successful Phase 2 simulator build. Tests, app launch, previews, and the MLX target remain unverified; see [Phase 2](PHASE2-XCODE-SCAFFOLD.md). The Mac is not remotely connected to this cloud task.
+Status: **Mac host baseline recorded from the user's inventory report.** The user ran the inventory script on the Apple silicon Mac and supplied the results below. Ongoing app build, test, launch, and inference evidence is tracked in [Phase 2](PHASE2-XCODE-SCAFFOLD.md). The Mac is not remotely connected to this cloud task.
 
 ## User-reported Mac inventory
 
@@ -30,8 +30,8 @@ runtime or model download is required for the first app-shell attempt.
 | --- | --- |
 | Attached cloud host | Debian GNU/Linux 13, x86_64 |
 | Apple development tools | `xcodebuild`, `xcrun`, and `swift` not found |
-| App build / launch | Corrected simulator build reported successful; tests and app launch pending |
-| App project's current state | Phase 2 scaffold's simulator build passes by user report; MLX target not compiled or run yet |
+| App build / launch | Follow the separate Phase 2 record for user-reported Mac build/test results and outstanding checks |
+| App project's current state | Xcode scaffold is present; current validation scope is recorded in Phase 2 |
 | Mac access | User-side command output supplied; the cloud task cannot execute commands on that Mac |
 | MLX simulator support | MLX Swift 0.32.3 documentation explicitly says iOS Simulator is unsupported because it does not provide the required modern Metal GPU family |
 
@@ -57,8 +57,8 @@ Do not select these tags just because they exist. The supplied 2025 source may n
 ## Initial simulator matrix
 
 These destinations are selected from the user's actual available-device list.
-The main iPhone 18 Pro simulator build is now reported successful. App tests,
-launch/layout checks, and the other matrix destinations remain unverified.
+Use the Phase 2 record for app results on the main iPhone 18 Pro destination.
+The other matrix destinations and minimum-OS layout coverage remain unverified.
 
 | Destination / UDID | Purpose | Runtime / inventory state |
 | --- | --- | --- |
@@ -103,20 +103,13 @@ For an existing clean `main` checkout, use `git pull --ff-only` before running t
 - Physical-device runs later require a signing team/account, an enabled device-development setup as applicable to that iOS version, and provisioning appropriate to the installation method. A personal team may suffice for local development; do not assume paid distribution membership is required for the simulator MVP.
 - No account credentials or certificates are needed at this checkpoint.
 
-## Checkpoint: Phase 2 tests
+## Follow-on checkpoint: Phase 2
 
-The inventory and successful corrected build result are supplied. On the Mac,
-update the checkout and run the tests on the same destination:
-
-```bash
-git pull --ff-only
-bash scripts/build-simulator.sh 89CA5AC4-8662-4AB0-8D53-0F1B7A355A30 test
-```
-
-Share the test counts, pass/fail summary, and first error if one occurs. The
-expected suite contains two persistence tests and one UI smoke test. Build
-success alone does not demonstrate those tests or an app launch. The cloud task
-cannot run this command on the user's Mac. Phase 3 remains paused.
+The host inventory checkpoint is complete. Follow the current commands and
+remaining app-validation steps in [Phase 2](PHASE2-XCODE-SCAFFOLD.md), which records
+the user's simulator build/test-command successes and any still-missing evidence.
+The cloud task cannot execute Xcode on the user's Mac. Phase 3 remains paused
+until the Phase 2 checkpoint is reviewed.
 
 ## Sources and verification limits
 

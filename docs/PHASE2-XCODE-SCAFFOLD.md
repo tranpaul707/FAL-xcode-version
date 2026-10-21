@@ -1,11 +1,14 @@
 # Phase 2 — Xcode app scaffold
 
-Status: **corrected simulator build reported successful; test and launch checkpoint pending.**
+Status: **simulator build and test command reported successful; counts, MLX compilation, and app/preview review pending.**
 The Mac report identifies Xcode 27.1, Swift 6.4, 16 GiB RAM, and an installed iOS
 27.0 runtime. The first destination is the booted iPhone 18 Pro. The report does
 not initially contain a project build or launch result. The first build failed
 at package loading; after the source correction, the user reported
-`BUILD SUCCEEDED` for the requested simulator build. Details are below.
+`BUILD SUCCEEDED` for the requested simulator build and subsequently
+`TEST SUCCEEDED` for the requested test command. Only those terminal result
+lines have been supplied; detailed test counts have not yet been confirmed.
+Details are below.
 This phase does not restore datasets/models or claim the full analysis MVP works.
 Pause for the Mac validation checkpoint before Phase 3.
 
@@ -29,7 +32,8 @@ Pause for the Mac validation checkpoint before Phase 3.
   The MLX path checks that its model directory exists before initializing the GPU.
 - Added two Core Data tests (field round trip/delete and SQLite store reopening)
   and a UI smoke test for launch, built-in example, reset, and the history sheet.
-  These are authored tests, **not passed test results**.
+  The user reports overall `TEST SUCCEEDED`; per-test execution counts and
+  results have not yet been supplied.
 - Added a simulator build/test helper and Git ignores for local Xcode/build state.
 
 ## Targets and schemes
@@ -114,21 +118,28 @@ path. It does not prove MLX products compiled, that the local lockfile was
 unchanged, or that restoration on a fresh Mac was tested. Inspect any future
 lockfile change or resolution diagnostic before changing package versions.
 
-## Mac validation checkpoint: tests and launch
+## Mac validation checkpoint: separate MLX target
 
-The inventory and successful build result are received. Next, run the tests on
-the same iPhone 18 Pro destination:
+The inventory, successful simulator build, and successful test-command result
+are received. Please include the existing test summary showing whether the two
+persistence tests and one UI smoke test all executed, with their pass/fail/skip
+counts. No repeated simulator test run is requested merely to obtain those lines.
+
+The simulator app deliberately excludes MLX products and the real backend, so
+its successful build/test does not compile that code. Next, build the MLX scheme
+with the installed iPhoneOS SDK. This is a compile-only check; a generic iOS
+destination does not require a connected phone, signing team, or model weights.
+Use two jobs to limit concurrent compiler work on the reported 16 GiB Mac:
 
 ```bash
 git pull --ff-only
-bash scripts/build-simulator.sh 89CA5AC4-8662-4AB0-8D53-0F1B7A355A30 test
+xcodebuild -project FoodAdditiveLens.xcodeproj -scheme FoodAdditiveLens-MLX -configuration Debug -destination 'generic/platform=iOS' -derivedDataPath DerivedData -onlyUsePackageVersionsFromResolvedFile -jobs 2 CODE_SIGNING_ALLOWED=NO build
 ```
 
-This should execute two persistence tests and one UI smoke test. Share the test
-summary with passed/failed counts and any first error; a build-only or zero-test
-result is not a test pass. The helper uses the locked versions and disables
-simulator signing. The successful build used the reported iOS 27.0 destination
-with the iOS 27.1 SDK; no additional runtime download is needed for this test.
+Share the first actual compiler/package error and surrounding output, or the
+final build result. This target compiles the MLX dependencies and can take longer
+than the simulator shell. It builds an unsigned iOS app, not a native macOS app,
+and does not load a model or establish direct-Mac execution support.
 
 For targeted project/package/destination diagnostics if needed:
 
@@ -138,7 +149,7 @@ xcodebuild -resolvePackageDependencies -project FoodAdditiveLens.xcodeproj -sche
 xcodebuild -project FoodAdditiveLens.xcodeproj -scheme FoodAdditiveLens -showdestinations
 ```
 
-After reviewing test results, open the project, choose `FoodAdditiveLens` and
+For the app review, open the project, choose `FoodAdditiveLens` and
 that simulator, and use
 Product → Run. Confirm the app opens, the ingredient editor and Example/Reset
 controls work, history opens, and unavailable resources are reported without an
@@ -173,10 +184,10 @@ documented statuses. These are structural/negative-path checks, not app test
 results or evidence of a successful Apple-platform compilation.
 
 The initial user-side Xcode build failed during dependency loading. The user
-subsequently reported `BUILD SUCCEEDED` after the correction. The Linux task
-cannot execute Xcode itself. XCTest execution, UI test outcomes, manual launch,
+subsequently reported `BUILD SUCCEEDED` and `TEST SUCCEEDED` after the correction.
+The Linux task cannot execute Xcode itself. Detailed test counts, manual review,
 direct-Mac/MLX target compilation, previews, and real inference remain unverified.
-Phase 2 remains open for its test/launch and separate-target checks.
+Phase 2 remains open for its count/review and separate-target checks.
 
 ## Remaining resource work
 
