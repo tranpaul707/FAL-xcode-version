@@ -10,8 +10,10 @@ on the iPhone 18 Pro destination with Xcode 27.1. Detailed test counts are pendi
 The separate **FoodAdditiveLens-MLX unsigned generic iOS build also succeeded**,
 as reported by the user after running the diagnostic helper. This confirms the
 Metal preflight and compilation passed; signing, execution, and inference remain
-unverified. The next checks cover test counts and app/preview review; genuine
-inference still requires the missing model resources.
+unverified for the MLX target. The user also confirms running **FoodAdditiveLens**
+and seeing **My Mac** as a destination. Specific UI checks, preview review, and
+test counts remain pending; genuine inference still requires the missing model
+resources.
 The original source credit and Apache license are retained.
 
 The MLX target also needs Xcode's **Metal Toolchain** component. If its compiler
@@ -64,7 +66,8 @@ The shared **FoodAdditiveLens-MLX** scheme builds the same UI with the original 
 implementation for supported physical hardware. On an Apple silicon Mac, try the
 compatible **My Mac (Designed for iPhone/iPad)** destination if Xcode offers it;
 otherwise use a supported iPhone. This is an iOS app on Mac, not a Catalyst/native
-macOS rewrite. Device/Mac execution, signing, and inference remain unverified.
+macOS rewrite. The user reports that **My Mac** appears as a destination. MLX
+device/Mac execution, signing, and inference remain unverified.
 This scheme cannot use iOS Simulator. It requires the missing original model and
 knowledge resources before analysis can work. The two app targets have different
 bundle IDs, so their installed apps and history stores are separate.

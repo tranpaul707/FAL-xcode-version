@@ -1,13 +1,16 @@
 # Phase 2 — Xcode app scaffold
 
-Status: **simulator build/test command and separate unsigned generic iOS MLX build reported successful; test counts and manual review remain pending.**
+Status: **simulator build/test command, app launch, and unsigned generic iOS MLX build reported successful; My Mac destination reported available. Specific UI/preview checks and test counts remain pending.**
 The Mac report identifies Xcode 27.1, Swift 6.4, 16 GiB RAM, and an installed iOS
 27.0 runtime. The first destination is the booted iPhone 18 Pro. The report does
 not initially contain a project build or launch result. The first build failed
 at package loading; after the source correction, the user reported
 `BUILD SUCCEEDED` for the requested simulator build and subsequently
 `TEST SUCCEEDED` for the requested test command. Only those terminal result
-lines have been supplied; detailed test counts have not yet been confirmed.
+lines were initially supplied; detailed test counts have not yet been confirmed.
+The user subsequently confirmed running `FoodAdditiveLens` and seeing `My Mac`
+as a destination in response to the MLX-scheme check. MLX execution is not
+established by this.
 Details are below.
 This phase does not restore datasets/models or claim the full analysis MVP works.
 Pause for the Mac validation checkpoint before Phase 3.
@@ -201,9 +204,9 @@ resources and are not claimed to work.
 If Xcode asks to change package versions, stop and share the diagnostic rather
 than updating to current MLX major versions. For a build failure, share the first
 actual error and its surrounding output; do not reset the checkout or delete work.
-After the simulator build, separately check whether Xcode offers the direct-Mac
-destination for `FoodAdditiveLens-MLX`. That target may require a locally selected
-signing team. No signing identity or personal team is stored in this repository.
+The user reports that `My Mac` appears as a destination in response to the
+MLX-scheme check. Execution and signing remain untested; that target may require a locally selected signing team. No
+signing identity or personal team is stored in this repository.
 
 ## Verification in the Linux task
 
@@ -234,9 +237,10 @@ The initial user-side Xcode build failed during dependency loading. The user
 subsequently reported `BUILD SUCCEEDED` and `TEST SUCCEEDED` after the correction.
 The user also reported the diagnostic helper's unsigned generic iOS MLX build
 success footer after its initial missing-Metal preflight failure. The Linux task
-cannot execute Xcode itself. Detailed test counts, manual app/preview review,
-direct-Mac destination availability/execution, signing, and real inference remain
-unverified. Phase 2 remains open for its count/review and destination checks.
+cannot execute Xcode itself. The user also confirms running `FoodAdditiveLens`
+and seeing a `My Mac` destination. Detailed test counts, specific UI checks,
+preview review, MLX direct-Mac execution/signing, and real inference remain
+unverified. Phase 2 remains open for its count/review checks.
 
 ## Remaining resource work
 

@@ -11,7 +11,7 @@ Deliver in two steps:
 
 Do not add accounts, a backend, cloud inference, barcode scanning, health/safety scores, dietary recommendations, new model architectures, or unrelated UI redesign. Research retraining and paper-wide evaluations are not prerequisites for the first app launch. Preserve the Apache license, Yihang Feng's source credit, and existing acknowledgments; check model/data terms separately.
 
-The user reported `BUILD SUCCEEDED` and then `TEST SUCCEEDED` for the corrected Phase 2 simulator scaffold, followed by `BUILD SUCCEEDED (unsigned generic iOS compile only; inference was not run).` from the MLX diagnostic helper. The missing Metal compiler blocker is resolved for that build path. Detailed test counts, manual app/preview review, and direct-Mac destination availability remain pending. Signing, installation, and inference are not established by the compile result. The cloud task remains on Linux; Mac validation is performed by the user.
+The user reported `BUILD SUCCEEDED` and then `TEST SUCCEEDED` for the corrected Phase 2 simulator scaffold, followed by `BUILD SUCCEEDED (unsigned generic iOS compile only; inference was not run).` from the MLX diagnostic helper. The missing Metal compiler blocker is resolved for that build path. The user also confirms running `FoodAdditiveLens` and seeing `My Mac` as a destination. Detailed test counts, specific Example/Reset/History checks, and preview review remain pending. MLX signing, installation, and inference are not established by these results. The cloud task remains on Linux; Mac validation is performed by the user.
 
 **Execution checkpoints:** work one phase at a time. Report results and any action needed from the user at each phase boundary, and pause before starting the next phase. For intermediate work that requires the user's machine, configuration, access, or a decision, ask for that prerequisite and pause the dependent work while finishing independent checks.
 
@@ -53,7 +53,7 @@ Reference source locations: sample loader near line 189; Llama loader near 2197â
 
 ## Phase 2 â€” Create the minimal Xcode application
 
-**Status:** the corrected `FoodAdditiveLens` simulator build/test command and separate unsigned generic iOS `FoodAdditiveLens-MLX` build are reported successful. Test counts, app/preview review, and direct-Mac destination availability remain pending. No inference has run. See [Phase 2 implementation and checkpoint](docs/PHASE2-XCODE-SCAFFOLD.md). Pause before Phase 3.
+**Status:** the corrected `FoodAdditiveLens` simulator build/test command and separate unsigned generic iOS `FoodAdditiveLens-MLX` build are reported successful. The user confirms running `FoodAdditiveLens` and seeing the `My Mac` destination. Test counts, specific UI checks, and preview review remain pending. No inference has run. See [Phase 2 implementation and checkpoint](docs/PHASE2-XCODE-SCAFFOLD.md). Pause before Phase 3.
 
 - [x] Add a native SwiftUI iOS application project, `FoodAdditiveLens.xcodeproj`, with a shared `FoodAdditiveLens` scheme, app target, unit-test target, and UI-test target. The additional `FoodAdditiveLens-MLX` scheme uses the same app source for supported hardware. The existing checkout is retained.
 - [x] Add the `@main` app entry and inject the Core Data managed-object context into `ContentView` and history. Implement the missing persistence controller with a persistent store and an in-memory preview/test store.
@@ -61,14 +61,15 @@ Reference source locations: sample loader near line 189; Llama loader near 2197â
 - [x] Include the supplied Swift source exactly once in each app target. Make only build/integration fixes initially; the existing model prompts and retrieval/classification logic are retained.
 - [x] Resolve the corrected locked package configuration for the simulator build: the user reports `BUILD SUCCEEDED` after the requested locked build command. The source correction uses `mlx-swift-examples` 2.25.4 with MLX 0.25.4 and Transformers 0.1.21. This validates acceptance of the graph on that build path, not compilation or execution of the excluded MLX products, nor a fresh-Mac restoration.
 - [x] Separate MLX imports, linked products, and initialization from the simulator target with a conditional unavailable backend and a distinct device/iOS-on-Mac inference target. The simulator and separate unsigned generic iOS MLX builds now pass by user report; no simulator inference is claimed.
-- [x] Configure bundle identifiers, iOS 17/iPhone settings, generated Info.plist, camera/photo-library usage descriptions, named colors, and iOS-on-Mac capability. Device/Mac signing and destination availability remain untested; no personal signing team is committed.
+- [x] Configure bundle identifiers, iOS 17/iPhone settings, generated Info.plist, camera/photo-library usage descriptions, named colors, and iOS-on-Mac capability. The user reports a `My Mac` destination; MLX signing and execution remain untested, and no personal signing team is committed.
 - [x] Build the non-MLX simulator app on the user's Mac; `BUILD SUCCEEDED` was reported after correcting the dependency source. The simulator app's SwiftUI/Core Data source now has a real build result.
 - [x] Run the simulator test command: the user reports `TEST SUCCEEDED`. This records the runner outcome without inventing counts or per-test results.
-- [ ] Confirm the two persistence tests and one UI smoke test actually executed and inspect passed/failed/skipped counts. Review the app shell and preview store behavior.
+- [x] Launch the app shell: the user confirms being able to run `FoodAdditiveLens`.
+- [ ] Confirm the two persistence tests and one UI smoke test actually executed and inspect passed/failed/skipped counts. Verify Example/Reset/History behavior and the SwiftUI preview; app launch alone does not confirm those checks.
 - [x] Verify the Metal compiler is available for the MLX build. The diagnostic helper reached its success footer, which requires the `xcrun --sdk iphoneos metal --version` preflight to pass; the earlier missing-tool blocker is resolved on this build path. No standalone installer output was supplied.
 - [x] Run `scripts/diagnose-mlx-build.sh` and collect the result: the user reports its unsigned generic iOS build success footer.
 - [x] Compile `FoodAdditiveLens-MLX` with the iPhoneOS SDK, locked packages, and signing disabled. A generic iOS build requires neither a connected iPhone nor model weights. This does not establish signing/install or inference.
-- [ ] Confirm whether Xcode offers **My Mac (Designed for iPhone/iPad)** for `FoodAdditiveLens-MLX`; record destination availability without claiming execution or selecting a personal signing team in the committed project.
+- [x] Check Mac destination availability: in response to the requested MLX-scheme check, the user reports `My Mac` appears. This records availability only; MLX execution/signing/inference remain untested.
 
 **Exit:** Xcode opens the shared scheme, resolves packages, and builds/launches an app shell on a selected simulator without model-resource crashes.
 
