@@ -11,9 +11,9 @@ The separate **FoodAdditiveLens-MLX unsigned generic iOS build also succeeded**,
 as reported by the user after running the diagnostic helper. This confirms the
 Metal preflight and compilation passed; signing, execution, and inference remain
 unverified for the MLX target. The user also confirms running **FoodAdditiveLens**
-and seeing **My Mac** as a destination. Specific UI checks, preview review, and
-test counts remain pending; genuine inference still requires the missing model
-resources.
+and seeing **My Mac** as a destination. The user verified **Example**, **Reset**,
+and opening/closing **History**. Preview review and detailed test counts remain
+pending; genuine inference still requires the missing model resources.
 The original source credit and Apache license are retained.
 
 The MLX target also needs Xcode's **Metal Toolchain** component. If its compiler

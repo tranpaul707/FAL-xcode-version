@@ -1,6 +1,6 @@
 # Phase 2 — Xcode app scaffold
 
-Status: **simulator build/test command, app launch, and unsigned generic iOS MLX build reported successful; My Mac destination reported available. Specific UI/preview checks and test counts remain pending.**
+Status: **simulator build/test command, app launch, and unsigned generic iOS MLX build reported successful; My Mac destination reported available. Example/Reset/History checks passed by user report; preview and test counts remain pending.**
 The Mac report identifies Xcode 27.1, Swift 6.4, 16 GiB RAM, and an installed iOS
 27.0 runtime. The first destination is the booted iPhone 18 Pro. The report does
 not initially contain a project build or launch result. The first build failed
@@ -10,7 +10,9 @@ at package loading; after the source correction, the user reported
 lines were initially supplied; detailed test counts have not yet been confirmed.
 The user subsequently confirmed running `FoodAdditiveLens` and seeing `My Mac`
 as a destination in response to the MLX-scheme check. MLX execution is not
-established by this.
+established by this. The user also confirms the instructed Example, Reset, and
+History/Back checks all worked. This validates the controls, not analysis or
+persistence of completed analyses.
 Details are below.
 This phase does not restore datasets/models or claim the full analysis MVP works.
 Pause for the Mac validation checkpoint before Phase 3.
@@ -195,9 +197,9 @@ xcodebuild -project FoodAdditiveLens.xcodeproj -scheme FoodAdditiveLens -showdes
 
 For the app review, open the project, choose `FoodAdditiveLens` and
 that simulator, and use
-Product → Run. Confirm the app opens, the ingredient editor and Example/Reset
-controls work, history opens, and unavailable resources are reported without an
-endless loading banner. This is an app-shell check; additive analysis, category
+Product → Run. The user confirms the app opens, Example fills the ingredient
+editor, Reset clears it, and History opens and returns via Back. The preview
+store and detailed test results still require review. This is an app-shell check; additive analysis, category
 predictions, CFR lookup, and generated explanations remain blocked by missing
 resources and are not claimed to work.
 
@@ -238,9 +240,10 @@ subsequently reported `BUILD SUCCEEDED` and `TEST SUCCEEDED` after the correctio
 The user also reported the diagnostic helper's unsigned generic iOS MLX build
 success footer after its initial missing-Metal preflight failure. The Linux task
 cannot execute Xcode itself. The user also confirms running `FoodAdditiveLens`
-and seeing a `My Mac` destination. Detailed test counts, specific UI checks,
-preview review, MLX direct-Mac execution/signing, and real inference remain
-unverified. Phase 2 remains open for its count/review checks.
+and seeing a `My Mac` destination. The user verified Example, Reset, and
+History/Back. Detailed test counts, preview review, MLX direct-Mac
+execution/signing, and real inference remain unverified. Phase 2 remains open
+for its test-count and preview checks.
 
 ## Remaining resource work
 
