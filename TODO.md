@@ -11,7 +11,7 @@ Deliver in two steps:
 
 Do not add accounts, a backend, cloud inference, barcode scanning, health/safety scores, dietary recommendations, new model architectures, or unrelated UI redesign. Research retraining and paper-wide evaluations are not prerequisites for the first app launch. Preserve the Apache license, Yihang Feng's source credit, and existing acknowledgments; check model/data terms separately.
 
-The user reported `BUILD SUCCEEDED` and then `TEST SUCCEEDED` for the corrected Phase 2 simulator scaffold. Detailed test counts and manual app/preview review remain pending. The separate MLX build is blocked by the Mac's missing Apple Metal Toolchain component; installation and retry are required. The cloud task remains on Linux; Mac validation is performed by the user.
+The user reported `BUILD SUCCEEDED` and then `TEST SUCCEEDED` for the corrected Phase 2 simulator scaffold. Detailed test counts and manual app/preview review remain pending. The separate MLX build's last confirmed cause was a missing Apple Metal Toolchain component. Another retry failed at Metal compilation, but installation success and the current underlying diagnostic have not been supplied. The cloud task remains on Linux; Mac validation is performed by the user.
 
 **Execution checkpoints:** work one phase at a time. Report results and any action needed from the user at each phase boundary, and pause before starting the next phase. For intermediate work that requires the user's machine, configuration, access, or a decision, ask for that prerequisite and pause the dependent work while finishing independent checks.
 
@@ -53,7 +53,7 @@ Reference source locations: sample loader near line 189; Llama loader near 2197â
 
 ## Phase 2 â€” Create the minimal Xcode application
 
-**Status:** the corrected `FoodAdditiveLens` simulator build and test command are reported successful on the iPhone 18 Pro. The MLX build reached Metal compilation but cannot execute the compiler because MetalToolchain is missing. Install Apple's component on the Mac, verify the compiler, and retry; test counts and app/preview review remain pending. See [Phase 2 implementation and checkpoint](docs/PHASE2-XCODE-SCAFFOLD.md). Pause before Phase 3.
+**Status:** the corrected `FoodAdditiveLens` simulator build and test command are reported successful on the iPhone 18 Pro. The MLX build still fails at Metal compilation. Run `bash scripts/diagnose-mlx-build.sh` to check whether Metal is available and collect the current error; the last confirmed error was a missing MetalToolchain. Test counts and app/preview review remain pending. See [Phase 2 implementation and checkpoint](docs/PHASE2-XCODE-SCAFFOLD.md). Pause before Phase 3.
 
 - [x] Add a native SwiftUI iOS application project, `FoodAdditiveLens.xcodeproj`, with a shared `FoodAdditiveLens` scheme, app target, unit-test target, and UI-test target. The additional `FoodAdditiveLens-MLX` scheme uses the same app source for supported hardware. The existing checkout is retained.
 - [x] Add the `@main` app entry and inject the Core Data managed-object context into `ContentView` and history. Implement the missing persistence controller with a persistent store and an in-memory preview/test store.
@@ -66,6 +66,7 @@ Reference source locations: sample loader near line 189; Llama loader near 2197â
 - [x] Run the simulator test command: the user reports `TEST SUCCEEDED`. This records the runner outcome without inventing counts or per-test results.
 - [ ] Confirm the two persistence tests and one UI smoke test actually executed and inspect passed/failed/skipped counts. Review the app shell and preview store behavior.
 - [ ] Install the missing Apple Metal Toolchain on the user's Mac with `xcodebuild -downloadComponent MetalToolchain`, then verify `xcrun --sdk iphoneos metal --version`. The inventory script now checks this prerequisite without installing it automatically.
+- [ ] Collect the latest retry's actual error using `scripts/diagnose-mlx-build.sh`. Its final result section includes the Metal check and first build error; installation success is not yet confirmed.
 - [ ] Retry compiling `FoodAdditiveLens-MLX` with the iPhoneOS SDK and signing disabled after the Metal compiler is available. A generic iOS build requires neither a connected iPhone nor model weights. Actual direct-Mac destination availability, signing/install, and inference are separate checks.
 
 **Exit:** Xcode opens the shared scheme, resolves packages, and builds/launches an app shell on a selected simulator without model-resource crashes.

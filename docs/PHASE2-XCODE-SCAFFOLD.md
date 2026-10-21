@@ -1,6 +1,6 @@
 # Phase 2 — Xcode app scaffold
 
-Status: **simulator build/test command reported successful; MLX build blocked by the Mac's missing Metal Toolchain.**
+Status: **simulator build/test command reported successful; MLX build still failing, with the current compiler diagnostic pending.**
 The Mac report identifies Xcode 27.1, Swift 6.4, 16 GiB RAM, and an installed iOS
 27.0 runtime. The first destination is the booted iPhone 18 Pro. The report does
 not initially contain a project build or launch result. The first build failed
@@ -120,7 +120,7 @@ lockfile change or resolution diagnostic before changing package versions.
 
 ## Mac validation checkpoint: separate MLX target
 
-### Current blocker: missing Apple Metal Toolchain
+### Last confirmed cause: missing Apple Metal Toolchain
 
 The MLX build reached `CompileMetalFile` for `steel_attention.metal`, then the
 user supplied the underlying diagnostic:
@@ -139,14 +139,17 @@ xcodebuild -downloadComponent MetalToolchain
 xcrun --sdk iphoneos metal --version
 ```
 
-After the version query succeeds, retry the MLX command below and report the
-build result or first actual error. The cloud task cannot install this component
+The latest retry again reports `CompileMetalFile` failure but does not include
+the underlying error. Installation success and the current Metal compiler state
+have not been supplied, so the retry's cause is not yet established. Use the
+diagnostic helper below to distinguish a still-missing tool from a compiler error.
+The cloud task cannot install this component
 on the user's Mac. The inventory helper now queries this compiler, reports the
 remediation on failure, and continues collecting the remaining inventory. It
 does not perform the installation itself. No package pin or shader source was
 changed for this missing-tool diagnosis.
 
-### Retry after installing the component
+### Collect the current error
 
 The inventory, successful simulator build, and successful test-command result
 are received. Please include the existing test summary showing whether the two
@@ -157,15 +160,20 @@ The simulator app deliberately excludes MLX products and the real backend, so
 its successful build/test does not compile that code. Next, build the MLX scheme
 with the installed iPhoneOS SDK. This is a compile-only check; a generic iOS
 destination does not require a connected phone, signing team, or model weights.
-Use two jobs to limit concurrent compiler work on the reported 16 GiB Mac:
+The helper checks `xcrun --sdk iphoneos metal --version` first and stops if it
+fails. Otherwise, it runs the locked, unsigned MLX build with one compiler job
+to make diagnostics easier to follow and limit concurrent work:
 
 ```bash
 git pull --ff-only
-xcodebuild -project FoodAdditiveLens.xcodeproj -scheme FoodAdditiveLens-MLX -configuration Debug -destination 'generic/platform=iOS' -derivedDataPath DerivedData -onlyUsePackageVersionsFromResolvedFile -jobs 2 CODE_SIGNING_ALLOWED=NO build
+bash scripts/diagnose-mlx-build.sh
 ```
 
-Share the first actual compiler/package error and surrounding output, or the
-final build result. This target compiles the MLX dependencies and can take longer
+Share the final `=== MLX DIAGNOSTIC RESULT ===` section. It repeats the Metal
+check and, on build failure, the first compiler/tool error with surrounding output.
+Fresh logs are saved under ignored `DerivedData/diagnostics/`; the helper preserves
+the build exit status through `tee`. It does not install components, delete caches,
+or change dependencies. This target compiles the MLX dependencies and can take longer
 than the simulator shell. It builds an unsigned iOS app, not a native macOS app,
 and does not load a model or establish direct-Mac execution support.
 
@@ -211,11 +219,18 @@ help, invalid-input, build-on-Linux, and test-on-Linux paths returned their
 documented statuses. These are structural/negative-path checks, not app test
 results or evidence of a successful Apple-platform compilation.
 
+The MLX diagnostic helper passed shell syntax and controlled stub-tool checks
+for missing Metal (no build started), successful and failed builds, first-error
+context extraction, paths with spaces, unique logs, and preservation of build
+and log-capture failure statuses. These Linux checks validate the helper's
+control flow; its real Mac output is still required.
+
 The initial user-side Xcode build failed during dependency loading. The user
 subsequently reported `BUILD SUCCEEDED` and `TEST SUCCEEDED` after the correction.
 The Linux task cannot execute Xcode itself. Detailed test counts, manual review,
 direct-Mac/MLX target compilation, previews, and real inference remain unverified.
-The MLX compile attempt currently stops because Apple's Metal Toolchain is missing.
+The last confirmed MLX error was a missing Metal Toolchain. The latest retry's
+underlying error and the component installation outcome are still pending.
 Phase 2 remains open for its count/review and separate-target checks.
 
 ## Remaining resource work

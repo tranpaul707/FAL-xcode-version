@@ -19,7 +19,16 @@ xcodebuild -downloadComponent MetalToolchain
 xcrun --sdk iphoneos metal --version
 ```
 
-Then retry the MLX build. The inventory script now checks this compiler explicitly.
+To check Metal and collect the current MLX build error, run:
+
+```bash
+git pull --ff-only
+bash scripts/diagnose-mlx-build.sh
+```
+
+Share the final `=== MLX DIAGNOSTIC RESULT ===` section. The helper saves logs in
+ignored `DerivedData/diagnostics/` and stops before building if Metal is unavailable.
+It does not install components. The latest retry's underlying error is still pending.
 
 On an Apple silicon Mac with full Xcode and an installed iOS Simulator runtime:
 
