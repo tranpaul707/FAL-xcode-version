@@ -6,14 +6,16 @@ The repository for research paper titled 'Food Additive Lens: An on-device AI ap
 ## Xcode development
 
 The Phase 2 simulator scaffold has **user-reported build and test-command success**
-on the iPhone 18 Pro destination with Xcode 27.1. Detailed test counts are pending.
+on the iPhone 18 Pro destination with Xcode 27.1. The supplied UI-runner log
+confirms **1 UI test passed, 0 failures**; the two persistence-test results remain
+pending.
 The separate **FoodAdditiveLens-MLX unsigned generic iOS build also succeeded**,
 as reported by the user after running the diagnostic helper. This confirms the
 Metal preflight and compilation passed; signing, execution, and inference remain
 unverified for the MLX target. The user also confirms running **FoodAdditiveLens**
 and seeing **My Mac** as a destination. The user verified **Example**, **Reset**,
-and opening/closing **History**. Preview review and detailed test counts remain
-pending; genuine inference still requires the missing model resources.
+and opening/closing **History**. Preview review and persistence-test results
+remain pending; genuine inference still requires the missing model resources.
 The original source credit and Apache license are retained.
 
 The MLX target also needs Xcode's **Metal Toolchain** component. If its compiler
@@ -59,8 +61,9 @@ bash scripts/build-simulator.sh YOUR_SIMULATOR_UDID test
 
 Replace `YOUR_SIMULATOR_UDID` with a UUID from the device list. The helper disables
 signing only for the simulator and keeps output in ignored `DerivedData/`.
-The user reported `TEST SUCCEEDED`; confirmation that both persistence tests and
-the UI smoke test executed, including their counts/results, is still pending.
+The user reported `TEST SUCCEEDED` and supplied the UI smoke-test result:
+**1 test executed, 0 failures**. The two persistence-test results are still pending.
+The UI-runner log does not establish the separate unit-test bundle's outcome.
 
 The shared **FoodAdditiveLens-MLX** scheme builds the same UI with the original MLX
 implementation for supported physical hardware. On an Apple silicon Mac, try the

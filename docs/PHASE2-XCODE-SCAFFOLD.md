@@ -1,13 +1,15 @@
 # Phase 2 — Xcode app scaffold
 
-Status: **simulator build/test command, app launch, and unsigned generic iOS MLX build reported successful; My Mac destination reported available. Example/Reset/History checks passed by user report; preview and test counts remain pending.**
+Status: **simulator build/test command, app launch, and unsigned generic iOS MLX build reported successful; My Mac destination reported available. Example/Reset/History checks passed by user report; the UI smoke test passed (1 executed, 0 failures). Preview and persistence-test results remain pending.**
 The Mac report identifies Xcode 27.1, Swift 6.4, 16 GiB RAM, and an installed iOS
 27.0 runtime. The first destination is the booted iPhone 18 Pro. The report does
 not initially contain a project build or launch result. The first build failed
 at package loading; after the source correction, the user reported
 `BUILD SUCCEEDED` for the requested simulator build and subsequently
 `TEST SUCCEEDED` for the requested test command. Only those terminal result
-lines were initially supplied; detailed test counts have not yet been confirmed.
+lines were initially supplied. A later `FoodAdditiveLensUITests.xctest` log
+confirms the UI smoke test passed: 1 executed, 0 failures, 14.234 seconds. The
+separate `FoodAdditiveLensTests.xctest` persistence results have not been supplied.
 The user subsequently confirmed running `FoodAdditiveLens` and seeing `My Mac`
 as a destination in response to the MLX-scheme check. MLX execution is not
 established by this. The user also confirms the instructed Example, Reset, and
@@ -37,8 +39,9 @@ Pause for the Mac validation checkpoint before Phase 3.
   The MLX path checks that its model directory exists before initializing the GPU.
 - Added two Core Data tests (field round trip/delete and SQLite store reopening)
   and a UI smoke test for launch, built-in example, reset, and the history sheet.
-  The user reports overall `TEST SUCCEEDED`; per-test execution counts and
-  results have not yet been supplied.
+  The user reports overall `TEST SUCCEEDED` and supplied the UI smoke-test log:
+  `testLaunchExampleResetAndHistoryWithoutModels` passed, 1 executed, 0 failures.
+  The two persistence-test results have not yet been supplied.
 - Added a simulator build/test helper and Git ignores for local Xcode/build state.
 
 ## Targets and schemes
@@ -161,10 +164,19 @@ direct-Mac execution, or real model inference.
 
 ### Reproduce the compile or diagnose a future failure
 
-The inventory, successful simulator build, and successful test-command result
-are received. Please include the existing test summary showing whether the two
-persistence tests and one UI smoke test all executed, with their pass/fail/skip
-counts. No repeated simulator test run is requested merely to obtain those lines.
+The inventory, successful simulator build, successful test-command result, and
+UI smoke-test execution (1 test, 0 failures) are received. The supplied UI-runner
+log covers only `FoodAdditiveLensUITests.xctest`; its “All tests” summary refers
+to that runner and does not establish results for `FoodAdditiveLensTests.xctest`.
+Both bundles are enabled in the committed `FoodAdditiveLens` scheme. Inspect the
+existing unit-test results first; if absent, run only `PersistenceTests` from
+Xcode's Test navigator (Command-6). The two expected tests are
+`testAnalysisFieldsCanBeSavedFetchedAndDeleted` and
+`testSQLiteHistorySurvivesStoreReopening`. No repeated UI run is needed.
+
+The UI-runner log also contains Apple Simulator accessibility warnings about
+duplicate classes and missing AX categories. The test completed successfully
+despite those messages; they did not cause a failure in this supplied run.
 
 The simulator app deliberately excludes MLX products and the real backend, so
 its successful build/test does not compile that code. The separate MLX check uses
@@ -241,9 +253,10 @@ The user also reported the diagnostic helper's unsigned generic iOS MLX build
 success footer after its initial missing-Metal preflight failure. The Linux task
 cannot execute Xcode itself. The user also confirms running `FoodAdditiveLens`
 and seeing a `My Mac` destination. The user verified Example, Reset, and
-History/Back. Detailed test counts, preview review, MLX direct-Mac
+History/Back. The supplied UI smoke-test log confirms 1 test executed with
+0 failures. Persistence-test results, preview review, MLX direct-Mac
 execution/signing, and real inference remain unverified. Phase 2 remains open
-for its test-count and preview checks.
+for its persistence-test and preview checks.
 
 ## Remaining resource work
 
