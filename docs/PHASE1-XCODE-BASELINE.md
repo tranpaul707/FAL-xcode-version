@@ -16,9 +16,12 @@ Status: **Mac host baseline recorded from the user's inventory report.** The use
 | iOS device / Simulator SDK | `27.1` / `27.1` |
 | Installed iOS Simulator runtime | iOS `27.0`, build `24A434` |
 | Initial simulator | iPhone 18 Pro, already reported booted |
+| Metal compiler (later MLX attempt) | Missing Metal Toolchain reported by Xcode; install/verify on the Mac before retrying the MLX build |
 
-The script output contains successful responses for every inventory query and no
-query-failure messages. This establishes the reported host/tool availability,
+The original script output contains successful responses for the queries it
+performed and no query-failure messages. It did not yet query the Metal compiler;
+that check was added after the separate MLX attempt exposed the missing component.
+This establishes the originally reported host/tool availability,
 not project or model compatibility. The Simulator SDK and installed runtime have
 different version numbers; that alone does not establish a fault or a need for
 another download. Confirm this destination through the Phase 2 build. No additional

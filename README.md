@@ -11,6 +11,16 @@ The next checks cover the separate MLX target and app/preview review; genuine
 inference still requires the missing model resources.
 The original source credit and Apache license are retained.
 
+The MLX target also needs Xcode's **Metal Toolchain** component. If its compiler
+reports that this component is missing, install it on the Mac and verify it:
+
+```bash
+xcodebuild -downloadComponent MetalToolchain
+xcrun --sdk iphoneos metal --version
+```
+
+Then retry the MLX build. The inventory script now checks this compiler explicitly.
+
 On an Apple silicon Mac with full Xcode and an installed iOS Simulator runtime:
 
 ```bash

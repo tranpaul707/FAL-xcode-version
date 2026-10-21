@@ -38,6 +38,17 @@ run_check 'Xcode version:' xcodebuild -version
 run_check 'Selected Swift compiler:' xcrun swift --version
 run_check 'Available SDKs:' xcodebuild -showsdks
 run_check 'Selected iOS Simulator SDK version:' xcrun --sdk iphonesimulator --show-sdk-version
+
+printf '\n%s\n' 'Metal compiler for the iOS SDK:'
+if xcrun --sdk iphoneos metal --version; then
+    :
+else
+    phase1_status=1
+    printf '%s\n' 'Metal compiler query failed. If Xcode reports a missing MetalToolchain component, install it on this Mac with:'
+    printf '%s\n' '  xcodebuild -downloadComponent MetalToolchain'
+    printf '%s\n' 'Then rerun this inventory. This script does not install components.'
+fi
+
 run_check 'Installed simulator runtimes:' xcrun simctl list runtimes
 run_check 'Available simulator devices / UDIDs:' xcrun simctl list devices available
 

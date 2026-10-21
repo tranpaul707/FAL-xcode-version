@@ -1,6 +1,6 @@
 # Phase 2 — Xcode app scaffold
 
-Status: **simulator build and test command reported successful; counts, MLX compilation, and app/preview review pending.**
+Status: **simulator build/test command reported successful; MLX build blocked by the Mac's missing Metal Toolchain.**
 The Mac report identifies Xcode 27.1, Swift 6.4, 16 GiB RAM, and an installed iOS
 27.0 runtime. The first destination is the booted iPhone 18 Pro. The report does
 not initially contain a project build or launch result. The first build failed
@@ -120,6 +120,34 @@ lockfile change or resolution diagnostic before changing package versions.
 
 ## Mac validation checkpoint: separate MLX target
 
+### Current blocker: missing Apple Metal Toolchain
+
+The MLX build reached `CompileMetalFile` for `steel_attention.metal`, then the
+user supplied the underlying diagnostic:
+
+```text
+cannot execute tool 'metal' due to missing Metal Toolchain;
+use: xcodebuild -downloadComponent MetalToolchain
+```
+
+This identifies an absent Xcode component, not a shader-source diagnostic.
+On the user's Mac, install the component using the command suggested by Xcode,
+then verify the compiler:
+
+```bash
+xcodebuild -downloadComponent MetalToolchain
+xcrun --sdk iphoneos metal --version
+```
+
+After the version query succeeds, retry the MLX command below and report the
+build result or first actual error. The cloud task cannot install this component
+on the user's Mac. The inventory helper now queries this compiler, reports the
+remediation on failure, and continues collecting the remaining inventory. It
+does not perform the installation itself. No package pin or shader source was
+changed for this missing-tool diagnosis.
+
+### Retry after installing the component
+
 The inventory, successful simulator build, and successful test-command result
 are received. Please include the existing test summary showing whether the two
 persistence tests and one UI smoke test all executed, with their pass/fail/skip
@@ -187,6 +215,7 @@ The initial user-side Xcode build failed during dependency loading. The user
 subsequently reported `BUILD SUCCEEDED` and `TEST SUCCEEDED` after the correction.
 The Linux task cannot execute Xcode itself. Detailed test counts, manual review,
 direct-Mac/MLX target compilation, previews, and real inference remain unverified.
+The MLX compile attempt currently stops because Apple's Metal Toolchain is missing.
 Phase 2 remains open for its count/review and separate-target checks.
 
 ## Remaining resource work
