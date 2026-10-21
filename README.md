@@ -7,7 +7,10 @@ The repository for research paper titled 'Food Additive Lens: An on-device AI ap
 
 The Phase 2 simulator scaffold has **user-reported build and test-command success**
 on the iPhone 18 Pro destination with Xcode 27.1. Detailed test counts are pending.
-The next checks cover the separate MLX target and app/preview review; genuine
+The separate **FoodAdditiveLens-MLX unsigned generic iOS build also succeeded**,
+as reported by the user after running the diagnostic helper. This confirms the
+Metal preflight and compilation passed; signing, execution, and inference remain
+unverified. The next checks cover test counts and app/preview review; genuine
 inference still requires the missing model resources.
 The original source credit and Apache license are retained.
 
@@ -19,7 +22,7 @@ xcodebuild -downloadComponent MetalToolchain
 xcrun --sdk iphoneos metal --version
 ```
 
-To check Metal and collect the current MLX build error, run:
+To check Metal and build the MLX target, or diagnose a future failure, run:
 
 ```bash
 git pull --ff-only
@@ -28,7 +31,8 @@ bash scripts/diagnose-mlx-build.sh
 
 Share the final `=== MLX DIAGNOSTIC RESULT ===` section. The helper saves logs in
 ignored `DerivedData/diagnostics/` and stops before building if Metal is unavailable.
-It does not install components. The latest retry's underlying error is still pending.
+It does not install components. The previously missing Metal compiler no longer
+blocks the reported generic iOS build.
 
 On an Apple silicon Mac with full Xcode and an installed iOS Simulator runtime:
 
