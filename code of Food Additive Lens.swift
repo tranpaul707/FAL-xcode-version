@@ -4222,7 +4222,8 @@ class CFRManager {
         }
     }
     
-    private func loadCFRData() async {
+    // Also callable internally for a deterministic bundled-resource test.
+    func loadCFRData() async {
         guard !isLoaded && !isLoading else { return }
         isLoading = true
         
@@ -4460,8 +4461,8 @@ class CFRManager {
                 continue
             }
             
-            // Always use subchapter-B and subpart-C
-            let urlString = "https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-\(part)/subpart-C/section-\(cleanedCode)"
+            // Let eCFR resolve the actual hierarchy: source sections span subparts.
+            let urlString = "https://www.ecfr.gov/current/title-21/section-\(cleanedCode)"
             
             if let url = URL(string: urlString) {
                 results.append((code: cleanedCode, url: url))

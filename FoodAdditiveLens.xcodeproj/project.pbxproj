@@ -5,6 +5,20 @@
 	};
 	objectVersion = 56;
 	objects = {
+		7EBBB1836D0FA0E510E68FA9 = {
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = FoodSubstancesCFR.csv;
+			sourceTree = "<group>";
+		};
+		9383BA1527D678E9AC961B6F = {
+			isa = PBXBuildFile;
+			fileRef = 7EBBB1836D0FA0E510E68FA9;
+		};
+		A2BF08CA27F2FE957AB84251 = {
+			isa = PBXBuildFile;
+			fileRef = 7EBBB1836D0FA0E510E68FA9;
+		};
 		C8880FBCCBC13D0D8E1DDF89 = {
 			isa = PBXFileReference;
 			lastKnownFileType = text;
@@ -156,6 +170,7 @@
 		B5DA903F4EE3DB011CF7AB09 = {
 			isa = PBXGroup;
 			children = (
+				7EBBB1836D0FA0E510E68FA9,
 				C8880FBCCBC13D0D8E1DDF89,
 				9D3B785426B0C48123F7C85F,
 				E1FEBCA6F9E0924D72F31D0C,
@@ -474,6 +489,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9383BA1527D678E9AC961B6F,
 				80F0CDD2EAB03F146B51645E,
 				08ADDFF31184E6444373BE5E,
 				B76402A771D58A4510AD9BC5,
@@ -644,6 +660,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A2BF08CA27F2FE957AB84251,
 				221F5FC1A1DA876B953A6683,
 				3FAFCD085EA2463C00F42D77,
 				41602541959789FA2A703D2A,

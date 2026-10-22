@@ -19,8 +19,8 @@ unverified for the MLX target. The user also confirms running **FoodAdditiveLens
 and seeing **My Mac** as a destination. The user verified **Example**, **Reset**,
 and opening/closing **History**. **Canvas now renders**, as confirmed by the user
 after adding an explicit type to the diagnostic tuple array. Genuine inference
-still requires the missing model resources. Phase 3 now supplies knowledge data
-and 20 authentic logged food samples; its updated Mac checks are pending.
+still requires the missing model resources. Phase 3 now supplies knowledge data,
+20 authentic logged food samples, and sourced CFR mappings; its updated Mac checks are pending.
 The original source credit and Apache license are retained.
 
 The MLX target also needs Xcode's **Metal Toolchain** component. If its compiler
@@ -72,7 +72,7 @@ The user reported `TEST SUCCEEDED` and supplied the UI smoke-test result:
 confirms **2 executed, 0 failures**. The context-specific insertion fix was
 verified by a Mac rerun: both persistence tests passed and the earlier entity-lookup
 diagnostics are absent from the supplied log. Those are Phase 2 results. Phase 3
-adds two resource/parity tests and updates the sample UI test: expect **4 unit
+adds resource/parity/CFR tests and updates the sample UI test: expect **5 unit
 tests and 1 UI test** in the next run; their new Mac results are pending.
 
 The shared **FoodAdditiveLens-MLX** scheme builds the same UI with the original MLX
@@ -90,8 +90,11 @@ bundle IDs, so their installed apps and history stores are separate.
 `App/Resources/` now contains 3,971 supplied additive records with their original
 hand-crafted embeddings and 20 food inputs recovered from the uploaded validation
 notebook. Both app targets bundle them. Unknown FDC IDs/sub-brands stay blank;
-source notebook references are recorded separately. CFR and classifier/Llama
-resources remain missing; no generated explanations are used as sample inputs.
+source notebook references are recorded separately. The newly uploaded FDA
+`FoodSubstances.csv` supplies 2,171 substance-to-CFR mappings (3,907 reference
+cells); its normalized runtime CSV is also bundled. The source identifies an
+inventory update of February 13, 2025 and download of June 19, 2025. Classifier
+and Llama artifacts remain missing.
 
 Generate or verify from a checkout with Python 3.9+ and no extra packages:
 
@@ -105,7 +108,9 @@ python3 -m unittest discover -s scripts -p 'test_knowledge_resources.py' -v
 professor artifact requests, limitations, and the Mac checkpoint. After pulling,
 run the simulator helper's `test` action above, then check **Random Sample** and
 entry IDs 0–19. The expected console counts are 3,971 additive records and 20 food
-records. Missing CFR/classifier messages remain expected. Pause before Phase 4.
+records, plus CFR data for 2,171 substances. The classifier missing message
+remains expected; knowledge/sample/CFR missing messages should disappear.
+Pause before Phase 4.
 
 See [Phase 2 details and validation checkpoint](docs/PHASE2-XCODE-SCAFFOLD.md),
 [resource requirements](App/Resources/README.md), and the phased [TODO](TODO.md).

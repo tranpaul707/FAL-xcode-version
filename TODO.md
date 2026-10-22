@@ -15,7 +15,8 @@ Phases 1 and 2 are complete based on the supplied Mac inventory, app/test result
 MLX compile, and working Canvas. Phase 3 now restores 3,971 knowledge records and
 20 authentic food samples from the initial uploads, with reproducible generation,
 provenance, and Python checks. Its new Mac bundle/parity/UI tests remain pending.
-CFR data and original classifier/Llama artifacts remain unavailable; no inference
+A subsequent FDA CSV upload supplies authentic CFR data, now normalized and
+bundled. Original classifier/Llama artifacts remain unavailable; no inference
 has run. The cloud task is Linux, so Apple-platform validation is performed by
 the user. The user clarified that the initial uploads are all the source files
 available and can ask the professors about missing artifacts.
@@ -90,8 +91,8 @@ Reference source locations: sample loader near line 189; Llama loader near 2197�
 
 **Status:** implemented from the available uploads; awaiting the Mac resource/parity
 checkpoint. See [Phase 3 results and professor artifact list](docs/PHASE3-RESOURCE-RESTORATION.md).
-CFR data is an explicit original-feature blocker, permitted by the first-MVP exit
-criteria. Pause before Phase 4.
+The later FDA source upload resolves the CFR data blocker in source; Mac loader
+and link tests remain pending. Pause before Phase 4.
 
 - [x] Extract the original 384-dimensional hand-crafted algorithm into `scripts/generate_knowledge_resources.py`, using only the Python standard library and checkout-relative defaults.
 - [x] Generate `App/Resources/food_additive_embeddings.json`: 3,971 unique supplied records with the original loader schema. Every vector exactly matches the inspected notebook reference function.
@@ -99,18 +100,18 @@ criteria. Pause before Phase 4.
 - [x] Check the demonstrated non-ASCII mismatch: Python uses `ord()`, while Swift used `asciiValue ?? 0`. Align Swift scalar values/counts and character-sine precision; add seven notebook-reference parity fixtures. Actual Swift parity execution is part of the Mac checkpoint below.
 - [x] Investigate the raw food LFS object: the original repository contains the same pointer, and retrieval is blocked. Recover authentic samples instead from captured original input fields in the supplied validation notebook; the full training dataset is not required for the first MVP.
 - [x] Generate a valid seven-column `branded_food_short_sample.csv` with 20 notebook-derived foods, quoted commas, and empty unrecorded FDC/sub-brand fields. Record source entry IDs separately, preserve actual fields, and keep runtime row IDs at 0–19. Fix random selection to retain the chosen row index when FDC IDs are blank/duplicated.
-- [x] Investigate CFR recovery: no original file in the initial uploads or inspected upstream snapshot; FDA requests return proxy 403. Document the missing resource, original loader contract, and professor handoff. No CFR codes or citations are fabricated.
-- [ ] Restore authentic `FoodSubstancesCFR.csv` when obtainable; check its line-9 header, Substance/Reg add columns, encoding, and source/version. This is an explicit outstanding feature blocker, not a prerequisite for the first manual-input/knowledge MVP.
-- [x] Add knowledge JSON and sample CSV individually to both app bundle roots. Add the parity fixture only to unit tests; keep provenance, notebooks, workbooks, and full datasets outside app resources.
+- [x] Restore CFR data from the subsequently uploaded `FoodSubstances.csv`: preserve the source bytes/dated provenance, normalize its 19 Reg add columns into `FoodSubstancesCFR.csv`, and validate every original reference cell. Runtime header remains on line 9; mappings cover 2,171 substances and 3,907 reference cells. No spreadsheet formulas are evaluated.
+- [x] Correct generated eCFR section URLs to resolve the actual hierarchy rather than assuming every reference is subpart C. Add an actual-loader/representative-mapping/URL XCTest; browser execution remains unverified.
+- [x] Add knowledge JSON, sample CSV, and normalized CFR CSV individually to both app bundle roots. Add the parity fixture only to unit tests; keep provenance, notebooks, workbooks, and full datasets outside app resources.
 - [x] Record source revision, provenance, checksums, commands, and future model retrieval/storage in `docs/resources/manifest.json`. The source CSV and embedding notebook match the original author's inspected repository. Keep large downloads/model weights in ignored locations.
-- [ ] On the Mac, run the updated simulator tests: 4 unit tests (2 persistence, 2 knowledge/resource) and 1 UI smoke test. Confirm actual Swift query parity and app-bundle resource decoding; those tests have not run here.
-- [ ] Confirm app startup logs show 3,971 knowledge records and 20 food records loaded; review Random Sample/product card and loading IDs 0–19. CFR/classifier missing messages remain expected. Analysis remains gated until Phase 4.
+- [ ] On the Mac, run the updated simulator tests: 5 unit tests (2 persistence, 2 knowledge/resource, 1 CFR) and 1 UI smoke test. Confirm actual Swift query parity and app-bundle resource decoding; those tests have not run here.
+- [ ] Confirm app startup logs show 3,971 knowledge records, 20 food records, and CFR mappings for 2,171 substances loaded; review Random Sample/product card and loading IDs 0–19. Only classifier missing messages remain expected; the CFR file should load. Analysis remains gated until Phase 4.
 
 **Exit for first MVP:** real knowledge resources load from the app bundle. Authentic
-samples are restored; CFR data remains an explicit blocker. The Mac checkpoint
-must be reviewed before Phase 4. Priority professor request: original CFR CSV;
-optional original sample CSV; exact classifier/tokenizer and Llama artifacts for
-Phase 5, with source/version and reuse terms.
+samples and sourced CFR data are restored in the implementation. The Mac
+checkpoint must be reviewed before Phase 4. Remaining professor requests are
+exact classifier/tokenizer and Llama artifacts for Phase 5, with source/version
+and reuse terms; a complete original sample CSV is optional.
 
 ## Phase 4 — Make the first simulator MVP functional
 
@@ -133,9 +134,9 @@ Phase 5, with source/version and reuse terms.
 - [ ] Preserve the `Llama-3.2-3B-Instruct-4bit/` directory structure during bundling or document a minimal explicit resource-path adjustment. Verify all required files and Metal resources before starting inference; provide actionable missing-resource/load errors.
 - [ ] Restore the original direct-match plus LLM additive identification, retrieval, and streamed contextual explanation flow. Preserve prompts, matching behavior, category context, and generation settings initially. Check UI responsiveness, error recovery, and repeated use within device memory limits.
 - [ ] Run genuine inference on a supported physical iPhone or compatible Apple silicon iOS-on-Mac destination and record actual outcomes. The direct-Mac route was agreed with the user and the Phase 2 MLX scheme prepares that path, but it is not runtime-verified. The Phase 1 MLX documentation excludes simulator inference, so keep the simulator MVP's MLX features unavailable. Revisit only if upstream documentation and a real compatibility check establish support for the chosen backend; do not introduce a remote inference service to bridge the gap.
-- [ ] Restore and verify authentic sample browsing and CFR links still blocked after Phase 3. Confirm generated links correspond to real source citations; browser access to eCFR is distinct from offline analysis.
+- [ ] Verify restored authentic sample browsing and CFR links in the original full analysis flow. Confirm generated links correspond to real source citations; browser access to eCFR is distinct from offline analysis.
 
-**Parity acceptance:** authentic samples/input/photo → real category prediction and selection → direct plus LLM additive identification → knowledge/CFR → genuine generated explanations → persisted history. Record which steps pass on simulator versus physical device. Missing original model/CFR artifacts remain parity blockers.
+**Parity acceptance:** authentic samples/input/photo → real category prediction and selection → direct plus LLM additive identification → knowledge/CFR → genuine generated explanations → persisted history. Record which steps pass on simulator versus physical device. Missing original model artifacts remain parity blockers; restored CFR mapping/link behavior still requires runtime validation.
 
 ## Phase 6 — Verify, document, and hand off
 

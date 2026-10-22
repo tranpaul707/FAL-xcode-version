@@ -4,7 +4,7 @@
     "repository": "https://github.com/yih-f/Food-Additive-Lens",
     "inspected_commit": "64b70c4798c230c6acaabec39261cbbe9510e5a4",
     "license": "Apache-2.0 (original repository LICENSE)",
-    "input_note": "The supplied substances CSV and embedding notebook are byte-identical to this upstream snapshot. Source export dates are not recorded."
+    "input_note": "The supplied cleaned substances CSV and embedding notebook match the inspected upstream snapshot. A later original FDA CSV upload supplies dated CFR provenance and the same 3,971 substance keys."
   },
   "knowledge": {
     "records": 3971,
@@ -25,15 +25,28 @@
     "excludes": "LLM answers, classifier predictions, and invented metadata"
   },
   "branded_training_object": {
-    "status": "not recovered; not required for the notebook-derived 20-row sample",
+    "status": "Large branded CSV uploaded later, but transfer exceeds 32 MiB; bytes/hash not verified here. The 20 notebook-derived runtime samples remain available.",
     "bytes": 111633644,
     "sha256": "37a768281698a656f52771e7d8775271d62d6cc6bb5c2017fda973ab28da1ecd",
     "recovery_result": "Original repo contains the same pointer. Git LFS batch returned Resource not accessible by integration; media download requests returned proxy 403."
   },
   "cfr": {
-    "status": "unavailable; not bundled; links remain unavailable",
-    "reason": "Not included in initial uploads or inspected upstream snapshot. Public FDA inventory requests returned proxy 403. The cleaned CSV has no regulation columns.",
-    "required_contract": "Original CSV with header on physical line 9, Substance and Reg add/Regadd columns, authentic mappings, and known encoding/provenance."
+    "status": "restored from a subsequently uploaded FDA export; Mac loader/link tests pending",
+    "source": "data/source/FoodSubstances.csv",
+    "source_url": "http://www.hfpappexternal.fda.gov/scripts/fdcc/?set=FoodSubstances",
+    "inventory_last_updated": "2025-02-13",
+    "source_downloaded": "2025-06-19",
+    "encoding": "source Windows-1252; normalized runtime UTF-8 (ASCII content)",
+    "source_records": 3971,
+    "substances_with_references": 2171,
+    "reference_cells": 3907,
+    "regulation_columns": 19,
+    "conversion": "Preserve original source preamble/disclaimer and all Substance/Reg add cells in order; strip whitespace and literal spreadsheet =T(\"...\") wrappers without evaluation. Add conversion metadata so runtime header is on line 9.",
+    "runtime_file": "App/Resources/FoodSubstancesCFR.csv",
+    "runtime_header_line": 9,
+    "scope": "Uses original Reg add columns, matching the app. Color-only, prohibited, administrative, and labeling columns are not added to the lookup.",
+    "link_strategy": "Use eCFR title-21 section URLs without assuming all sections are subpart C; original general-category fallback is retained.",
+    "browser_verification": "Pending; HEAD requests to representative eCFR section URLs returned proxy 403 from this environment."
   },
   "model_artifacts": {
     "status": "not supplied or downloaded; Phase 5",
@@ -57,8 +70,8 @@
     },
     "generator": {
       "path": "scripts/generate_knowledge_resources.py",
-      "bytes": 11029,
-      "sha256": "863423b44eff85bbb742975432efed7ab3fd39c6deeee3adbe438b0852d91497"
+      "bytes": 14443,
+      "sha256": "d36487455b8767e7bd4b66b2b6d5a7f492885b4cf97ab0f16364087e6f5140f4"
     },
     "knowledge_json": {
       "path": "App/Resources/food_additive_embeddings.json",
@@ -79,6 +92,16 @@
       "path": "docs/resources/sample-provenance.json",
       "bytes": 2931,
       "sha256": "2d451754d4630deb285baec4dcafa4f3cb8c8c5f24dc8a677618b5aab428a2c4"
+    },
+    "cfr_source": {
+      "path": "data/source/FoodSubstances.csv",
+      "bytes": 1457083,
+      "sha256": "9abd2721ba83eb274e6566d4760e2c96b8c5acdabf50a59fc8dc8b688b9a3130"
+    },
+    "cfr_runtime": {
+      "path": "App/Resources/FoodSubstancesCFR.csv",
+      "bytes": 213185,
+      "sha256": "9fe1fe1bbeedff7eab84d5af35bb5300ff48834284f5837480472b6355275708"
     }
   }
 }

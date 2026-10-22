@@ -151,6 +151,66 @@ def sample_csv(rows):
     return stream.getvalue().encode("utf-8")
 
 
+def cfr_resource(source):
+    """Normalize actual FDA Reg add cells without evaluating spreadsheet syntax."""
+    raw = source.read_bytes()
+    text = raw.decode("cp1252")
+    lines = text.splitlines()
+    header_index = next((i for i, line in enumerate(lines)
+                         if "Substance" in next(csv.reader([line]))), None)
+    if header_index is None:
+        raise ValueError("FDA source has no Substance header")
+    reader = csv.DictReader(io.StringIO("\n".join(lines[header_index:])), strict=True)
+    columns = [name for name in reader.fieldnames if name.startswith(("Reg add", "Regadd"))]
+    if not columns:
+        raise ValueError("FDA source has no Reg add columns")
+    rows, seen = [], set()
+    with_codes = references = 0
+    for row in reader:
+        if None in row or any(value is None for value in row.values()):
+            raise ValueError("FDA source has inconsistent columns")
+        substance = row["Substance"].strip()
+        if not substance or substance.upper() in seen or any(c in substance for c in '\r\n"'):
+            raise ValueError("FDA source has an empty/duplicate/incompatible substance")
+        seen.add(substance.upper())
+        codes = []
+        for name in columns:
+            value = row[name].strip()
+            if not value:
+                codes.append("")
+                continue
+            wrapper = re.fullmatch(r'=T\("([0-9]+\.[0-9]+)"\)', value)
+            if wrapper:
+                value = wrapper.group(1)
+            if not re.fullmatch(r"[0-9]+\.[0-9]+", value):
+                raise ValueError(f"Unexpected CFR reference for {substance}: {name}")
+            codes.append(value)
+        references += sum(bool(code) for code in codes)
+        with_codes += any(codes)
+        rows.append([substance] + codes)
+    if not with_codes:
+        raise ValueError("FDA source contains no Reg add references")
+    # Retain source provenance/warning, then document the conversion. The original
+    # app's CFR loader expects the header on physical line 9; no fake data rows.
+    preamble = lines[:header_index] + [
+        "Food Additive Lens normalized CFR resource.",
+        f"Source SHA-256: {hashlib.sha256(raw).hexdigest()}",
+        "Original Reg add values only; spreadsheet text wrappers removed.",
+        "",
+    ]
+    if len(preamble) != 8:
+        raise ValueError("Expected the original four-line FDA preamble")
+    stream = io.StringIO(newline="")
+    stream.write("\n".join(preamble) + "\n")
+    writer = csv.writer(stream, lineterminator="\n")
+    writer.writerow(["Substance"] + columns)
+    writer.writerows(rows)
+    summary = {"source_records": len(rows), "substances_with_references": with_codes,
+               "reference_cells": references, "regulation_columns": columns,
+               "source_header_line": header_index + 1, "runtime_header_line": 9}
+    return stream.getvalue().encode("utf-8"), summary
+
+
 def encoded(value):
     return (json.dumps(value, ensure_ascii=False, allow_nan=False, separators=(",", ":")) + "\n").encode("utf-8")
 
@@ -188,6 +248,8 @@ def main():
     parser.add_argument("--sample-output", type=Path, default=ROOT / "App/Resources/branded_food_short_sample.csv")
     parser.add_argument("--sample-provenance-output", type=Path,
                         default=ROOT / "docs/resources/sample-provenance.json")
+    parser.add_argument("--cfr-source", type=Path, default=ROOT / "data/source/FoodSubstances.csv")
+    parser.add_argument("--cfr-output", type=Path, default=ROOT / "App/Resources/FoodSubstancesCFR.csv")
     parser.add_argument("--check", action="store_true", help="Verify exact reproducibility without writing files")
     args = parser.parse_args()
     try:
@@ -204,13 +266,17 @@ def main():
             "id_note": "Source entry IDs are app row indices, not USDA FDC IDs. Runtime row indices use the 20-row sample.",
             "records": references,
         }
+        cfr, cfr_summary = cfr_resource(args.cfr_source)
         write_or_check(args.output, encoded(dataset), args.check)
         write_or_check(args.fixtures_output, encoded(parity_fixtures()), args.check)
         write_or_check(args.sample_output, sample_csv(samples), args.check)
         write_or_check(args.sample_provenance_output, encoded(provenance), args.check)
-    except (OSError, UnicodeError, ValueError) as error:
+        write_or_check(args.cfr_output, cfr, args.check)
+    except (OSError, UnicodeError, ValueError, csv.Error) as error:
         parser.exit(1, f"Resource generation failed: {error}\n")
     print(f"Validated {len(records):,} unique records with {DIMENSION} finite, normalized values each.")
+    print(f"Validated CFR references for {cfr_summary['substances_with_references']:,} substances "
+          f"from {cfr_summary['reference_cells']:,} source reference cells.")
 
 
 if __name__ == "__main__":

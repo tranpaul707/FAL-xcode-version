@@ -3,6 +3,27 @@ import XCTest
 @testable import FoodAdditiveLens
 
 final class KnowledgeResourceTests: XCTestCase {
+    @MainActor
+    func testBundledCFRMappingsAndSectionURLs() async throws {
+        let url = try XCTUnwrap(Bundle.main.url(forResource: "FoodSubstancesCFR", withExtension: "csv"))
+        let text = try String(contentsOf: url, encoding: .utf8)
+        let lines = text.components(separatedBy: .newlines)
+        let header = try XCTUnwrap(lines.dropFirst(8).first)
+        XCTAssertTrue(header.hasPrefix("Substance,Reg add01,"))
+
+        let manager = CFRManager()
+        await manager.loadCFRData()
+        XCTAssertTrue(manager.isLoaded)
+        XCTAssertEqual(manager.getCFRCodes(for: "CALCIUM PROPIONATE"), ["179.45", "181.23", "184.1221"])
+        XCTAssertEqual(manager.getCFRCodes(for: "ASCORBIC ACID"), ["172.280", "182.3013", "182.8013"])
+        XCTAssertEqual(manager.getCFRCodes(for: "ACESULFAME POTASSIUM"), ["172.800"])
+        let links = manager.generateCFRURLs(for: ["184.1221", "172.280"])
+        XCTAssertEqual(links.map { $0.url.absoluteString }, [
+            "https://www.ecfr.gov/current/title-21/section-184.1221",
+            "https://www.ecfr.gov/current/title-21/section-172.280"
+        ])
+    }
+
     private struct ParityFixtures: Decodable {
         let embeddingDimension: Int
         let cases: [Example]

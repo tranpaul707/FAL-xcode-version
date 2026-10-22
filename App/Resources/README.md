@@ -1,9 +1,11 @@
 # Runtime resources
 
-Phase 3 restores two files to the root of **both app bundles**:
+Phase 3 restores three files to the root of **both app bundles**:
 
 - `food_additive_embeddings.json`: 3,971 supplied substance records with their
   original 384-dimensional hand-crafted vectors, about 17 MB.
+- `FoodSubstancesCFR.csv`: the uploaded FDA export's original Reg add mappings,
+  normalized for the existing loader: 2,171 substances and 3,907 reference cells.
 - `branded_food_short_sample.csv`: 20 original food inputs recovered from captured
   output in the supplied validation notebook. Unrecorded FDC IDs and sub-brands
   are blank. Runtime sample indices are 0–19; notebook entry IDs are not FDC IDs.
@@ -16,14 +18,13 @@ python3 scripts/generate_knowledge_resources.py --check
 python3 -m unittest discover -s scripts -p 'test_knowledge_resources.py' -v
 ```
 
-The generator also writes a test-only parity fixture and per-sample provenance.
+The original dated FDA CSV is preserved in `data/source/`. The generator also
+writes a test-only parity fixture and per-sample provenance.
 See [Phase 3 details](../../docs/PHASE3-RESOURCE-RESTORATION.md) and
 [checksums/source records](../../docs/resources/manifest.json).
 
 Still unavailable:
 
-- `FoodSubstancesCFR.csv`: absent from the supplied materials and inspected
-  original repository snapshot; the cleaned CSV has no regulation columns.
 - `FoodClassifier.mlpackage` and its matching classifier `tokenizer_config.json`.
 - The complete intended `Llama-3.2-3B-Instruct-4bit/` model bundle.
 

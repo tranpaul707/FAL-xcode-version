@@ -4,6 +4,7 @@ import ast
 import copy
 import csv
 import hashlib
+import io
 import json
 import math
 from pathlib import Path
@@ -159,6 +160,48 @@ class KnowledgeResourceTests(unittest.TestCase):
             content = (resources.ROOT / identity["path"]).read_bytes()
             self.assertEqual(len(content), identity["bytes"], identity["path"])
             self.assertEqual(hashlib.sha256(content).hexdigest(), identity["sha256"], identity["path"])
+
+    def test_cfr_resource_preserves_all_original_regulation_cells(self):
+        source = resources.ROOT / "data/source/FoodSubstances.csv"
+        source_lines = source.read_bytes().decode("cp1252").splitlines()
+        source_rows = list(csv.DictReader(io.StringIO("\n".join(source_lines[4:]))))
+        result, summary = resources.cfr_resource(source)
+        self.assertEqual(result, (resources.ROOT / "App/Resources/FoodSubstancesCFR.csv").read_bytes())
+        lines = result.decode("utf-8").splitlines()
+        self.assertEqual(lines[:4], source_lines[:4])
+        self.assertTrue(lines[8].startswith("Substance,Reg add01,"))
+        self.assertIn("Last updated 2/13/2025; downloaded 6/19/2025.", lines[0])
+        actual = list(csv.DictReader(io.StringIO("\n".join(lines[8:]))))
+        self.assertEqual(len(actual), 3971)
+        self.assertEqual(summary["substances_with_references"], 2171)
+        self.assertEqual(summary["reference_cells"], 3907)
+        self.assertEqual(len(summary["regulation_columns"]), 19)
+        self.assertEqual({r["Substance"] for r in actual}, {r["substance"] for r in self.dataset["data"]})
+        for original, normalized in zip(source_rows, actual):
+            self.assertEqual(normalized["Substance"], original["Substance"].strip())
+            for key in summary["regulation_columns"]:
+                value = original[key].strip()
+                if value:
+                    self.assertRegex(value, r'^=T\("[0-9]+\.[0-9]+"\)$')
+                self.assertEqual(normalized[key], value[4:-2] if value else "")
+
+    def test_cfr_conversion_rejects_unknown_formula_and_bad_contract(self):
+        preamble = "source\n\nwarning\n\n"
+        cases = (
+            "no columns here\n",
+            preamble + "Substance,Other Names\nACID,ALIAS\n",
+            preamble + "Substance,Reg add01\nACID,=1+1\n",
+            preamble + "Substance,Reg add01\nACID,172.515,extra\n",
+            preamble + "Substance,Reg add01\nACID,\n",
+            preamble + 'Substance,Reg add01\nACID,=T("172.515")\nACID,=T("172.510")\n',
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "source.csv"
+            for text in cases:
+                with self.subTest(text=text):
+                    source.write_bytes(text.encode("cp1252"))
+                    with self.assertRaises(ValueError):
+                        resources.cfr_resource(source)
 
 
 if __name__ == "__main__":
