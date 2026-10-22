@@ -90,6 +90,12 @@ difference for Float precision. A Linux Float32 arithmetic model stays within
 that tolerance (maximum observed error about 6.44e-8); actual Swift execution is
 still pending on the Mac.
 
+The parity XCTest uses an async `@MainActor` entry point because the query method
+belongs to the main-actor-isolated knowledge manager. This matches the existing
+persistence test pattern and avoids calling an actor-isolated static method from
+a synchronous, nonisolated test. The reported Mac test build failed before test
+execution; the corrected build still needs a Mac rerun.
+
 ## Restored CFR source and mappings
 
 The later upload `FoodSubstances.csv` resolves the missing regulation source.

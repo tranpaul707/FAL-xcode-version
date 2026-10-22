@@ -46,7 +46,8 @@ final class KnowledgeResourceTests: XCTestCase {
         }
     }
 
-    func testQueryFeaturesMatchNotebookFixtures() throws {
+    @MainActor
+    func testQueryFeaturesMatchNotebookFixtures() async throws {
         let url = try XCTUnwrap(Bundle(for: Self.self).url(forResource: "embedding-parity", withExtension: "json"))
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
