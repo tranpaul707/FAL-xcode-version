@@ -96,3 +96,25 @@ Share test results and any first compiler error, plus the manual photo/browser
 outcomes. Physical camera permission/capture validation remains pending on a
 real device; the scoped photo picker needs no full-library permission prompt.
 Do not start Phase 5 until this checkpoint is reviewed with the user.
+
+## A stalled test run
+
+A user reported an apparent loop with the SDK `invalidDigitCount(94232)` warning.
+The supplied repeated warnings span only 15 milliseconds and contain no test-case
+lines; they do not establish an endless test loop or identify the cause. The user
+suspended the command with Control-Z. Resume that job with `fg`, then stop it
+with Control-C before launching another run. Isolate the suites:
+
+```bash
+bash scripts/build-simulator.sh 89CA5AC4-8662-4AB0-8D53-0F1B7A355A30 unit-test
+bash scripts/build-simulator.sh 89CA5AC4-8662-4AB0-8D53-0F1B7A355A30 ui-test
+```
+
+The helper now disables parallel test execution and enables Xcode's per-test
+execution allowances (120 seconds default, 180 seconds maximum). These are XCTest
+execution limits, not a shell watchdog for package resolution, builds, simulator
+startup, or an unresponsive Xcode service. The UI suite deliberately launches the
+app repeatedly to verify persistence; its scroll loops are finite. Provide the
+last Test Case / interaction lines after the SDK warning to locate the stall.
+The Phase 4 checkpoint remains pending; this change does not establish that the
+reported stall is fixed.
