@@ -14,7 +14,8 @@ Do not add accounts, a backend, cloud inference, barcode scanning, health/safety
 Phases 1 and 2 are complete based on the supplied Mac inventory, app/test results,
 MLX compile, and working Canvas. Phase 3 now restores 3,971 knowledge records and
 20 authentic food samples from the initial uploads, with reproducible generation,
-provenance, and Python checks. Its new Mac bundle/parity/UI tests remain pending.
+provenance, and Python checks. The user-supplied October 22 Mac run passed all
+5 unit tests and 1 UI test, including Swift parity and bundled CFR mappings.
 A subsequent FDA CSV upload supplies authentic CFR data, now normalized and
 bundled. Original classifier/Llama artifacts remain unavailable; no inference
 has run. The cloud task is Linux, so Apple-platform validation is performed by
@@ -89,10 +90,10 @@ Reference source locations: sample loader near line 189; Llama loader near 2197�
 
 ## Phase 3 — Restore usable data from the supplied materials
 
-**Status:** implemented from the available uploads; awaiting the Mac resource/parity
-checkpoint. See [Phase 3 results and professor artifact list](docs/PHASE3-RESOURCE-RESTORATION.md).
-The later FDA source upload resolves the CFR data blocker in source; Mac loader
-and link tests remain pending. Pause before Phase 4.
+**Status:** resource restoration and Mac automated checkpoint complete; Phase 4
+awaits user authorization. See [Phase 3 results and professor artifact list](docs/PHASE3-RESOURCE-RESTORATION.md).
+The Mac run confirms all restored resources load and the representative CFR
+mapping/URL tests pass. Browser navigation remains unverified. Pause before Phase 4.
 
 - [x] Extract the original 384-dimensional hand-crafted algorithm into `scripts/generate_knowledge_resources.py`, using only the Python standard library and checkout-relative defaults.
 - [x] Generate `App/Resources/food_additive_embeddings.json`: 3,971 unique supplied records with the original loader schema. Every vector exactly matches the inspected notebook reference function.
@@ -104,12 +105,13 @@ and link tests remain pending. Pause before Phase 4.
 - [x] Correct generated eCFR section URLs to resolve the actual hierarchy rather than assuming every reference is subpart C. Add an actual-loader/representative-mapping/URL XCTest; browser execution remains unverified.
 - [x] Add knowledge JSON, sample CSV, and normalized CFR CSV individually to both app bundle roots. Add the parity fixture only to unit tests; keep provenance, notebooks, workbooks, and full datasets outside app resources.
 - [x] Record source revision, provenance, checksums, commands, and future model retrieval/storage in `docs/resources/manifest.json`. The source CSV and embedding notebook match the original author's inspected repository. Keep large downloads/model weights in ignored locations.
-- [ ] On the Mac, run the updated simulator tests: 5 unit tests (2 persistence, 2 knowledge/resource, 1 CFR) and 1 UI smoke test. Confirm actual Swift query parity and app-bundle resource decoding; those tests have not run here.
-- [ ] Confirm app startup logs show 3,971 knowledge records, 20 food records, and CFR mappings for 2,171 substances loaded; review Random Sample/product card and loading IDs 0–19. Only classifier missing messages remain expected; the CFR file should load. Analysis remains gated until Phase 4.
+- [x] User-supplied Mac run on October 22, 2026: 5 unit tests (2 persistence, 2 knowledge/resource, 1 CFR) and 1 UI smoke test passed with zero failures. Actual Swift query parity and app-bundle resource decoding passed after the main-actor test fix in `5601255`.
+- [x] Confirmed in the supplied Mac logs: 3,971 knowledge records, 20 food records, and CFR mappings for 2,171 substances loaded. UI automation passed Random Sample/product card, Reset, and History. The missing classifier message remains expected; analysis remains gated until Phase 4.
+- [ ] Include manual entry-ID selection (0–19) and browser navigation in Phase 4 functional validation; these interactions were not exercised by the Phase 3 automated run.
 
 **Exit for first MVP:** real knowledge resources load from the app bundle. Authentic
 samples and sourced CFR data are restored in the implementation. The Mac
-checkpoint must be reviewed before Phase 4. Remaining professor requests are
+automated checkpoint passed; obtain user authorization before Phase 4. Remaining professor requests are
 exact classifier/tokenizer and Llama artifacts for Phase 5, with source/version
 and reuse terms; a complete original sample CSV is optional.
 

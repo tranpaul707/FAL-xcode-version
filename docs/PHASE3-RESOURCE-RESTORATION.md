@@ -1,7 +1,6 @@
 # Phase 3 — Restore available runtime data
 
-Status: **implementation and Linux checks complete; Mac build/resource/parity
-validation pending.** The user clarified that the initial uploads are all the
+Status: **implementation, Linux checks, and Mac automated checkpoint complete.** The user clarified that the initial uploads are all the
 original files available. The supplied data is sufficient for this checkpoint;
 a later FDA CSV upload now supplies the original CFR mappings. Pause before Phase 4.
 
@@ -87,14 +86,13 @@ The test-only `embedding-parity.json` covers seven queries: blank input, calcium
 propionate, ascorbic acid, mixed whitespace, the actual alias character, a
 combining mark, and a non-BMP scalar. XCTest permits a 0.000003 per-component
 difference for Float precision. A Linux Float32 arithmetic model stays within
-that tolerance (maximum observed error about 6.44e-8); actual Swift execution is
-still pending on the Mac.
+that tolerance (maximum observed error about 6.44e-8); actual Swift execution subsequently passed in the user-supplied Mac run.
 
 The parity XCTest uses an async `@MainActor` entry point because the query method
 belongs to the main-actor-isolated knowledge manager. This matches the existing
 persistence test pattern and avoids calling an actor-isolated static method from
 a synchronous, nonisolated test. The reported Mac test build failed before test
-execution; the corrected build still needs a Mac rerun.
+execution; the corrected build and all six tests subsequently passed on the Mac.
 
 ## Restored CFR source and mappings
 
@@ -188,9 +186,14 @@ bash scripts/build-simulator.sh 89CA5AC4-8662-4AB0-8D53-0F1B7A355A30 test
 ```
 
 Expected inventory: **5 unit tests** (2 persistence, 2 knowledge/resource, 1 CFR) and
-**1 UI test** (`testLaunchSampleResetAndHistoryWithoutModels`). These six tests
-have not yet been run on the Mac for this change. Share pass/fail/skip results
-and any first actual compiler error.
+**1 UI test** (`testLaunchSampleResetAndHistoryWithoutModels`). The user-supplied
+October 22, 2026 run after pulling `5601255` passed all six with zero failures
+and ended with `TEST SUCCEEDED` at approximately 14:03 Eastern. Knowledge tests
+confirmed actual Swift feature parity, bundle decoding, representative CFR
+mappings, and section URL construction. The UI test confirmed Random Sample,
+its product card, Reset, and History navigation. Both persistence tests passed.
+The supplied startup logs confirm all three loader messages below. These are
+user-run Mac results; the cloud environment did not execute Xcode.
 
 Run `FoodAdditiveLens` and confirm these loader messages:
 
@@ -200,7 +203,8 @@ Run `FoodAdditiveLens` and confirm these loader messages:
 ✅ CFR: Loaded CFR data for 2171 substances
 ```
 
-Check **Random Sample**, its product card, and loading an entry ID from 0–19.
+Random Sample and its product card passed UI automation. Manual entry-ID
+selection (0–19) and browser link navigation remain for Phase 4 validation.
 Knowledge/sample/CFR missing-file errors should disappear. The classifier
 missing message remains expected. Analysis/explanations are still gated by model
 readiness; enabling direct simulator lookup belongs to Phase 4. Pause here before Phase 4.
