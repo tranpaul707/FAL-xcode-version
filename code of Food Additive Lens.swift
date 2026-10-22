@@ -1593,7 +1593,7 @@ struct ContentView: View {
         guard let additives = identifiedAdditives else { return }
         
         withAnimation {
-            let newItem = Item(context: viewContext)
+            let newItem = Item.insert(into: viewContext)
             newItem.timestamp = Date()
             newItem.ingredientText = ingredientText
             
@@ -1642,7 +1642,7 @@ struct ContentView: View {
     }
     private func saveToHistoryAtStage(_ stage: String) {
         withAnimation {
-            let newItem = Item(context: viewContext)
+            let newItem = Item.insert(into: viewContext)
             newItem.timestamp = Date()
             newItem.ingredientText = ingredientText
             newItem.stage = stage

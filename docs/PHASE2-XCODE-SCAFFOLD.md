@@ -1,6 +1,6 @@
 # Phase 2 — Xcode app scaffold
 
-Status: **simulator build/test command, app launch, and unsigned generic iOS MLX build reported successful; My Mac destination reported available. Example/Reset/History checks passed by user report; the UI smoke test passed (1 executed, 0 failures). Preview and persistence-test results remain pending.**
+Status: **simulator build/test command, app launch, and unsigned generic iOS MLX build reported successful; My Mac destination reported available. Example/Reset/History checks passed by user report; the UI smoke test passed (1 executed, 0 failures). The two persistence tests also passed (2 executed, 0 failures); a follow-up Core Data insertion fix needs a Mac rerun. Preview review remains pending.**
 The Mac report identifies Xcode 27.1, Swift 6.4, 16 GiB RAM, and an installed iOS
 27.0 runtime. The first destination is the booted iPhone 18 Pro. The report does
 not initially contain a project build or launch result. The first build failed
@@ -9,7 +9,9 @@ at package loading; after the source correction, the user reported
 `TEST SUCCEEDED` for the requested test command. Only those terminal result
 lines were initially supplied. A later `FoodAdditiveLensUITests.xctest` log
 confirms the UI smoke test passed: 1 executed, 0 failures, 14.234 seconds. The
-separate `FoodAdditiveLensTests.xctest` persistence results have not been supplied.
+separate `FoodAdditiveLensTests.xctest` log subsequently confirms both persistence
+tests passed: 2 executed, 0 failures. That run also exposes the entity-lookup
+ambiguity addressed below.
 The user subsequently confirmed running `FoodAdditiveLens` and seeing `My Mac`
 as a destination in response to the MLX-scheme check. MLX execution is not
 established by this. The user also confirms the instructed Example, Reset, and
@@ -41,7 +43,8 @@ Pause for the Mac validation checkpoint before Phase 3.
   and a UI smoke test for launch, built-in example, reset, and the history sheet.
   The user reports overall `TEST SUCCEEDED` and supplied the UI smoke-test log:
   `testLaunchExampleResetAndHistoryWithoutModels` passed, 1 executed, 0 failures.
-  The two persistence-test results have not yet been supplied.
+  The separate persistence log confirms both tests passed, 2 executed, 0 failures.
+  Its Core Data ambiguity prompted the context-specific insertion fix below.
 - Added a simulator build/test helper and Git ignores for local Xcode/build state.
 
 ## Targets and schemes
@@ -168,11 +171,14 @@ The inventory, successful simulator build, successful test-command result, and
 UI smoke-test execution (1 test, 0 failures) are received. The supplied UI-runner
 log covers only `FoodAdditiveLensUITests.xctest`; its “All tests” summary refers
 to that runner and does not establish results for `FoodAdditiveLensTests.xctest`.
-Both bundles are enabled in the committed `FoodAdditiveLens` scheme. Inspect the
-existing unit-test results first; if absent, run only `PersistenceTests` from
-Xcode's Test navigator (Command-6). The two expected tests are
+Both bundles are enabled in the committed `FoodAdditiveLens` scheme. The user
+subsequently supplied the separate unit-runner log: both
 `testAnalysisFieldsCanBeSavedFetchedAndDeleted` and
-`testSQLiteHistorySurvivesStoreReopening`. No repeated UI run is needed.
+`testSQLiteHistorySurvivesStoreReopening` passed, 2 executed, 0 failures. There
+are now three confirmed passing tests across the separately supplied runs.
+The unit log also revealed the entity ambiguity below; rerun only
+`PersistenceTests` from Xcode's Test navigator (Command-6) after pulling its fix.
+No repeated UI run is needed for this insertion change.
 
 The UI-runner log also contains Apple Simulator accessibility warnings about
 duplicate classes and missing AX categories. The test completed successfully
@@ -222,6 +228,28 @@ The user reports that `My Mac` appears as a destination in response to the
 MLX-scheme check. Execution and signing remain untested; that target may require a locally selected signing team. No
 signing identity or personal team is stored in this repository.
 
+## Follow-up: Core Data entity lookup ambiguity
+
+The supplied unit-test log reports `Multiple NSEntityDescriptions claim the
+NSManagedObject subclass Item` and `+[Item entity] Failed to find a unique match`,
+even though both tests pass. The hosted app and isolated tests can have separate
+`NSManagedObjectModel` instances describing the same `Item` subclass.
+`Item(context:)` relies on class-based entity discovery, which becomes ambiguous
+when those models coexist.
+
+`Item.insert(into:)` now resolves `Item` with
+`NSEntityDescription.entity(forEntityName:in:)` using the supplied context, then
+initializes with `Item(entity:insertInto:)`. Both app history-save paths and the
+persistence tests use this helper. No model schema, history fields, or migration
+settings changed. The existing round-trip test now keeps two isolated stores
+alive, checks that inserted objects use each store's model entity and context,
+and verifies deleting from one store leaves the other store's record intact.
+
+The follow-up requires a Mac rerun of the two `PersistenceTests`: both should
+pass without the duplicate-entity / `+[Item entity]` diagnostics. The Linux task
+can check syntax and references but cannot run Core Data or establish that those
+runtime diagnostics have disappeared.
+
 ## Verification in the Linux task
 
 - The OpenStep/PBX project was parsed with `pbxproj`/`openstep-parser`; schemes,
@@ -254,9 +282,11 @@ success footer after its initial missing-Metal preflight failure. The Linux task
 cannot execute Xcode itself. The user also confirms running `FoodAdditiveLens`
 and seeing a `My Mac` destination. The user verified Example, Reset, and
 History/Back. The supplied UI smoke-test log confirms 1 test executed with
-0 failures. Persistence-test results, preview review, MLX direct-Mac
-execution/signing, and real inference remain unverified. Phase 2 remains open
-for its persistence-test and preview checks.
+0 failures. The separate persistence log confirms 2 tests executed with
+0 failures, but contains Core Data entity-lookup diagnostics. The insertion fix
+still requires a Mac rerun. Preview review, MLX direct-Mac execution/signing,
+and real inference remain unverified. Phase 2 remains open for the focused
+persistence rerun and preview checks.
 
 ## Remaining resource work
 

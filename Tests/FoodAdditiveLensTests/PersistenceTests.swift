@@ -6,11 +6,25 @@ final class PersistenceTests: XCTestCase {
     @MainActor
     func testAnalysisFieldsCanBeSavedFetchedAndDeleted() async throws {
         let persistence = PersistenceController(inMemory: true)
+        // Keep another model/store alive, as happens with the hosted app and previews.
+        let otherPersistence = PersistenceController(inMemory: true)
         XCTAssertNil(persistence.loadError)
+        XCTAssertNil(otherPersistence.loadError)
         let context = persistence.container.viewContext
+        let otherContext = otherPersistence.container.viewContext
         let timestamp = Date(timeIntervalSince1970: 1_750_000_000)
 
-        let item = Item(context: context)
+        let otherItem = Item.insert(into: otherContext)
+        otherItem.ingredientText = "OTHER STORE"
+        try otherContext.save()
+
+        let item = Item.insert(into: context)
+        let expectedEntity = try XCTUnwrap(persistence.container.managedObjectModel.entitiesByName["Item"])
+        let otherExpectedEntity = try XCTUnwrap(otherPersistence.container.managedObjectModel.entitiesByName["Item"])
+        XCTAssertTrue(item.entity === expectedEntity)
+        XCTAssertTrue(otherItem.entity === otherExpectedEntity)
+        XCTAssertTrue(item.managedObjectContext === context)
+        XCTAssertTrue(otherItem.managedObjectContext === otherContext)
         item.timestamp = timestamp
         item.ingredientText = "WATER, CALCIUM PROPIONATE"
         item.stage = "After Knowledge Lookup"
@@ -41,6 +55,9 @@ final class PersistenceTests: XCTestCase {
         context.delete(complete)
         try context.save()
         XCTAssertEqual(try context.count(for: Item.fetchRequest()), 0)
+        let otherItems = try otherContext.fetch(Item.fetchRequest())
+        XCTAssertEqual(otherItems.count, 1)
+        XCTAssertEqual(otherItems.first?.ingredientText, "OTHER STORE")
     }
 
     @MainActor
@@ -53,7 +70,7 @@ final class PersistenceTests: XCTestCase {
 
         let first = PersistenceController(storeURL: storeURL)
         XCTAssertNil(first.loadError)
-        let item = Item(context: first.container.viewContext)
+        let item = Item.insert(into: first.container.viewContext)
         item.ingredientText = "ASCORBIC ACID"
         item.stage = "After Knowledge Lookup"
         try first.container.viewContext.save()
