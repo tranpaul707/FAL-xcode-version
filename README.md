@@ -8,15 +8,16 @@ The repository for research paper titled 'Food Additive Lens: An on-device AI ap
 The Phase 2 simulator scaffold has **user-reported build and test-command success**
 on the iPhone 18 Pro destination with Xcode 27.1. The supplied UI-runner log
 confirms **1 UI test passed, 0 failures**. A separate persistence-test log confirms
-**2 tests passed, 0 failures**, with Core Data entity-lookup diagnostics. A fix
-using context-specific insertion is committed and awaits a focused Mac rerun.
+**2 tests passed, 0 failures**. After fixing context-specific insertion, the
+Mac rerun again passed both tests with no entity-lookup diagnostics in the
+supplied log.
 The separate **FoodAdditiveLens-MLX unsigned generic iOS build also succeeded**,
 as reported by the user after running the diagnostic helper. This confirms the
 Metal preflight and compilation passed; signing, execution, and inference remain
 unverified for the MLX target. The user also confirms running **FoodAdditiveLens**
 and seeing **My Mac** as a destination. The user verified **Example**, **Reset**,
-and opening/closing **History**. Preview review and verification of the Core Data
-insertion fix remain pending; genuine inference still requires the missing model resources.
+and opening/closing **History**. Preview review remains pending; genuine
+inference still requires the missing model resources.
 The original source credit and Apache license are retained.
 
 The MLX target also needs Xcode's **Metal Toolchain** component. If its compiler
@@ -64,9 +65,9 @@ Replace `YOUR_SIMULATOR_UDID` with a UUID from the device list. The helper disab
 signing only for the simulator and keeps output in ignored `DerivedData/`.
 The user reported `TEST SUCCEEDED` and supplied the UI smoke-test result:
 **1 test executed, 0 failures**. The separately supplied persistence-test log
-confirms **2 executed, 0 failures**. A follow-up fix for its Core Data entity-lookup
-diagnostics uses each context's entity for insertion; rerun `PersistenceTests`
-after pulling to verify the fix. The UI test does not need repeating for this change.
+confirms **2 executed, 0 failures**. The context-specific insertion fix was
+verified by a Mac rerun: both persistence tests passed and the earlier entity-lookup
+diagnostics are absent from the supplied log. No further test rerun is requested.
 
 The shared **FoodAdditiveLens-MLX** scheme builds the same UI with the original MLX
 implementation for supported physical hardware. On an Apple silicon Mac, try the

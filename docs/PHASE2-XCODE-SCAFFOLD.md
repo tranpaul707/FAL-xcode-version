@@ -1,6 +1,6 @@
 # Phase 2 — Xcode app scaffold
 
-Status: **simulator build/test command, app launch, and unsigned generic iOS MLX build reported successful; My Mac destination reported available. Example/Reset/History checks passed by user report; the UI smoke test passed (1 executed, 0 failures). The two persistence tests also passed (2 executed, 0 failures); a follow-up Core Data insertion fix needs a Mac rerun. Preview review remains pending.**
+Status: **simulator build/test command, app launch, and unsigned generic iOS MLX build reported successful; My Mac destination reported available. Example/Reset/History checks passed by user report; the UI smoke test passed (1 executed, 0 failures). The two persistence tests also passed (2 executed, 0 failures); the Core Data insertion fix is verified by a passing Mac rerun without entity-lookup diagnostics in the supplied log. Only preview review remains pending for Phase 2.**
 The Mac report identifies Xcode 27.1, Swift 6.4, 16 GiB RAM, and an installed iOS
 27.0 runtime. The first destination is the booted iPhone 18 Pro. The report does
 not initially contain a project build or launch result. The first build failed
@@ -176,9 +176,9 @@ subsequently supplied the separate unit-runner log: both
 `testAnalysisFieldsCanBeSavedFetchedAndDeleted` and
 `testSQLiteHistorySurvivesStoreReopening` passed, 2 executed, 0 failures. There
 are now three confirmed passing tests across the separately supplied runs.
-The unit log also revealed the entity ambiguity below; rerun only
-`PersistenceTests` from Xcode's Test navigator (Command-6) after pulling its fix.
-No repeated UI run is needed for this insertion change.
+The initial unit log revealed the entity ambiguity below. The user then supplied
+a rerun after its fix: both tests passed again, 2 executed, 0 failures, with no
+entity-lookup diagnostics in the provided log. No further test rerun is requested.
 
 The UI-runner log also contains Apple Simulator accessibility warnings about
 duplicate classes and missing AX categories. The test completed successfully
@@ -245,10 +245,12 @@ settings changed. The existing round-trip test now keeps two isolated stores
 alive, checks that inserted objects use each store's model entity and context,
 and verifies deleting from one store leaves the other store's record intact.
 
-The follow-up requires a Mac rerun of the two `PersistenceTests`: both should
-pass without the duplicate-entity / `+[Item entity]` diagnostics. The Linux task
-can check syntax and references but cannot run Core Data or establish that those
-runtime diagnostics have disappeared.
+The supplied Mac rerun verifies both `PersistenceTests` passed after the fix:
+2 executed, 0 failures, 0.063 seconds total test time. Both the duplicate-entity
+and `+[Item entity]` diagnostics are absent from the provided rerun log. This
+records verification on the user's Mac; the Linux task cannot run Core Data.
+The remaining missing-resource and Apple system messages did not prevent this
+test run from passing.
 
 ## Verification in the Linux task
 
@@ -283,10 +285,11 @@ cannot execute Xcode itself. The user also confirms running `FoodAdditiveLens`
 and seeing a `My Mac` destination. The user verified Example, Reset, and
 History/Back. The supplied UI smoke-test log confirms 1 test executed with
 0 failures. The separate persistence log confirms 2 tests executed with
-0 failures, but contains Core Data entity-lookup diagnostics. The insertion fix
-still requires a Mac rerun. Preview review, MLX direct-Mac execution/signing,
-and real inference remain unverified. Phase 2 remains open for the focused
-persistence rerun and preview checks.
+0 failures. Its initial entity-lookup diagnostics prompted a source fix; the
+Mac rerun passed both tests with no entity-lookup diagnostics in the supplied
+log. Preview review, MLX direct-Mac execution/signing, and real inference remain
+unverified. Phase 2 remains open only for its preview check; later inference
+validation belongs to the model-restoration phases.
 
 ## Remaining resource work
 
