@@ -5,7 +5,8 @@ The repository for research paper titled 'Food Additive Lens: An on-device AI ap
 
 ## Xcode development
 
-The Phase 2 simulator scaffold has **user-reported build and test-command success**
+The **Phase 2 Xcode scaffold is complete**, based on the user-supplied Mac results,
+including simulator build and test-command success
 on the iPhone 18 Pro destination with Xcode 27.1. The supplied UI-runner log
 confirms **1 UI test passed, 0 failures**. A separate persistence-test log confirms
 **2 tests passed, 0 failures**. After fixing context-specific insertion, the
@@ -16,9 +17,10 @@ as reported by the user after running the diagnostic helper. This confirms the
 Metal preflight and compilation passed; signing, execution, and inference remain
 unverified for the MLX target. The user also confirms running **FoodAdditiveLens**
 and seeing **My Mac** as a destination. The user verified **Example**, **Reset**,
-and opening/closing **History**. Canvas reported a type-inference timeout in a
-diagnostic example array; an explicit tuple-array type is added and awaits a
-Mac preview retry. Genuine inference still requires the missing model resources.
+and opening/closing **History**. **Canvas now renders**, as confirmed by the user
+after adding an explicit type to the diagnostic tuple array. Genuine inference
+still requires the missing model resources. Phase 3 resource restoration has not
+started; work is paused at the requested phase boundary.
 The original source credit and Apache license are retained.
 
 The MLX target also needs Xcode's **Metal Toolchain** component. If its compiler

@@ -1,6 +1,12 @@
 # Phase 2 — Xcode app scaffold
 
-Status: **simulator build/test command, app launch, and unsigned generic iOS MLX build reported successful; My Mac destination reported available. Example/Reset/History checks passed by user report; the UI smoke test passed (1 executed, 0 failures). The two persistence tests also passed (2 executed, 0 failures); the Core Data insertion fix is verified by a passing Mac rerun without entity-lookup diagnostics in the supplied log. Canvas reported a type-inference timeout at `trainingLikeExamples`; an explicit type annotation is implemented and awaits a Mac preview retry.**
+Status: **Phase 2 complete based on user-supplied Mac results.** The simulator app
+builds and runs; Example/Reset/History work; the UI test passed (1 executed,
+0 failures); both persistence tests passed after the Core Data insertion fix
+(2 executed, 0 failures, with no entity-lookup diagnostics in the supplied rerun).
+Canvas now renders after the tuple-array annotation. The separate unsigned
+generic iOS MLX build succeeded and `My Mac` is offered as a destination.
+MLX execution/signing and inference remain unverified for later phases.
 The Mac report identifies Xcode 27.1, Swift 6.4, 16 GiB RAM, and an installed iOS
 27.0 runtime. The first destination is the booted iPhone 18 Pro. The report does
 not initially contain a project build or launch result. The first build failed
@@ -19,7 +25,8 @@ History/Back checks all worked. This validates the controls, not analysis or
 persistence of completed analyses.
 Details are below.
 This phase does not restore datasets/models or claim the full analysis MVP works.
-Pause for the Mac validation checkpoint before Phase 3.
+The Mac validation checkpoint is satisfied. Pause at the requested phase
+boundary before starting Phase 3.
 
 ## What changed
 
@@ -216,9 +223,9 @@ xcodebuild -project FoodAdditiveLens.xcodeproj -scheme FoodAdditiveLens -showdes
 For the app review, open the project, choose `FoodAdditiveLens` and
 that simulator, and use
 Product → Run. The user confirms the app opens, Example fills the ingredient
-editor, Reset clears it, and History opens and returns via Back. The preview
-store still requires preview validation; both test bundles now have supplied
-passing results. This is an app-shell check; additive analysis, category
+editor, Reset clears it, and History opens and returns via Back. Canvas now
+renders using the preview context, and both test bundles have supplied passing
+results. This is an app-shell check; additive analysis, category
 predictions, CFR lookup, and generated explanations remain blocked by missing
 resources and are not claimed to work.
 
@@ -268,10 +275,11 @@ The array values, loop, classifier, UI, and original prompts are unchanged.
 
 Swift grammar checks pass, and a comparison against the committed source verifies
 that reversing the single annotation produces byte-identical Swift source. Those
-checks do not execute Apple's preview compiler. After pulling, use the
-`FoodAdditiveLens` scheme with an iPhone simulator, open the main Swift file,
-and resume Canvas. Report whether it renders or share the next error with its
-source location. No additional test rerun is requested for the type annotation.
+checks do not execute Apple's preview compiler. The user subsequently confirms
+“Preview now works for canvas” after the annotation. The supplied startup output
+still reports the expected missing embeddings, CFR data, classifier, and sample
+CSV. Rendering validates the preview; it does not establish analysis or inference.
+No additional test rerun is requested for the type annotation.
 
 ## Verification in the Linux task
 
@@ -308,14 +316,16 @@ History/Back. The supplied UI smoke-test log confirms 1 test executed with
 0 failures. The separate persistence log confirms 2 tests executed with
 0 failures. Its initial entity-lookup diagnostics prompted a source fix; the
 Mac rerun passed both tests with no entity-lookup diagnostics in the supplied
-log. Preview review, MLX direct-Mac execution/signing, and real inference remain
-unverified. Canvas subsequently failed at the diagnostic example array; the
-type annotation described above requires a Mac retry. Phase 2 remains open for that preview
-check; later inference validation belongs to the model-restoration phases.
+log. Canvas initially failed at the diagnostic example array, then rendered
+successfully after the type annotation, as confirmed by the user. This completes
+Phase 2's build/test/app-shell/preview checkpoint. MLX direct-Mac execution/signing
+and real inference remain unverified; later inference validation belongs to the
+model-restoration phases.
 
 ## Remaining resource work
 
-Phase 3 generates real knowledge embeddings from the supplied data and handles
+Phase 3 has not started; work is paused at the requested phase boundary. It
+generates real knowledge embeddings from the supplied data and handles
 authentic sample/CFR recovery. Phase 4 connects the full non-MLX lookup MVP.
 Phase 5 restores the original classifier/Llama artifacts and validates genuine
 inference, including the direct-Mac path discussed with the user. See `TODO.md`.
