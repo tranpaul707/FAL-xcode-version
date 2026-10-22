@@ -1,6 +1,6 @@
 # Phase 2 — Xcode app scaffold
 
-Status: **simulator build/test command, app launch, and unsigned generic iOS MLX build reported successful; My Mac destination reported available. Example/Reset/History checks passed by user report; the UI smoke test passed (1 executed, 0 failures). The two persistence tests also passed (2 executed, 0 failures); the Core Data insertion fix is verified by a passing Mac rerun without entity-lookup diagnostics in the supplied log. Only preview review remains pending for Phase 2.**
+Status: **simulator build/test command, app launch, and unsigned generic iOS MLX build reported successful; My Mac destination reported available. Example/Reset/History checks passed by user report; the UI smoke test passed (1 executed, 0 failures). The two persistence tests also passed (2 executed, 0 failures); the Core Data insertion fix is verified by a passing Mac rerun without entity-lookup diagnostics in the supplied log. Canvas reported a type-inference timeout at `trainingLikeExamples`; an explicit type annotation is implemented and awaits a Mac preview retry.**
 The Mac report identifies Xcode 27.1, Swift 6.4, 16 GiB RAM, and an installed iOS
 27.0 runtime. The first destination is the booted iPhone 18 Pro. The report does
 not initially contain a project build or launch result. The first build failed
@@ -217,7 +217,8 @@ For the app review, open the project, choose `FoodAdditiveLens` and
 that simulator, and use
 Product → Run. The user confirms the app opens, Example fills the ingredient
 editor, Reset clears it, and History opens and returns via Back. The preview
-store and detailed test results still require review. This is an app-shell check; additive analysis, category
+store still requires preview validation; both test bundles now have supplied
+passing results. This is an app-shell check; additive analysis, category
 predictions, CFR lookup, and generated explanations remain blocked by missing
 resources and are not claimed to work.
 
@@ -251,6 +252,26 @@ and `+[Item entity]` diagnostics are absent from the provided rerun log. This
 records verification on the user's Mac; the Linux task cannot run Core Data.
 The remaining missing-resource and Apple system messages did not prevent this
 test run from passing.
+
+## Follow-up: Canvas tuple-array type inference
+
+The expanded preview diagnostic identifies `trainingLikeExamples` in
+`testWithTrainingExamples()` as the expression that times out. The generated
+preview source replaces the array's string literals with `__designTimeString`
+calls, adding type-inference work to the unannotated eight-element tuple array.
+The failing build uses the `FoodAdditiveLens` scheme and the iPhone 18 Pro
+simulator; the supplied report contains no package-resolution error.
+
+The source now declares `let trainingLikeExamples: [(String, String)] = [...]`.
+This supplies the expected types for each diagnostic ingredient/label pair.
+The array values, loop, classifier, UI, and original prompts are unchanged.
+
+Swift grammar checks pass, and a comparison against the committed source verifies
+that reversing the single annotation produces byte-identical Swift source. Those
+checks do not execute Apple's preview compiler. After pulling, use the
+`FoodAdditiveLens` scheme with an iPhone simulator, open the main Swift file,
+and resume Canvas. Report whether it renders or share the next error with its
+source location. No additional test rerun is requested for the type annotation.
 
 ## Verification in the Linux task
 
@@ -288,8 +309,9 @@ History/Back. The supplied UI smoke-test log confirms 1 test executed with
 0 failures. Its initial entity-lookup diagnostics prompted a source fix; the
 Mac rerun passed both tests with no entity-lookup diagnostics in the supplied
 log. Preview review, MLX direct-Mac execution/signing, and real inference remain
-unverified. Phase 2 remains open only for its preview check; later inference
-validation belongs to the model-restoration phases.
+unverified. Canvas subsequently failed at the diagnostic example array; the
+type annotation described above requires a Mac retry. Phase 2 remains open for that preview
+check; later inference validation belongs to the model-restoration phases.
 
 ## Remaining resource work
 

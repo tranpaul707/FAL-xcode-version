@@ -1856,7 +1856,7 @@ struct ContentView: View {
         print("🧪 Testing with examples similar to training data...")
         
         // Use examples that should match your training categories well
-        let trainingLikeExamples = [
+        let trainingLikeExamples: [(String, String)] = [
             ("sugar, corn syrup, water, citric acid, artificial flavors, colors", "Expected: Candy"),
             ("wheat flour, water, yeast, salt, sugar", "Expected: Breads & Buns"),
             ("milk, sugar, cream, vanilla, eggs", "Expected: Ice Cream"),

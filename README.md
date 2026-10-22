@@ -16,8 +16,9 @@ as reported by the user after running the diagnostic helper. This confirms the
 Metal preflight and compilation passed; signing, execution, and inference remain
 unverified for the MLX target. The user also confirms running **FoodAdditiveLens**
 and seeing **My Mac** as a destination. The user verified **Example**, **Reset**,
-and opening/closing **History**. Preview review remains pending; genuine
-inference still requires the missing model resources.
+and opening/closing **History**. Canvas reported a type-inference timeout in a
+diagnostic example array; an explicit tuple-array type is added and awaits a
+Mac preview retry. Genuine inference still requires the missing model resources.
 The original source credit and Apache license are retained.
 
 The MLX target also needs Xcode's **Metal Toolchain** component. If its compiler
