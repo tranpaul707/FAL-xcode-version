@@ -118,3 +118,24 @@ app repeatedly to verify persistence; its scroll loops are finite. Provide the
 last Test Case / interaction lines after the SDK warning to locate the stall.
 The Phase 4 checkpoint remains pending; this change does not establish that the
 reported stall is fixed.
+
+## Reported split-suite results
+
+The user reported `TEST SUCCEEDED` for the unit-test command. The subsequent UI
+run finished on October 22 at 15:28 Eastern: 3 executed, 2 failures. The failing
+tests were `testDirectLookupSaveRelaunchAndDelete` and
+`testLaunchSampleResetAndHistoryWithoutModels`; the empty/unmatched-input test
+was not listed as failing. The assertion messages have not yet been supplied.
+The SDK warning appeared after the test suite finished. Its repetition does not
+identify the UI failure cause.
+
+Extract the assertion messages from that saved run without rerunning tests:
+
+```bash
+python3 scripts/summarize-test-failures.py "DerivedData/Logs/Test/Test-FoodAdditiveLens-2026.10.22_15-27-21--0400.xcresult"
+```
+
+This read-only helper uses Xcode's legacy object export to print XCTest failure
+summaries and source locations. Share its output. If extraction is unavailable,
+open the `.xcresult` in Xcode and copy the two failed-test assertion messages.
+Phase 4 remains pending the UI fixes and manual photo/browser checks.
