@@ -6,8 +6,8 @@ The repository for research paper titled 'Food Additive Lens: An on-device AI ap
 ## Xcode development
 
 The **Phase 2 Xcode scaffold is complete**, based on the user-supplied Mac results,
-including simulator build and test-command success
-on the iPhone 18 Pro destination with Xcode 27.1. The supplied UI-runner log
+including simulator build and test-command success on the iPhone 18 Pro
+destination with Xcode 27.1. The supplied UI-runner log
 confirms **1 UI test passed, 0 failures**. A separate persistence-test log confirms
 **2 tests passed, 0 failures**. After fixing context-specific insertion, the
 Mac rerun again passed both tests with no entity-lookup diagnostics in the
@@ -19,8 +19,8 @@ unverified for the MLX target. The user also confirms running **FoodAdditiveLens
 and seeing **My Mac** as a destination. The user verified **Example**, **Reset**,
 and opening/closing **History**. **Canvas now renders**, as confirmed by the user
 after adding an explicit type to the diagnostic tuple array. Genuine inference
-still requires the missing model resources. Phase 3 resource restoration has not
-started; work is paused at the requested phase boundary.
+still requires the missing model resources. Phase 3 now supplies knowledge data
+and 20 authentic logged food samples; its updated Mac checks are pending.
 The original source credit and Apache license are retained.
 
 The MLX target also needs Xcode's **Metal Toolchain** component. If its compiler
@@ -52,9 +52,10 @@ open FoodAdditiveLens.xcodeproj
 
 Select the shared **FoodAdditiveLens** scheme, choose an installed iPhone simulator,
 and use Product → Run. This target excludes MLX and provides the original app shell,
-ingredient editor, built-in example, photo selection, and history interface. Its
-unavailable resources are reported explicitly. Analysis stays unavailable until
-the knowledge/model resources are restored in the later phases.
+ingredient editor, 20 recovered food samples (with a built-in example fallback),
+photo selection, and history interface. Unavailable resources are reported
+explicitly. Knowledge/sample resources are restored in Phase 3. Analysis remains
+gated by model readiness until Phase 4 connects the simulator lookup workflow.
 
 To build or run the included tests from Terminal, choose an actual simulator UDID:
 
@@ -70,7 +71,9 @@ The user reported `TEST SUCCEEDED` and supplied the UI smoke-test result:
 **1 test executed, 0 failures**. The separately supplied persistence-test log
 confirms **2 executed, 0 failures**. The context-specific insertion fix was
 verified by a Mac rerun: both persistence tests passed and the earlier entity-lookup
-diagnostics are absent from the supplied log. No further test rerun is requested.
+diagnostics are absent from the supplied log. Those are Phase 2 results. Phase 3
+adds two resource/parity tests and updates the sample UI test: expect **4 unit
+tests and 1 UI test** in the next run; their new Mac results are pending.
 
 The shared **FoodAdditiveLens-MLX** scheme builds the same UI with the original MLX
 implementation for supported physical hardware. On an Apple silicon Mac, try the
@@ -78,9 +81,31 @@ compatible **My Mac (Designed for iPhone/iPad)** destination if Xcode offers it;
 otherwise use a supported iPhone. This is an iOS app on Mac, not a Catalyst/native
 macOS rewrite. The user reports that **My Mac** appears as a destination. MLX
 device/Mac execution, signing, and inference remain unverified.
-This scheme cannot use iOS Simulator. It requires the missing original model and
-knowledge resources before analysis can work. The two app targets have different
+This scheme cannot use iOS Simulator. It requires the missing original model
+resources before AI analysis can work. The two app targets have different
 bundle IDs, so their installed apps and history stores are separate.
+
+## Phase 3 resources
+
+`App/Resources/` now contains 3,971 supplied additive records with their original
+hand-crafted embeddings and 20 food inputs recovered from the uploaded validation
+notebook. Both app targets bundle them. Unknown FDC IDs/sub-brands stay blank;
+source notebook references are recorded separately. CFR and classifier/Llama
+resources remain missing; no generated explanations are used as sample inputs.
+
+Generate or verify from a checkout with Python 3.9+ and no extra packages:
+
+```bash
+python3 scripts/generate_knowledge_resources.py
+python3 scripts/generate_knowledge_resources.py --check
+python3 -m unittest discover -s scripts -p 'test_knowledge_resources.py' -v
+```
+
+[Phase 3 details](docs/PHASE3-RESOURCE-RESTORATION.md) include provenance, optional
+professor artifact requests, limitations, and the Mac checkpoint. After pulling,
+run the simulator helper's `test` action above, then check **Random Sample** and
+entry IDs 0–19. The expected console counts are 3,971 additive records and 20 food
+records. Missing CFR/classifier messages remain expected. Pause before Phase 4.
 
 See [Phase 2 details and validation checkpoint](docs/PHASE2-XCODE-SCAFFOLD.md),
 [resource requirements](App/Resources/README.md), and the phased [TODO](TODO.md).

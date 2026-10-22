@@ -414,14 +414,10 @@ struct ContentView: View {
         }
         
         // Filter for longer entries (prefer entries with more ingredients)
-        let longerEntries = availableFoodRecords.filter { $0.ingredients.count > 100 }
-        let entriesToUse = longerEntries.isEmpty ? availableFoodRecords : longerEntries
-        
-        let randomIndex = Int.random(in: 0..<entriesToUse.count)
-        let selectedRecord = entriesToUse[randomIndex]
-        
-        // Find the actual index in the full array
-        let actualIndex = availableFoodRecords.firstIndex { $0.fdcId == selectedRecord.fdcId } ?? randomIndex
+        let longerIndices = availableFoodRecords.indices.filter { availableFoodRecords[$0].ingredients.count > 100 }
+        let indicesToUse = longerIndices.isEmpty ? Array(availableFoodRecords.indices) : longerIndices
+        guard let actualIndex = indicesToUse.randomElement() else { return }
+        let selectedRecord = availableFoodRecords[actualIndex]
         
         ingredientText = selectedRecord.ingredients
         currentFoodRecord = selectedRecord
@@ -3021,6 +3017,12 @@ class AdditiveKnowledgeManager {
     
     // Generate a simple query embedding based on text features
     private func generateQueryEmbedding(for text: String) -> [Float] {
+        Self.generateQueryEmbedding(for: text, dimension: embeddingDimension)
+    }
+
+    // Keep this pure so query features can be checked against the notebook fixtures.
+    static func generateQueryEmbedding(for text: String, dimension embeddingDimension: Int) -> [Float] {
+        guard embeddingDimension > 0 else { return [] }
         // Create a simple but effective embedding based on text characteristics
         var embedding = Array(repeating: Float(0.0), count: embeddingDimension)
         
@@ -3036,15 +3038,17 @@ class AdditiveKnowledgeManager {
             let positionWeight = 1.0 - (Float(wordIndex) / Float(words.count))
             
             // Character-based features
-            for (charIndex, char) in word.enumerated() {
-                let ascii = Float(char.asciiValue ?? 0)
+            for (charIndex, scalar) in word.unicodeScalars.enumerated() {
+                // Match Python's ord()/double-precision sine before Float storage.
+                let characterFeature = Float(sin(Double(scalar.value) * 0.1))
                 let embeddingIndex = (charIndex + wordIndex * 10) % embeddingDimension
-                embedding[embeddingIndex] += sin(ascii * 0.1) * wordWeight * positionWeight
+                embedding[embeddingIndex] += characterFeature * wordWeight * positionWeight
             }
             
             // Word length features
-            let length = Float(word.count)
-            let lengthIndex = (word.count * 7) % embeddingDimension
+            let scalarCount = word.unicodeScalars.count
+            let length = Float(scalarCount)
+            let lengthIndex = (scalarCount * 7) % embeddingDimension
             embedding[lengthIndex] += tanh(length / 10.0) * wordWeight
             
             // Chemical pattern features

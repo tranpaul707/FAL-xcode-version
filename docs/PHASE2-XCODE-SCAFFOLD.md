@@ -25,8 +25,9 @@ History/Back checks all worked. This validates the controls, not analysis or
 persistence of completed analyses.
 Details are below.
 This phase does not restore datasets/models or claim the full analysis MVP works.
-The Mac validation checkpoint is satisfied. Pause at the requested phase
-boundary before starting Phase 3.
+The Mac validation checkpoint was satisfied and the user authorized Phase 3.
+Later resource changes and the current test inventory are tracked in
+[Phase 3](PHASE3-RESOURCE-RESTORATION.md).
 
 ## What changed
 
@@ -324,8 +325,8 @@ model-restoration phases.
 
 ## Remaining resource work
 
-Phase 3 has not started; work is paused at the requested phase boundary. It
-generates real knowledge embeddings from the supplied data and handles
+Phase 3 work is tracked in [its resource checkpoint](PHASE3-RESOURCE-RESTORATION.md).
+It generates real knowledge embeddings from the supplied data and handles
 authentic sample/CFR recovery. Phase 4 connects the full non-MLX lookup MVP.
 Phase 5 restores the original classifier/Llama artifacts and validates genuine
 inference, including the direct-Mac path discussed with the user. See `TODO.md`.

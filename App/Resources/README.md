@@ -1,23 +1,38 @@
-# Runtime resources (restored in later phases)
+# Runtime resources
 
-No model weights or generated knowledge data are supplied in this directory yet.
-The Phase 2 app shell must launch with unavailable features reported accurately.
+Phase 3 restores two files to the root of **both app bundles**:
 
-Add restored resources to **both app targets** in Xcode in Phases 3/5:
+- `food_additive_embeddings.json`: 3,971 supplied substance records with their
+  original 384-dimensional hand-crafted vectors, about 17 MB.
+- `branded_food_short_sample.csv`: 20 original food inputs recovered from captured
+  output in the supplied validation notebook. Unrecorded FDC IDs and sub-brands
+  are blank. Runtime sample indices are 0–19; notebook entry IDs are not FDC IDs.
 
-- `food_additive_embeddings.json`
-- `branded_food_short_sample.csv`
-- `FoodSubstancesCFR.csv`
-- `FoodClassifier.mlpackage` (compiled by Xcode to `FoodClassifier.mlmodelc`)
-- classifier `tokenizer_config.json`
-- `Llama-3.2-3B-Instruct-4bit/`, preserving its complete directory structure
+Regenerate or verify with Python 3.9+ (no third-party packages):
 
-The existing loaders look in the app bundle root. Use individual file references
-for the JSON/CSV/model resources and a folder reference for the Llama directory;
-do not copy an enclosing `Resources/` folder into the bundle and change the lookup
-paths accidentally. Keep the Llama tokenizer inside its model directory.
+```bash
+python3 scripts/generate_knowledge_resources.py
+python3 scripts/generate_knowledge_resources.py --check
+python3 -m unittest discover -s scripts -p 'test_knowledge_resources.py' -v
+```
 
-Do not add this README, research notebooks, evaluator workbooks, the full branded
-food training dataset, or an unresolved Git LFS pointer to app target resources.
-Record provenance and the chosen retrieval/storage approach before adding large
-artifacts; do not commit model weights as ordinary Git blobs.
+The generator also writes a test-only parity fixture and per-sample provenance.
+See [Phase 3 details](../../docs/PHASE3-RESOURCE-RESTORATION.md) and
+[checksums/source records](../../docs/resources/manifest.json).
+
+Still unavailable:
+
+- `FoodSubstancesCFR.csv`: absent from the supplied materials and inspected
+  original repository snapshot; the cleaned CSV has no regulation columns.
+- `FoodClassifier.mlpackage` and its matching classifier `tokenizer_config.json`.
+- The complete intended `Llama-3.2-3B-Instruct-4bit/` model bundle.
+
+Original classifier/Llama restoration belongs to Phase 5. Record model source,
+revision, terms, required files, and checksums before retrieving/bundling. Keep
+raw downloads in ignored `artifacts/`; the future Llama folder is also ignored
+to prevent ordinary Git commits of weights. Keep the two tokenizers separate.
+
+Use individual root-level file references for CSV/JSON/model resources, and a
+folder reference preserving the Llama bundle's directory structure. Exclude this
+README, provenance documents, notebooks, spreadsheets, full training data, and
+unresolved LFS pointers from Copy Bundle Resources.

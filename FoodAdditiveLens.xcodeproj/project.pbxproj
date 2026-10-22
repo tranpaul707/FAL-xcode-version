@@ -5,6 +5,54 @@
 	};
 	objectVersion = 56;
 	objects = {
+		C8880FBCCBC13D0D8E1DDF89 = {
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = branded_food_short_sample.csv;
+			sourceTree = "<group>";
+		};
+		80F0CDD2EAB03F146B51645E = {
+			isa = PBXBuildFile;
+			fileRef = C8880FBCCBC13D0D8E1DDF89;
+		};
+		221F5FC1A1DA876B953A6683 = {
+			isa = PBXBuildFile;
+			fileRef = C8880FBCCBC13D0D8E1DDF89;
+		};
+		9D3B785426B0C48123F7C85F = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.json;
+			path = food_additive_embeddings.json;
+			sourceTree = "<group>";
+		};
+		248FA2051004E5B1E1F1B429 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = KnowledgeResourceTests.swift;
+			sourceTree = "<group>";
+		};
+		C8B21D9A8237BE8AFD7EAC34 = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.json;
+			path = "Fixtures/embedding-parity.json";
+			sourceTree = "<group>";
+		};
+		08ADDFF31184E6444373BE5E = {
+			isa = PBXBuildFile;
+			fileRef = 9D3B785426B0C48123F7C85F;
+		};
+		3FAFCD085EA2463C00F42D77 = {
+			isa = PBXBuildFile;
+			fileRef = 9D3B785426B0C48123F7C85F;
+		};
+		51CBD2E9D29F0A7BA1ED0EDF = {
+			isa = PBXBuildFile;
+			fileRef = 248FA2051004E5B1E1F1B429;
+		};
+		7276A9E0F139C9845EAC0A42 = {
+			isa = PBXBuildFile;
+			fileRef = C8B21D9A8237BE8AFD7EAC34;
+		};
 		FBF46BFE2A068DE37ABD0D2F = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
@@ -108,6 +156,8 @@
 		B5DA903F4EE3DB011CF7AB09 = {
 			isa = PBXGroup;
 			children = (
+				C8880FBCCBC13D0D8E1DDF89,
+				9D3B785426B0C48123F7C85F,
 				E1FEBCA6F9E0924D72F31D0C,
 			);
 			sourceTree = "<group>";
@@ -128,6 +178,8 @@
 		772ACBBC52D03349E6781DAB = {
 			isa = PBXGroup;
 			children = (
+				C8B21D9A8237BE8AFD7EAC34,
+				248FA2051004E5B1E1F1B429,
 				90BC2B2D9DAE367DC13D2040,
 			);
 			sourceTree = "<group>";
@@ -422,6 +474,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				80F0CDD2EAB03F146B51645E,
+				08ADDFF31184E6444373BE5E,
 				B76402A771D58A4510AD9BC5,
 				5851641441B0F733C0493729,
 			);
@@ -590,6 +644,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				221F5FC1A1DA876B953A6683,
+				3FAFCD085EA2463C00F42D77,
 				41602541959789FA2A703D2A,
 				AD5E3B52E952E191DB90B355,
 			);
@@ -689,6 +745,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				51CBD2E9D29F0A7BA1ED0EDF,
 				3C53998C25C088A61DDFA53C,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -704,6 +761,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7276A9E0F139C9845EAC0A42,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

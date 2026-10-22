@@ -11,7 +11,14 @@ Deliver in two steps:
 
 Do not add accounts, a backend, cloud inference, barcode scanning, health/safety scores, dietary recommendations, new model architectures, or unrelated UI redesign. Research retraining and paper-wide evaluations are not prerequisites for the first app launch. Preserve the Apache license, Yihang Feng's source credit, and existing acknowledgments; check model/data terms separately.
 
-The user reported `BUILD SUCCEEDED` and then `TEST SUCCEEDED` for the corrected Phase 2 simulator scaffold, followed by `BUILD SUCCEEDED (unsigned generic iOS compile only; inference was not run).` from the MLX diagnostic helper. The missing Metal compiler blocker is resolved for that build path. The user also confirms running `FoodAdditiveLens` and seeing `My Mac` as a destination. The user confirms Example fills the ingredient editor, Reset clears it, and History opens and returns via Back. The supplied UI-test log confirms `testLaunchExampleResetAndHistoryWithoutModels` passed: 1 test executed, 0 failures (14.234 seconds). The initial persistence run passed with an entity-lookup diagnostic. After the context-specific insertion fix, the supplied rerun confirms 2 executed, 0 failures, with no duplicate-entity or `+[Item entity]` diagnostics in that log. Canvas preview failed while inferring the diagnostic tuple array `trainingLikeExamples` after preview string rewriting. After adding the explicit `[(String, String)]` annotation, the user confirms Canvas now renders. Phase 2 is complete based on the supplied Mac results. MLX signing, installation, and inference are not established by these results. The cloud task remains on Linux; Mac validation is performed by the user.
+Phases 1 and 2 are complete based on the supplied Mac inventory, app/test results,
+MLX compile, and working Canvas. Phase 3 now restores 3,971 knowledge records and
+20 authentic food samples from the initial uploads, with reproducible generation,
+provenance, and Python checks. Its new Mac bundle/parity/UI tests remain pending.
+CFR data and original classifier/Llama artifacts remain unavailable; no inference
+has run. The cloud task is Linux, so Apple-platform validation is performed by
+the user. The user clarified that the initial uploads are all the source files
+available and can ask the professors about missing artifacts.
 
 **Execution checkpoints:** work one phase at a time. Report results and any action needed from the user at each phase boundary, and pause before starting the next phase. For intermediate work that requires the user's machine, configuration, access, or a decision, ask for that prerequisite and pause the dependent work while finishing independent checks.
 
@@ -53,7 +60,7 @@ Reference source locations: sample loader near line 189; Llama loader near 2197�
 
 ## Phase 2 — Create the minimal Xcode application
 
-**Status: complete based on the user-supplied Mac results.** The simulator app builds and runs; Example/Reset/History work; the UI test passed (1 executed, 0 failures); both persistence tests passed after the entity-lookup fix (2 executed, 0 failures, with no entity-ambiguity diagnostics in the supplied rerun). Canvas now renders after the diagnostic tuple-array type annotation. The separate unsigned generic iOS MLX build succeeded and `My Mac` is offered as a destination. MLX execution/signing and inference remain work for later phases. See [Phase 2 implementation and checkpoint](docs/PHASE2-XCODE-SCAFFOLD.md). Pause at the phase boundary before Phase 3.
+**Status: complete based on the user-supplied Mac results.** The simulator app builds and runs; Example/Reset/History work; the UI test passed (1 executed, 0 failures); both persistence tests passed after the entity-lookup fix (2 executed, 0 failures, with no entity-ambiguity diagnostics in the supplied rerun). Canvas now renders after the diagnostic tuple-array type annotation. The separate unsigned generic iOS MLX build succeeded and `My Mac` is offered as a destination. MLX execution/signing and inference remain work for later phases. See [Phase 2 implementation and checkpoint](docs/PHASE2-XCODE-SCAFFOLD.md). The user reviewed the checkpoint and authorized Phase 3.
 
 - [x] Add a native SwiftUI iOS application project, `FoodAdditiveLens.xcodeproj`, with a shared `FoodAdditiveLens` scheme, app target, unit-test target, and UI-test target. The additional `FoodAdditiveLens-MLX` scheme uses the same app source for supported hardware. The existing checkout is retained.
 - [x] Add the `@main` app entry and inject the Core Data managed-object context into `ContentView` and history. Implement the missing persistence controller with a persistent store and an in-memory preview/test store.
@@ -81,18 +88,29 @@ Reference source locations: sample loader near line 189; Llama loader near 2197�
 
 ## Phase 3 — Restore usable data from the supplied materials
 
-**Status:** not started; paused at the user-requested phase boundary. Generate embeddings from the supplied CSV, investigate authentic sample/CFR recovery, validate and bundle available resources, and record provenance. Request user assistance only if recovery requires unavailable files or access.
+**Status:** implemented from the available uploads; awaiting the Mac resource/parity
+checkpoint. See [Phase 3 results and professor artifact list](docs/PHASE3-RESOURCE-RESTORATION.md).
+CFR data is an explicit original-feature blocker, permitted by the first-MVP exit
+criteria. Pause before Phase 4.
 
-- [ ] Extract a small repeatable local resource generator from `hand-crafted food additive embedding.ipynb`; remove Colab/Drive path assumptions from the generator, while keeping the original notebook as research material.
-- [ ] Generate `food_additive_embeddings.json` from `FoodSubstances_cleaned_v2.csv` with the existing algorithm and schema: `embedding_dimension`, `total_records`, and records containing `substance`, `other_names`, `technical_effect`, `searchable_text`, and `embedding`.
-- [ ] Validate nonempty records, 384 finite values per vector, declared/actual counts, and normalization. Check Python/Swift query-feature agreement, including the existing Python `ord` versus Swift `asciiValue` behavior for non-ASCII input. Preserve the original matching threshold and mappings unless a demonstrated integration defect requires a documented fix.
-- [ ] Recover the real branded-food object from its original accessible LFS/source location, or recover the intended authentic sample directly. Verify size/hash for the referenced LFS object. If unavailable, retain built-in/manual ingredient input for the first MVP and mark database sample/entry lookup unavailable.
-- [ ] Create a small authentic `branded_food_short_sample.csv` with the exact seven-column contract and valid ingredient records. Test quoted commas, empty optional fields, row/index selection, and the loader's filters. Do not bundle the entire 111 MB research dataset just to launch the app.
-- [ ] Recover the distinct original CFR dataset and verify its encoding/header/column contract. Preserve actual substance-to-regulation mappings; do not invent codes or derive citations from the cleaned CSV. Mark links unavailable until authentic data is present.
-- [ ] Add validated resources with correct target membership and bundle paths. Keep classifier tokenizer files separate from Llama tokenizer files; keep notebooks, XLSX workbooks, and training datasets outside Copy Bundle Resources.
-- [ ] Record provenance, dataset versions, generation commands, licenses, and checksums. Define a reproducible retrieval/storage approach for large model artifacts rather than committing weights as ordinary Git blobs or assuming LFS pointers are hydrated.
+- [x] Extract the original 384-dimensional hand-crafted algorithm into `scripts/generate_knowledge_resources.py`, using only the Python standard library and checkout-relative defaults.
+- [x] Generate `App/Resources/food_additive_embeddings.json`: 3,971 unique supplied records with the original loader schema. Every vector exactly matches the inspected notebook reference function.
+- [x] Validate schema, uniqueness, all finite values, normalization, and deterministic regeneration. Preserve source text, feature layout, weights, patterns, and match threshold `0.244`.
+- [x] Check the demonstrated non-ASCII mismatch: Python uses `ord()`, while Swift used `asciiValue ?? 0`. Align Swift scalar values/counts and character-sine precision; add seven notebook-reference parity fixtures. Actual Swift parity execution is part of the Mac checkpoint below.
+- [x] Investigate the raw food LFS object: the original repository contains the same pointer, and retrieval is blocked. Recover authentic samples instead from captured original input fields in the supplied validation notebook; the full training dataset is not required for the first MVP.
+- [x] Generate a valid seven-column `branded_food_short_sample.csv` with 20 notebook-derived foods, quoted commas, and empty unrecorded FDC/sub-brand fields. Record source entry IDs separately, preserve actual fields, and keep runtime row IDs at 0–19. Fix random selection to retain the chosen row index when FDC IDs are blank/duplicated.
+- [x] Investigate CFR recovery: no original file in the initial uploads or inspected upstream snapshot; FDA requests return proxy 403. Document the missing resource, original loader contract, and professor handoff. No CFR codes or citations are fabricated.
+- [ ] Restore authentic `FoodSubstancesCFR.csv` when obtainable; check its line-9 header, Substance/Reg add columns, encoding, and source/version. This is an explicit outstanding feature blocker, not a prerequisite for the first manual-input/knowledge MVP.
+- [x] Add knowledge JSON and sample CSV individually to both app bundle roots. Add the parity fixture only to unit tests; keep provenance, notebooks, workbooks, and full datasets outside app resources.
+- [x] Record source revision, provenance, checksums, commands, and future model retrieval/storage in `docs/resources/manifest.json`. The source CSV and embedding notebook match the original author's inspected repository. Keep large downloads/model weights in ignored locations.
+- [ ] On the Mac, run the updated simulator tests: 4 unit tests (2 persistence, 2 knowledge/resource) and 1 UI smoke test. Confirm actual Swift query parity and app-bundle resource decoding; those tests have not run here.
+- [ ] Confirm app startup logs show 3,971 knowledge records and 20 food records loaded; review Random Sample/product card and loading IDs 0–19. CFR/classifier missing messages remain expected. Analysis remains gated until Phase 4.
 
-**Exit for first MVP:** real knowledge resources load from the app bundle. Authentic database samples and CFR data have either been restored and checked or are explicit outstanding feature blockers; they do not block manual input and knowledge lookup.
+**Exit for first MVP:** real knowledge resources load from the app bundle. Authentic
+samples are restored; CFR data remains an explicit blocker. The Mac checkpoint
+must be reviewed before Phase 4. Priority professor request: original CFR CSV;
+optional original sample CSV; exact classifier/tokenizer and Llama artifacts for
+Phase 5, with source/version and reuse terms.
 
 ## Phase 4 — Make the first simulator MVP functional
 

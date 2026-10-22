@@ -1,0 +1,84 @@
+{
+  "format_version": 1,
+  "upstream": {
+    "repository": "https://github.com/yih-f/Food-Additive-Lens",
+    "inspected_commit": "64b70c4798c230c6acaabec39261cbbe9510e5a4",
+    "license": "Apache-2.0 (original repository LICENSE)",
+    "input_note": "The supplied substances CSV and embedding notebook are byte-identical to this upstream snapshot. Source export dates are not recorded."
+  },
+  "knowledge": {
+    "records": 3971,
+    "dimension": 384,
+    "algorithm": "original hand-crafted features; Python ord() and double-precision arithmetic; no learned embedding model",
+    "source_character_note": "One Other Names value contains U+0092. Source text is preserved; Swift now uses Unicode scalar values/counts and double-precision character sine before Float storage."
+  },
+  "samples": {
+    "records": 20,
+    "source": "captured original input fields in additive identification validation part 1.ipynb stream output, cell 2/output 0",
+    "missing_fields": [
+      "fdc_id",
+      "subbrand_name"
+    ],
+    "source_entry_ids_are_fdc_ids": false,
+    "runtime_row_indices": "0 through 19",
+    "per_record_provenance": "docs/resources/sample-provenance.json",
+    "excludes": "LLM answers, classifier predictions, and invented metadata"
+  },
+  "branded_training_object": {
+    "status": "not recovered; not required for the notebook-derived 20-row sample",
+    "bytes": 111633644,
+    "sha256": "37a768281698a656f52771e7d8775271d62d6cc6bb5c2017fda973ab28da1ecd",
+    "recovery_result": "Original repo contains the same pointer. Git LFS batch returned Resource not accessible by integration; media download requests returned proxy 403."
+  },
+  "cfr": {
+    "status": "unavailable; not bundled; links remain unavailable",
+    "reason": "Not included in initial uploads or inspected upstream snapshot. Public FDA inventory requests returned proxy 403. The cleaned CSV has no regulation columns.",
+    "required_contract": "Original CSV with header on physical line 9, Substance and Reg add/Regadd columns, authentic mappings, and known encoding/provenance."
+  },
+  "model_artifacts": {
+    "status": "not supplied or downloaded; Phase 5",
+    "storage": "Keep raw downloads in ignored artifacts/ and model weights in the ignored App/Resources/Llama-3.2-3B-Instruct-4bit/ folder; record upstream revision, terms, required files and SHA-256 checksums before bundling. Do not treat an LFS pointer as hydrated weights."
+  },
+  "files": {
+    "substances_csv": {
+      "path": "FoodSubstances_cleaned_v2.csv",
+      "bytes": 844997,
+      "sha256": "00ccf4c99cc4d15350b217aae5bc3ffca3654605cf6e2b497ba2244fbbfa4c68"
+    },
+    "embedding_notebook": {
+      "path": "hand-crafted food additive embedding.ipynb",
+      "bytes": 16615,
+      "sha256": "1f98d8a00346c28d522dbde65ce7b20c35489f2da9e22e0e519a8b556bc2d827"
+    },
+    "sample_notebook": {
+      "path": "additive identification validation part 1.ipynb",
+      "bytes": 333936,
+      "sha256": "7e6af89bd8793ff5415c5e48cd8713eceb156adce7c9f63da4a32e8b9710240a"
+    },
+    "generator": {
+      "path": "scripts/generate_knowledge_resources.py",
+      "bytes": 11029,
+      "sha256": "863423b44eff85bbb742975432efed7ab3fd39c6deeee3adbe438b0852d91497"
+    },
+    "knowledge_json": {
+      "path": "App/Resources/food_additive_embeddings.json",
+      "bytes": 17396664,
+      "sha256": "872a920e69aa26ad6e33c25be824f2165c355daaf20b2798921f9e49a3e60e95"
+    },
+    "food_sample_csv": {
+      "path": "App/Resources/branded_food_short_sample.csv",
+      "bytes": 14232,
+      "sha256": "1b8540fc63f67ddd324961df429d713502d8c2a6e9169cabeb03fef4678d4476"
+    },
+    "parity_fixtures": {
+      "path": "Tests/FoodAdditiveLensTests/Fixtures/embedding-parity.json",
+      "bytes": 12650,
+      "sha256": "87d5e5f815139057338a46f84d6e45b0f41b09eb3c50e2e1c846d37a585cc3c0"
+    },
+    "sample_provenance": {
+      "path": "docs/resources/sample-provenance.json",
+      "bytes": 2931,
+      "sha256": "2d451754d4630deb285baec4dcafa4f3cb8c8c5f24dc8a677618b5aab428a2c4"
+    }
+  }
+}

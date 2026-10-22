@@ -1,3 +1,4 @@
+import Foundation
 import XCTest
 
 final class AppLaunchTests: XCTestCase {
@@ -5,7 +6,7 @@ final class AppLaunchTests: XCTestCase {
         continueAfterFailure = false
     }
 
-    func testLaunchExampleResetAndHistoryWithoutModels() {
+    func testLaunchSampleResetAndHistoryWithoutModels() {
         let app = XCUIApplication()
         app.launch()
 
@@ -13,10 +14,15 @@ final class AppLaunchTests: XCTestCase {
         XCTAssertTrue(editor.waitForExistence(timeout: 15))
         XCTAssertFalse(app.otherElements["persistenceError"].exists)
 
-        let example = app.buttons["sampleButton"]
-        XCTAssertTrue(example.waitForExistence(timeout: 5))
-        example.tap()
-        XCTAssertTrue((editor.value as? String)?.contains("CALCIUM PROPIONATE") == true)
+        let sample = app.buttons["sampleButton"]
+        XCTAssertTrue(sample.waitForExistence(timeout: 5))
+        expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: sample)
+        waitForExpectations(timeout: 10)
+        sample.tap()
+        let ingredients = editor.value as? String ?? ""
+        XCTAssertGreaterThan(ingredients.count, 50)
+        XCTAssertTrue(ingredients.contains(","))
+        XCTAssertTrue(app.staticTexts["Sample Food Product"].exists)
 
         app.buttons["resetButton"].tap()
         XCTAssertEqual(editor.value as? String, "")
