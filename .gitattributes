@@ -1,0 +1,2 @@
+# Preserve the original Windows-1252/CRLF FDA snapshot for checksum verification.
+data/source/FoodSubstances.csv -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
