@@ -15,6 +15,7 @@ import MLX
 import MLXRandom
 import MLXLLM
 import MLXLMCommon
+import Metal
 #endif
 import Foundation
 import CoreML
@@ -22,6 +23,8 @@ import NaturalLanguage
 import Accelerate
 import Vision
 import UIKit
+import PhotosUI
+import AVFoundation
 
 // MARK: - ContentView
 @MainActor
@@ -61,8 +64,9 @@ struct ContentView: View {
     @State private var showingAboutSheet = false
     @FocusState private var isTextEditorFocused: Bool
     @FocusState private var isEntryIdFocused: Bool
-    @State private var showingUnsupportedDeviceAlert = false
-    @State private var deviceModel = ""
+    @State private var isAnalyzing = false
+    @State private var operationError: String?
+    @State private var usedLLM = false
     let sampleIngredient = """
     ENRICHED WHEAT FLOUR (FLOUR, NIACIN, REDUCED IRON, THIAMINE MONONITRATE, RIBOFLAVIN, FOLIC ACID), WATER, SUGAR, SOYBEAN OIL, YEAST, SALT, CALCIUM PROPIONATE (PRESERVATIVE), MONOGLYCERIDES, SODIUM STEAROYL LACTYLATE, CALCIUM SULFATE, ENZYMES, ASCORBIC ACID
     """
@@ -152,8 +156,9 @@ struct ContentView: View {
                     }
             }
             .sheet(isPresented: $showingPhotoPicker) {
-                ImagePicker(image: $selectedImage, sourceType: .photoLibrary)
+                PhotoLibraryPicker(image: $selectedImage, onError: { operationError = $0 })
                     .ignoresSafeArea()
+                    .interactiveDismissDisabled()
                     .onDisappear {
                         if let image = selectedImage {
                             processImageWithOCR(image)
@@ -169,14 +174,19 @@ struct ContentView: View {
             } message: {
                 Text("Successfully saved to history!")
             }
-            .alert("Feature Not Available", isPresented: $showingUnsupportedDeviceAlert) {
-                Button("OK") { }
+            .alert("Unable to Complete", isPresented: Binding(
+                get: { operationError != nil },
+                set: { if !$0 { operationError = nil } }
+            )) {
+                Button("OK") { operationError = nil }
             } message: {
-                if UIDevice.isRunningOnMac() {
-                    Text("The AI analysis feature is not supported on this Mac configuration. Please try on a supported iPhone (iPhone 14 or newer) or a newer Mac.")
-                } else {
-                    Text("The AI analysis feature requires iPhone 14 or newer. Your device (\(deviceModel)) is not currently supported.")
-                }
+                Text(operationError ?? "Please try again.")
+            }
+            .onChange(of: ingredientText) { _, _ in
+                clearAnalysisResults()
+                classificationResults = []
+                selectedFoodCategory = nil
+                showingCategorySelection = false
             }
             .contentShape(Rectangle())
             .onTapGesture {
@@ -535,12 +545,12 @@ struct ContentView: View {
                         }
                         
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(isInitializingServices ? "Loading AI Models..." : "Some Features Are Unavailable")
+                            Text(isInitializingServices ? "Loading Resources..." : (knowledgeManager.isReady ? "Ingredient Lookup Ready" : "Knowledge Lookup Unavailable"))
                                 .font(.headline)
                                 .fontWeight(.semibold)
                                 .foregroundColor(.orange)
                             
-                            Text(isInitializingServices ? "Please wait while we initialize the app" : "You can enter ingredients, choose a photo, or open history.")
+                            Text(knowledgeManager.isReady ? "Look up ingredients and their stored technical effects. AI features require their local models." : "You can enter ingredients, choose a photo, or open history.")
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
                         }
@@ -564,7 +574,7 @@ struct ContentView: View {
                             title: "Knowledge Base",
                             isReady: knowledgeManager.isReady,
                             isLoading: knowledgeManager.isLoading,
-                            detail: knowledgeManager.isReady || knowledgeManager.isLoading ? "Food additive database" : "Food additive data is unavailable."
+                            detail: knowledgeManager.loadError ?? "Food additive database"
                         )
                         
                         statusRow(
@@ -643,11 +653,11 @@ struct ContentView: View {
                         .accessibilityIdentifier("resetButton")
                         
                         Menu {
-                            Button(action: { showingCameraPicker = true }) {
+                            Button(action: requestCamera) {
                                 Label("Take Photo", systemImage: "camera")
                             }
                             
-                            Button(action: { showingPhotoPicker = true }) {
+                            Button(action: { selectedImage = nil; showingPhotoPicker = true }) {
                                 Label("Choose Photo", systemImage: "photo")
                             }
                         } label: {
@@ -666,7 +676,8 @@ struct ContentView: View {
                             .background(isProcessingOCR ? Color.gray : Color.orange)
                             .cornerRadius(20)
                         }
-                        .disabled(isProcessingOCR)
+                        .disabled(!canReset)
+                        .accessibilityIdentifier("scanIngredientsButton")
                 
                 Spacer()
             }
@@ -694,13 +705,18 @@ struct ContentView: View {
                     .background(isLoadingIngredients ? Color.gray : Color.blue)
                     .cornerRadius(20)
                 }
-                .disabled(isLoadingIngredients)
+                .disabled(!canReset)
                 .accessibilityIdentifier("sampleButton")
             }
             
             // Text Editor section (unchanged)
             ScrollView {
-                TextEditor(text: $ingredientText)
+                TextEditor(text: Binding(get: { ingredientText }, set: {
+                    ingredientText = $0
+                    currentFoodRecord = nil
+                    showingEntryId = nil
+                }))
+                    .disabled(!canReset)
                     .frame(minHeight: 120, maxHeight: 200)
                     .padding(12)
                     .background(Color.white)
@@ -714,6 +730,29 @@ struct ContentView: View {
                     .accessibilityIdentifier("ingredientTextEditor")
             }
             .frame(maxHeight: 200)
+            HStack {
+                TextField("Entry ID (0–\(max(availableFoodRecords.count - 1, 0)))", text: $selectedEntryId)
+                    .keyboardType(.numberPad)
+                    .textFieldStyle(.roundedBorder)
+                    .focused($isEntryIdFocused)
+                    .accessibilityIdentifier("entryIDField")
+                Button("Load Entry", action: loadSpecificEntry)
+                    .disabled(availableFoodRecords.isEmpty || selectedEntryId.isEmpty || !canReset)
+                    .accessibilityIdentifier("loadEntryButton")
+                Button("Example") {
+                    currentFoodRecord = nil
+                    showingEntryId = nil
+                    ingredientText = sampleIngredient
+                    isTextEditorFocused = false
+                }
+                .accessibilityIdentifier("exampleButton")
+            }
+            .font(.caption)
+            .disabled(!canReset)
+            if let entryIdError {
+                Text(entryIdError).font(.caption).foregroundColor(.red)
+                    .accessibilityIdentifier("entryIDError")
+            }
         }
     }
     private var foodRecordInfoSection: some View {
@@ -1070,14 +1109,14 @@ struct ContentView: View {
                         .font(.headline)
                         .foregroundColor(.primary)
                     
-                    Text(identifier.isLoading ? "Processing..." : "Find additives and retrieve knowledge")
+                    Text(isAnalyzing ? "Processing..." : (identifier.isModelLoaded ? "Find additives and retrieve knowledge" : "Match ingredient names against the knowledge base"))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
                 
                 Spacer()
                 
-                if identifier.isLoading || isLookingUpKnowledge {
+                if isAnalyzing || isLookingUpKnowledge {
                     ProgressView()
                         .scaleEffect(0.8)
                 }
@@ -1091,18 +1130,24 @@ struct ContentView: View {
         .buttonStyle(PlainButtonStyle())
         .disabled(!canAnalyze)
         .opacity(canAnalyze ? 1 : 0.6)
+        .accessibilityIdentifier("analyzeButton")
     }
     private func knowledgeSection(_ knowledge: [AdditiveKnowledgeManager.AdditiveKnowledge]) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Additive Knowledge Results")
                 .font(.headline)
             
+            Text(usedLLM ? "Direct lookup with on-device AI identification." : "Direct ingredient matches only. AI identification and generated explanations were not run.")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .accessibilityIdentifier("analysisMode")
             if knowledge.isEmpty {
                 HStack {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.green)
-                    Text("No food additives found in this ingredient list")
-                        .foregroundColor(.green)
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.secondary)
+                    Text("No matching additive records found. This does not establish that the food contains no additives.")
+                        .foregroundColor(.secondary)
+                        .accessibilityIdentifier("noMatchingRecords")
                 }
                 .padding()
                 .frame(maxWidth: .infinity)
@@ -1123,6 +1168,7 @@ struct ContentView: View {
                                             .foregroundColor(.green)
                                             .font(.system(size: 12))
                                         Text(info.originalQuery)
+                                            .accessibilityIdentifier("additive-\(info.substance.uppercased())")
                                             .font(.body)
                                             .fontWeight(.semibold)
                                         Spacer()
@@ -1269,6 +1315,11 @@ struct ContentView: View {
                     .padding(.vertical, 8)
                 }
                 
+                if !identifier.isModelLoaded {
+                    Text("Generated explanations are unavailable until the local AI model is loaded on a supported destination.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
                 // Generate explanations button
                 Button(action: {
                     generateExplanations()
@@ -1289,7 +1340,8 @@ struct ContentView: View {
                     .foregroundColor(.white)
                     .cornerRadius(10)
                 }
-                .disabled(isGeneratingExplanations || !identifier.isModelLoaded)
+                .disabled(isGeneratingExplanations || !identifier.isModelLoaded || isAnalyzing)
+                .accessibilityIdentifier("generateExplanationsButton")
                 .padding(.top, 8)
                 
                 Button(action: {
@@ -1302,6 +1354,8 @@ struct ContentView: View {
                             .font(.caption)
                     }
                 }
+                .accessibilityIdentifier("saveResultsButton")
+                .disabled(isAnalyzing || isGeneratingExplanations)
                 .foregroundColor(.blue)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
@@ -1387,55 +1441,29 @@ struct ContentView: View {
         }
     }
     private var canAnalyze: Bool {
-        identifier.isModelLoaded &&
         knowledgeManager.isReady &&
+        !isAnalyzing && !isProcessingOCR && !isGeneratingExplanations && !isClassifying &&
         !ingredientText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
         !identifier.isLoading &&
         !isLookingUpKnowledge
     }
     private var canReset: Bool {
+        !isAnalyzing && !isProcessingOCR && !isClassifying &&
         !identifier.isLoading &&
         !isLookingUpKnowledge &&
         !isGeneratingExplanations &&
         !isLoadingIngredients
     }
     private var canClassifyCategory: Bool {
+        !isAnalyzing && !isProcessingOCR && !isGeneratingExplanations &&
         foodClassifier.isLoaded &&
         !ingredientText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
         !isClassifying
     }
     private func identifyAdditives() {
-        // Get device information and print to console
-        let deviceIdentifier = UIDevice.getDeviceIdentifier()
-        let deviceModelName = UIDevice.getDeviceModelName()
-        let supportsMLX = UIDevice.supportsMLX()
-        let isRunningOnMac = UIDevice.isRunningOnMac()
-        
-        if isRunningOnMac {
-            print("🖥️ Device Check: Running on \(deviceModelName) - MLX Support: \(supportsMLX)")
-            print("🖥️ Hardware Identifier: \(deviceIdentifier)")
-        } else {
-            print("📱 Device Check: \(deviceModelName) (\(deviceIdentifier)) - MLX Support: \(supportsMLX)")
-        }
-        
-        // Check device compatibility
-        if !supportsMLX {
-            deviceModel = deviceModelName
-            showingUnsupportedDeviceAlert = true
-            if isRunningOnMac {
-                print("❌ Device Check: MLX not supported on this Mac configuration, aborting analysis")
-            } else {
-                print("❌ Device Check: MLX not supported on \(deviceModelName), aborting analysis")
-            }
-            return
-        }
-        
-        if isRunningOnMac {
-            print("✅ Device Check: Mac supports MLX, proceeding with analysis")
-        } else {
-            print("✅ Device Check: \(deviceModelName) supports MLX, proceeding with analysis")
-        }
-        
+        guard canAnalyze else { return }
+        isAnalyzing = true
+        usedLLM = identifier.isModelLoaded
         isTextEditorFocused = false
         
         // Clear previous results
@@ -1443,32 +1471,22 @@ struct ContentView: View {
         additiveExplanations = ""
         
         Task {
+            defer { isAnalyzing = false }
             // STEP 1: Direct knowledge lookup for comma-separated ingredients
-            var directlyIdentifiedAdditives: [String] = []
-            
-            if knowledgeManager.isReady {
-                print("🔍 Direct lookup: Starting pre-processing...")
-                let parsedIngredients = parseIngredientsByDelimiters(ingredientText)
-                print("📋 Direct lookup: Parsed \(parsedIngredients.count) ingredients")
-                
-                for ingredient in parsedIngredients {
-                    if isBasicIngredient(ingredient) {
-                        print("🚫 Skipping basic ingredient: '\(ingredient)'")
-                        continue
-                    }
-                    
-                    if let knowledge = await knowledgeManager.directLookup(for: ingredient) {
-                        directlyIdentifiedAdditives.append(knowledge.originalQuery)
-                        print("✅ Direct match found: '\(ingredient)' -> '\(knowledge.substance)'")
-                    }
+            let directKnowledge = await knowledgeManager.lookupIngredients(in: ingredientText)
+            let directlyIdentifiedAdditives = directKnowledge.map { $0.originalQuery }
+
+            // Preserve the original AI identification path only when a real model is ready.
+            var llmIdentifiedAdditives: [String] = []
+            if identifier.isModelLoaded {
+                if let result = await identifier.identifyAdditives(ingredientText) {
+                    llmIdentifiedAdditives = result
+                } else {
+                    operationError = identifier.errorMessage ?? "AI identification failed. Direct lookup results are shown."
+                    usedLLM = false
                 }
-                
-                print("📊 Direct lookup: Found \(directlyIdentifiedAdditives.count) additives directly")
             }
-            
-            // STEP 2: LLM identification (existing workflow)
-            let llmIdentifiedAdditives = await identifier.identifyAdditives(ingredientText) ?? []
-            
+
             // STEP 3: Parse any composite additives with parentheses
             var parsedLLMAdditives: [String] = []
             
@@ -1539,8 +1557,8 @@ struct ContentView: View {
         }
     }
     private func generateExplanations() {
-        guard let knowledge = additiveKnowledge,
-              !knowledge.isEmpty else { return }
+        guard identifier.isModelLoaded, !isGeneratingExplanations, !isAnalyzing,
+              let knowledge = additiveKnowledge, !knowledge.isEmpty else { return }
         
         isGeneratingExplanations = true
         additiveExplanations = ""  // Clear previous explanations
@@ -1580,39 +1598,22 @@ struct ContentView: View {
             // Final update with complete text (in case there's any difference)
             if let finalResult = result {
                 additiveExplanations = finalResult
+            } else {
+                operationError = identifier.errorMessage ?? "The AI explanation could not be generated."
             }
             
             isGeneratingExplanations = false
         }
     }
-    private func saveToHistory() {
-        guard let additives = identifiedAdditives else { return }
-        
-        withAnimation {
-            let newItem = Item.insert(into: viewContext)
-            newItem.timestamp = Date()
-            newItem.ingredientText = ingredientText
-            
-            // Combine LLM results and knowledge results
-            var resultText = "LLM identified: \(additives.joined(separator: ", "))"
-            
-            if let knowledge = additiveKnowledge, !knowledge.isEmpty {
-                let knowledgeSummary = knowledge.map { "\($0.substance) (\($0.technicalEffect))" }.joined(separator: ", ")
-                resultText += "\nKnowledge: \(knowledgeSummary)"
-            }
-            
-            newItem.analysisResult = resultText
-            
-            do {
-                try viewContext.save()
-                showingSaveSuccess = true
-            } catch {
-                let nsError = error as NSError
-                print("Error saving to history: \(nsError), \(nsError.userInfo)")
-            }
-        }
+    private func clearAnalysisResults() {
+        identifiedAdditives = nil
+        additiveKnowledge = nil
+        additiveExplanations = ""
+        usedLLM = false
     }
+
     private func resetAppContent() {
+        guard canReset else { return }
         // Clear all text content
         ingredientText = ""
         additiveExplanations = ""
@@ -1637,6 +1638,7 @@ struct ContentView: View {
         print("🔄 App content reset successfully")
     }
     private func saveToHistoryAtStage(_ stage: String) {
+        guard !isAnalyzing, !isGeneratingExplanations, additiveKnowledge != nil else { return }
         withAnimation {
             let newItem = Item.insert(into: viewContext)
             newItem.timestamp = Date()
@@ -1646,7 +1648,7 @@ struct ContentView: View {
             // Save data based on current stage
             if let additives = identifiedAdditives {
                 newItem.identifiedAdditives = additives.joined(separator: "|")
-                newItem.analysisResult = "Identified \(additives.count) additives"
+                newItem.analysisResult = "\(usedLLM ? "AI and direct lookup" : "Direct lookup"): \(additives.count) matched additives"
             }
             
             if let knowledge = additiveKnowledge {
@@ -1670,69 +1672,66 @@ struct ContentView: View {
                 try viewContext.save()
                 showingSaveSuccess = true
             } catch {
-                let nsError = error as NSError
-                print("Error saving to history: \(nsError), \(nsError.userInfo)")
+                viewContext.delete(newItem)
+                operationError = "The result was not saved: \(error.localizedDescription)"
+
             }
         }
     }
-    private func parseIngredientsByDelimiters(_ text: String) -> [String] {
-        // Replace parentheses with commas to use them as delimiters
-        let textWithCommas = text
-            .replacingOccurrences(of: "(", with: ",")
-            .replacingOccurrences(of: ")", with: ",")
-        
-        // Split by comma and clean each ingredient
-        let ingredients = textWithCommas.components(separatedBy: ",")
-            .map { ingredient in
-                ingredient
-                    .trimmingCharacters(in: .whitespacesAndNewlines)
-                    .replacingOccurrences(of: #"^\s*AND\s+"#, with: "", options: .regularExpression) // Remove leading "AND"
+    private func requestCamera() {
+        guard canReset else { return }
+        selectedImage = nil
+        guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
+            showingPhotoPicker = true
+            return
+        }
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized: showingCameraPicker = true
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { granted in
+                Task { @MainActor in
+                    if granted { showingCameraPicker = true }
+                    else { operationError = "Camera access was denied. Choose Photo or allow camera access in Settings." }
+                }
             }
-            .filter { !$0.isEmpty }
-            .filter { $0.count > 1 } // Filter out single characters that might result from splitting
-        
-        return ingredients
+        default:
+            operationError = "Camera access is unavailable. Choose Photo or allow camera access in Settings."
+        }
     }
+
     private func processImageWithOCR(_ image: UIImage) {
+        guard !isProcessingOCR else { return }
+        guard image.size.width > 0, image.size.height > 0 else {
+            operationError = "This photo has no readable image data. Choose another image."
+            return
+        }
         isProcessingOCR = true
-        
+        // Render first to apply UIImage orientation before Vision reads the pixels.
+        let normalized = UIGraphicsImageRenderer(size: image.size).image { _ in
+            image.draw(in: CGRect(origin: .zero, size: image.size))
+        }
+        guard let cgImage = normalized.cgImage else {
+            isProcessingOCR = false
+            operationError = "This photo could not be read. Choose another image."
+            return
+        }
         Task {
-            guard let cgImage = image.cgImage else {
-                isProcessingOCR = false
-                return
-            }
-            
-            let request = VNRecognizeTextRequest { request, error in
-                guard let observations = request.results as? [VNRecognizedTextObservation] else {
-                    isProcessingOCR = false
+            defer { isProcessingOCR = false }
+            do {
+                let text = try await Task.detached(priority: .userInitiated) {
+                    try IngredientOCR.recognize(cgImage)
+                }.value
+                guard !text.isEmpty else {
+                    operationError = "No ingredient text was recognized. Try a clearer photo or enter the ingredients."
                     return
                 }
-                
-                // Combine all recognized text
-                let recognizedText = observations.compactMap { observation in
-                    observation.topCandidates(1).first?.string
-                }.joined(separator: " ")
-                
-                // Update UI on main thread
-                DispatchQueue.main.async {
-                    // Clean and format the text for ingredient lists
-                    let cleanedText = self.cleanOCRText(recognizedText)
-                    self.ingredientText = cleanedText
-                    
-                    // Clear any existing food record info since this is from OCR
-                    self.currentFoodRecord = nil
-                    self.showingEntryId = nil
-                    
-                    self.isProcessingOCR = false
-                    self.isTextEditorFocused = false
-                }
+                ingredientText = text
+                currentFoodRecord = nil
+                showingEntryId = nil
+                isTextEditorFocused = false
+            } catch {
+                operationError = "Text recognition failed: \(error.localizedDescription)"
             }
-            
-            request.recognitionLevel = .accurate
-            request.usesLanguageCorrection = true
-            
-            let requestHandler = VNImageRequestHandler(cgImage: cgImage)
-            try? requestHandler.perform([request])
         }
     }
     private func parseAdditiveWithParentheses(_ text: String) -> [String] {
@@ -1778,33 +1777,7 @@ struct ContentView: View {
         return results
     }
     private func isBasicIngredient(_ ingredient: String) -> Bool {
-        let cleaned = ingredient.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        
-        // List of basic ingredients that are not food additives
-        let basicIngredients: Set<String> = [
-            "sugar", "cane sugar", "brown sugar", "white sugar", "granulated sugar",
-            "flour", "wheat flour", "water", "salt", "oil", "milk", "eggs", "butter",
-            "honey", "molasses", "corn syrup", "rice", "oats", "barley"
-        ]
-        
-        return basicIngredients.contains(cleaned)
-    }
-    private func cleanOCRText(_ text: String) -> String {
-        // Remove extra whitespace and clean up common OCR issues
-        var cleaned = text
-            .replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        // Try to identify and format as ingredient list
-        // Look for common patterns like "INGREDIENTS:" or "Contains:"
-        if let range = cleaned.range(of: "INGREDIENTS:", options: .caseInsensitive) {
-            cleaned = String(cleaned[range.upperBound...]).trimmingCharacters(in: .whitespacesAndNewlines)
-        } else if let range = cleaned.range(of: "CONTAINS:", options: .caseInsensitive) {
-            cleaned = String(cleaned[range.upperBound...]).trimmingCharacters(in: .whitespacesAndNewlines)
-        }
-        
-        // Convert to uppercase to match your sample format
-        return cleaned.uppercased()
+        AdditiveKnowledgeManager.isBasicIngredient(ingredient)
     }
     private func performKnowledgeLookup(for additives: [String]) async {
         isLookingUpKnowledge = true
@@ -1825,6 +1798,7 @@ struct ContentView: View {
             processedAdditives.insert(upperAdditive)
             
             if let directKnowledge = await knowledgeManager.directLookup(for: upperAdditive) {
+                guard !knowledgeResults.contains(where: { $0.substance.caseInsensitiveCompare(formatChemicalName(directKnowledge.substance)) == .orderedSame }) else { continue }
                 knowledgeResults.append(AdditiveKnowledgeManager.AdditiveKnowledge(
                     originalQuery: directKnowledge.originalQuery,
                     substance: formatChemicalName(directKnowledge.substance),
@@ -1834,7 +1808,8 @@ struct ContentView: View {
                 print("✅ Native: Found via direct lookup: '\(upperAdditive)'")
             } else {
                 let searchResults = await knowledgeManager.lookupAdditiveKnowledge(for: [upperAdditive])
-                if let knowledge = searchResults.first {
+                if let knowledge = searchResults.first,
+                   !knowledgeResults.contains(where: { $0.substance.caseInsensitiveCompare(formatChemicalName(knowledge.substance)) == .orderedSame }) {
                     knowledgeResults.append(AdditiveKnowledgeManager.AdditiveKnowledge(
                         originalQuery: knowledge.originalQuery,
                         substance: formatChemicalName(knowledge.substance),
@@ -1998,6 +1973,7 @@ struct HistoryView: View {
     private var historyItems: FetchedResults<Item>
     
     @State private var expandedItems: Set<NSManagedObjectID> = []
+    @State private var deleteError: String?
     
     var body: some View {
         NavigationView {
@@ -2008,6 +1984,9 @@ struct HistoryView: View {
                 .onDelete(perform: deleteItems)
             }
             .navigationTitle("Analysis History")
+            .alert("Unable to Delete", isPresented: Binding(get: { deleteError != nil }, set: { if !$0 { deleteError = nil } })) {
+                Button("OK") { deleteError = nil }
+            } message: { Text(deleteError ?? "Please try again.") }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Back") {
@@ -2051,6 +2030,7 @@ struct HistoryView: View {
                     .foregroundColor(.blue)
                     .font(.title3)
             }
+            .accessibilityIdentifier("historyRowHeader")
             .contentShape(Rectangle())
             .onTapGesture {
                 withAnimation(.spring(response: 0.3)) {
@@ -2172,8 +2152,8 @@ struct HistoryView: View {
             do {
                 try viewContext.save()
             } catch {
-                let nsError = error as NSError
-                print("Error deleting items: \(nsError), \(nsError.userInfo)")
+                viewContext.rollback()
+                deleteError = "The saved result was not deleted: \(error.localizedDescription)"
             }
         }
     }
@@ -2751,7 +2731,7 @@ class AdditiveKnowledgeManager {
         )
     ]
     // Internal structure for embeddings
-    private struct EmbeddingRecord {
+    private struct EmbeddingRecord: Decodable {
         let substance: String
         let otherNames: String
         let technicalEffect: String
@@ -2764,6 +2744,8 @@ class AdditiveKnowledgeManager {
     
     var isInitialized = false
     var isLoading = false
+    private(set) var loadError: String?
+    private let resourceURL: URL?
     
     // THRESHOLD CONFIGURATION
     // Adjust this value to control match quality:
@@ -2776,71 +2758,98 @@ class AdditiveKnowledgeManager {
     // Public property to check if ready
     var isReady: Bool { isInitialized && !isLoading && !embeddingRecords.isEmpty }
     
-    init() {
-        Task(priority: .userInitiated) { [weak self] in
-            await self?.loadEmbeddings()
+    init(resourceURL: URL? = Bundle.main.url(forResource: "food_additive_embeddings", withExtension: "json"), automaticallyLoad: Bool = true) {
+        self.resourceURL = resourceURL
+        if automaticallyLoad {
+            Task(priority: .userInitiated) { [weak self] in await self?.loadEmbeddings() }
         }
     }
-    
-    private func loadEmbeddings() async {
+
+    private struct EmbeddingDataset: Decodable {
+        let embeddingDimension: Int
+        let totalRecords: Int
+        let data: [EmbeddingRecord]
+    }
+
+    func loadEmbeddings() async {
         guard !isInitialized && !isLoading else { return }
         isLoading = true
-        
-        print("🔄 Native: Loading food additive embeddings...")
-        
+        loadError = nil
+        defer { isLoading = false }
         do {
-            // Load the JSON file from bundle
-            guard let path = Bundle.main.path(forResource: "food_additive_embeddings", ofType: "json") else {
-                print("❌ Native: food_additive_embeddings.json not found in bundle")
-                isLoading = false
-                return
+            guard let url = resourceURL else {
+                throw NSError(domain: "KnowledgeResource", code: 1, userInfo: [NSLocalizedDescriptionKey: "Food additive data is missing from the app bundle."])
             }
-            
-            let data = try Data(contentsOf: URL(fileURLWithPath: path))
-            let json = try JSONSerialization.jsonObject(with: data) as! [String: Any]
-            
-            embeddingDimension = json["embedding_dimension"] as? Int ?? 0
-            let totalRecords = json["total_records"] as? Int ?? 0
-            let dataArray = json["data"] as? [[String: Any]] ?? []
-            
-            print("📊 Native: Loading \(totalRecords) records with \(embeddingDimension)-dimensional embeddings")
-            
-            // Parse embedding records
-            var records: [EmbeddingRecord] = []
-            
-            for item in dataArray {
-                guard let substance = item["substance"] as? String,
-                      let otherNames = item["other_names"] as? String,
-                      let technicalEffect = item["technical_effect"] as? String,
-                      let searchableText = item["searchable_text"] as? String,
-                      let embeddingArray = item["embedding"] as? [Double] else {
-                    continue
-                }
-                
-                // Convert Double array to Float array for better performance
-                let embedding = embeddingArray.map { Float($0) }
-                
-                records.append(EmbeddingRecord(
-                    substance: substance,
-                    otherNames: otherNames,
-                    technicalEffect: technicalEffect,
-                    searchableText: searchableText,
-                    embedding: embedding
-                ))
+            let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
+            let dataset = try decoder.decode(EmbeddingDataset.self, from: Data(contentsOf: url))
+            guard dataset.embeddingDimension == 384, dataset.totalRecords > 0,
+                  dataset.data.count == dataset.totalRecords,
+                  Set(dataset.data.map { $0.substance.lowercased() }).count == dataset.totalRecords,
+                  dataset.data.allSatisfy({ record in
+                      !record.substance.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
+                      record.embedding.count == dataset.embeddingDimension &&
+                      record.embedding.allSatisfy { $0.isFinite } &&
+                      abs(record.embedding.reduce(0.0) { $0 + Double($1) * Double($1) } - 1.0) < 0.0001
+                  }) else {
+                throw NSError(domain: "KnowledgeResource", code: 2, userInfo: [NSLocalizedDescriptionKey: "Food additive data has an invalid record or embedding dimension."])
             }
-            
-            embeddingRecords = records
+            embeddingDimension = dataset.embeddingDimension
+            embeddingRecords = dataset.data
             isInitialized = true
-            
             print("✅ Native: Loaded \(embeddingRecords.count) additive records successfully")
-            
         } catch {
-            print("❌ Native: Failed to load embeddings: \(error)")
+            embeddingRecords = []
+            embeddingDimension = 0
+            loadError = "Knowledge lookup unavailable: \(error.localizedDescription)"
+            print("❌ Native: \(loadError ?? "Unable to load knowledge")")
         }
-        
-        isLoading = false
     }
-    
+
+    /// Existing direct-match pre-processing, available independently of MLX.
+    func lookupIngredients(in text: String) async -> [AdditiveKnowledge] {
+        guard isReady else { return [] }
+        var results: [AdditiveKnowledge] = []
+        var seen = Set<String>()
+        for ingredient in Self.parseIngredientsByDelimiters(text) {
+            guard !Self.isBasicIngredient(ingredient),
+                  let match = await directLookup(for: ingredient),
+                  seen.insert(match.substance.uppercased()).inserted else { continue }
+            results.append(match)
+        }
+        return results
+    }
+
+    static func parseIngredientsByDelimiters(_ text: String) -> [String] {
+        // Replace parentheses with commas to use them as delimiters
+        let textWithCommas = text
+            .replacingOccurrences(of: "(", with: ",")
+            .replacingOccurrences(of: ")", with: ",")
+
+        // Split by comma and clean each ingredient
+        let ingredients = textWithCommas.components(separatedBy: ",")
+            .map { ingredient in
+                ingredient
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                    .replacingOccurrences(of: #"^\s*AND\s+"#, with: "", options: .regularExpression) // Remove leading "AND"
+            }
+            .filter { !$0.isEmpty }
+            .filter { $0.count > 1 } // Filter out single characters that might result from splitting
+
+        return ingredients
+    }
+    static func isBasicIngredient(_ ingredient: String) -> Bool {
+        let cleaned = ingredient.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+
+        // List of basic ingredients that are not food additives
+        let basicIngredients: Set<String> = [
+            "sugar", "cane sugar", "brown sugar", "white sugar", "granulated sugar",
+            "flour", "wheat flour", "water", "salt", "oil", "milk", "eggs", "butter",
+            "honey", "molasses", "corn syrup", "rice", "oats", "barley"
+        ]
+
+        return basicIngredients.contains(cleaned)
+    }
     // Look up knowledge for identified additives
     func lookupAdditiveKnowledge(for identifiedAdditives: [String]) async -> [AdditiveKnowledge] {
         guard isReady else {
@@ -2883,6 +2892,7 @@ class AdditiveKnowledgeManager {
             .replacingOccurrences(of: ")", with: "")
             .trimmingCharacters(in: .whitespacesAndNewlines)
         
+        guard !cleaned.isEmpty else { return nil }
         let lowercased = cleaned.lowercased()
         
         // Check flavor mappings first
@@ -3182,6 +3192,74 @@ struct FoodRecord {
     let brandedFoodCategory: String
     let description: String
 }
+enum IngredientOCR {
+    static func recognize(_ image: CGImage) throws -> String {
+        let request = VNRecognizeTextRequest()
+        request.recognitionLevel = .accurate
+        request.usesLanguageCorrection = true
+        try VNImageRequestHandler(cgImage: image).perform([request])
+        let text = (request.results ?? []).compactMap { $0.topCandidates(1).first?.string }.joined(separator: " ")
+        return cleanOCRText(text)
+    }
+    static func cleanOCRText(_ text: String) -> String {
+        // Remove extra whitespace and clean up common OCR issues
+        var cleaned = text
+            .replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // Try to identify and format as ingredient list
+        // Look for common patterns like "INGREDIENTS:" or "Contains:"
+        if let range = cleaned.range(of: "INGREDIENTS:", options: .caseInsensitive) {
+            cleaned = String(cleaned[range.upperBound...]).trimmingCharacters(in: .whitespacesAndNewlines)
+        } else if let range = cleaned.range(of: "CONTAINS:", options: .caseInsensitive) {
+            cleaned = String(cleaned[range.upperBound...]).trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+
+        // Convert to uppercase to match your sample format
+        return cleaned.uppercased()
+    }
+}
+
+struct PhotoLibraryPicker: UIViewControllerRepresentable {
+    @Binding var image: UIImage?
+    let onError: (String) -> Void
+    @Environment(\.dismiss) private var dismiss
+
+    func makeUIViewController(context: Context) -> PHPickerViewController {
+        var configuration = PHPickerConfiguration()
+        configuration.filter = .images
+        configuration.selectionLimit = 1
+        let picker = PHPickerViewController(configuration: configuration)
+        picker.delegate = context.coordinator
+        return picker
+    }
+    func updateUIViewController(_ controller: PHPickerViewController, context: Context) {}
+    func makeCoordinator() -> Coordinator { Coordinator(self) }
+
+    class Coordinator: NSObject, PHPickerViewControllerDelegate {
+        let parent: PhotoLibraryPicker
+        init(_ parent: PhotoLibraryPicker) { self.parent = parent }
+        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+            guard let provider = results.first?.itemProvider else {
+                parent.dismiss()
+                return
+            }
+            guard provider.canLoadObject(ofClass: UIImage.self) else {
+                parent.onError("This photo format is not supported. Choose another image.")
+                parent.dismiss()
+                return
+            }
+            provider.loadObject(ofClass: UIImage.self) { object, error in
+                DispatchQueue.main.async {
+                    if let image = object as? UIImage { self.parent.image = image }
+                    else { self.parent.onError(error?.localizedDescription ?? "The photo could not be loaded.") }
+                    self.parent.dismiss()
+                }
+            }
+        }
+    }
+}
+
 // MARK: - Image Picker
 struct ImagePicker: UIViewControllerRepresentable {
     @Binding var image: UIImage?
@@ -4164,36 +4242,9 @@ extension UIDevice {
         #if !FAL_ENABLE_MLX || targetEnvironment(simulator)
         return false
         #else
-        let identifier = getDeviceIdentifier()
-        
-        // Mac (designed for iPhone) supports MLX
-        if isRunningOnMac() {
-            return true
-        }
-        // Check if iPhone model is >= iPhone14,7 (iPhone 14 or newer)
-        if identifier.hasPrefix("iPhone") {
-            // Extract major and minor version numbers
-            let versionString = identifier.replacingOccurrences(of: "iPhone", with: "")
-            let components = versionString.components(separatedBy: ",")
-            
-            guard components.count >= 2,
-                  let major = Int(components[0]),
-                  let minor = Int(components[1]) else {
-                return false // Can't parse version, assume unsupported
-            }
-            
-            // iPhone 14,7 or greater supports MLX
-            if major > 14 {
-                return true  // iPhone 15,x, iPhone 16,x, etc.
-            } else if major == 14 {
-                return minor >= 7  // iPhone 14,7 (iPhone 14) or higher
-            } else {
-                return false  // iPhone 13,x or older
-            }
-        }
-        
-        // Default to false for safety if we can't determine the model
-        return false
+        // Eligibility only: actual model loading/inference must still succeed.
+        // Simulator builds never reach Metal or initialize MLX.
+        return MTLCreateSystemDefaultDevice() != nil
         #endif
     }
     

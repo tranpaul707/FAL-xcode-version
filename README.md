@@ -20,7 +20,9 @@ and seeing **My Mac** as a destination. The user verified **Example**, **Reset**
 and opening/closing **History**. **Canvas now renders**, as confirmed by the user
 after adding an explicit type to the diagnostic tuple array. Genuine inference
 still requires the missing model resources. Phase 3 now supplies knowledge data,
-20 authentic logged food samples, and sourced CFR mappings; its updated Mac checks are pending.
+20 authentic logged food samples, and sourced CFR mappings. All six Phase 3 Mac tests
+passed. Phase 4 now connects direct ingredient lookup; its expanded Mac checks
+are pending.
 The original source credit and Apache license are retained.
 
 The MLX target also needs Xcode's **Metal Toolchain** component. If its compiler
@@ -53,9 +55,11 @@ open FoodAdditiveLens.xcodeproj
 Select the shared **FoodAdditiveLens** scheme, choose an installed iPhone simulator,
 and use Product → Run. This target excludes MLX and provides the original app shell,
 ingredient editor, 20 recovered food samples (with a built-in example fallback),
-photo selection, and history interface. Unavailable resources are reported
-explicitly. Knowledge/sample resources are restored in Phase 3. Analysis remains
-gated by model readiness until Phase 4 connects the simulator lookup workflow.
+photo OCR, direct ingredient lookup, sourced CFR links, and saved history.
+Choose **Identify & Analyze Additives** to match the loaded knowledge base even
+without AI models. Results identify direct-only matching; classification and
+generated explanations require the missing models. See the
+[Phase 4 workflow and Mac checkpoint](docs/PHASE4-SIMULATOR-MVP.md).
 
 To build or run the included tests from Terminal, choose an actual simulator UDID:
 
@@ -72,8 +76,10 @@ The user reported `TEST SUCCEEDED` and supplied the UI smoke-test result:
 confirms **2 executed, 0 failures**. The context-specific insertion fix was
 verified by a Mac rerun: both persistence tests passed and the earlier entity-lookup
 diagnostics are absent from the supplied log. Those are Phase 2 results. Phase 3
-adds resource/parity/CFR tests and updates the sample UI test: expect **5 unit
-tests and 1 UI test** in the next run; their new Mac results are pending.
+resource/parity/CFR and updated sample tests subsequently passed: **5 unit
+tests and 1 UI test**, zero failures. Phase 4 adds lookup, resource-failure, Vision,
+and history UI coverage: expect **8 unit tests and 3 UI tests** in the next run.
+The Phase 4 Mac results are pending.
 
 The shared **FoodAdditiveLens-MLX** scheme builds the same UI with the original MLX
 implementation for supported physical hardware. On an Apple silicon Mac, try the
@@ -110,7 +116,8 @@ run the simulator helper's `test` action above, then check **Random Sample** and
 entry IDs 0–19. The expected console counts are 3,971 additive records and 20 food
 records, plus CFR data for 2,171 substances. The classifier missing message
 remains expected; knowledge/sample/CFR missing messages should disappear.
-Pause before Phase 4.
+Phase 4 is authorized and implemented; its [Mac checkpoint](docs/PHASE4-SIMULATOR-MVP.md)
+remains pending. Pause before Phase 5.
 
 See [Phase 2 details and validation checkpoint](docs/PHASE2-XCODE-SCAFFOLD.md),
 [resource requirements](App/Resources/README.md), and the phased [TODO](TODO.md).

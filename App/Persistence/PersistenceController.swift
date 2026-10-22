@@ -3,7 +3,18 @@ import Foundation
 
 @MainActor
 final class PersistenceController {
-    static let shared = PersistenceController()
+    static let shared: PersistenceController = {
+        #if DEBUG
+        // Each UI test gets a separate persistent store; normal history is untouched.
+        if let value = ProcessInfo.processInfo.environment["FAL_UI_TEST_STORE_ID"],
+           let id = UUID(uuidString: value) {
+            let url = FileManager.default.temporaryDirectory
+                .appendingPathComponent("FAL-UITest-\(id.uuidString).sqlite")
+            return PersistenceController(storeURL: url)
+        }
+        #endif
+        return PersistenceController()
+    }()
     static let preview = PersistenceController(inMemory: true)
 
     let container: NSPersistentContainer
