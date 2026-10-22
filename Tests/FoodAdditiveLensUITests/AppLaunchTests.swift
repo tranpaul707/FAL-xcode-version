@@ -6,6 +6,22 @@ final class AppLaunchTests: XCTestCase {
         continueAfterFailure = false
     }
 
+    override func tearDownWithError() throws {
+        if let run = testRun, run.failureCount > 0 {
+            let app = XCUIApplication()
+            let hierarchy = XCTAttachment(string: app.debugDescription)
+            hierarchy.name = "UI hierarchy at failure"
+            hierarchy.lifetime = .keepAlways
+            add(hierarchy)
+            if app.state == .runningForeground {
+                let screenshot = XCTAttachment(screenshot: app.screenshot())
+                screenshot.name = "UI at failure"
+                screenshot.lifetime = .keepAlways
+                add(screenshot)
+            }
+        }
+    }
+
     func testLaunchSampleResetAndHistoryWithoutModels() {
         let app = XCUIApplication()
         app.launch()
@@ -18,13 +34,23 @@ final class AppLaunchTests: XCTestCase {
         XCTAssertTrue(sample.waitForExistence(timeout: 5))
         expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: sample)
         waitForExpectations(timeout: 10)
+        scrollTo(sample, in: app)
         sample.tap()
+        expectation(for: NSPredicate { _, _ in
+            let value = editor.value as? String ?? ""
+            return value.count > 50 && value.contains(",")
+        }, evaluatedWith: editor)
+        waitForExpectations(timeout: 10)
         let ingredients = editor.value as? String ?? ""
         XCTAssertGreaterThan(ingredients.count, 50)
         XCTAssertTrue(ingredients.contains(","))
         XCTAssertTrue(app.staticTexts["Sample Food Product"].exists)
 
-        app.buttons["resetButton"].tap()
+        let reset = app.buttons["resetButton"]
+        scrollTo(reset, in: app, towardTop: true)
+        reset.tap()
+        expectation(for: NSPredicate(format: "value == %@", ""), evaluatedWith: editor)
+        waitForExpectations(timeout: 5)
         XCTAssertEqual(editor.value as? String, "")
 
         app.buttons["historyButton"].tap()
@@ -32,12 +58,14 @@ final class AppLaunchTests: XCTestCase {
         app.buttons["Back"].tap()
         XCTAssertTrue(editor.waitForExistence(timeout: 5))
     }
-    private func scrollTo(_ element: XCUIElement, in app: XCUIApplication) {
+    private func scrollTo(_ element: XCUIElement, in app: XCUIApplication, towardTop: Bool = false) {
         for _ in 0..<10 {
             if element.exists && element.isHittable { return }
             // Scroll along the margin so the nested ingredient editor does not consume the gesture.
-            app.coordinate(withNormalizedOffset: CGVector(dx: 0.98, dy: 0.8))
-                .press(forDuration: 0.01, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.98, dy: 0.25)))
+            let start = CGVector(dx: 0.98, dy: towardTop ? 0.25 : 0.8)
+            let end = CGVector(dx: 0.98, dy: towardTop ? 0.8 : 0.25)
+            app.coordinate(withNormalizedOffset: start)
+                .press(forDuration: 0.01, thenDragTo: app.coordinate(withNormalizedOffset: end))
         }
         XCTAssertTrue(element.exists && element.isHittable, "Expected control to be reachable: \(element)")
     }
@@ -45,8 +73,12 @@ final class AppLaunchTests: XCTestCase {
     private func enterIngredients(_ text: String, in app: XCUIApplication) {
         let editor = app.textViews["ingredientTextEditor"]
         XCTAssertTrue(editor.waitForExistence(timeout: 15))
+        scrollTo(editor, in: app)
+        expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: editor)
+        waitForExpectations(timeout: 10)
         editor.tap()
         editor.typeText(text)
+        XCTAssertEqual(editor.value as? String, text, "The ingredient editor must contain the exact lookup input.")
         app.staticTexts["Ingredient List"].tap() // Dismiss the keyboard.
     }
 
@@ -60,9 +92,13 @@ final class AppLaunchTests: XCTestCase {
         expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: analyze)
         waitForExpectations(timeout: 15)
         analyze.tap()
+        // Results are below the button. LazyVStack rows may not exist until scrolled into view.
+        let mode = app.staticTexts["analysisMode"]
+        scrollTo(mode, in: app)
+        XCTAssertTrue(mode.label.contains("Direct ingredient matches only"))
         let ascorbic = app.staticTexts["additive-ASCORBIC ACID"]
+        scrollTo(ascorbic, in: app)
         XCTAssertTrue(ascorbic.waitForExistence(timeout: 10))
-        XCTAssertTrue(app.staticTexts["analysisMode"].label.contains("Direct ingredient matches only"))
         scrollTo(app.staticTexts["additive-CALCIUM PROPIONATE"], in: app)
         let explanations = app.buttons["generateExplanationsButton"]
         scrollTo(explanations, in: app)
@@ -100,10 +136,7 @@ final class AppLaunchTests: XCTestCase {
         XCTAssertTrue(app.textViews["ingredientTextEditor"].waitForExistence(timeout: 15))
         scrollTo(analyze, in: app)
         XCTAssertFalse(analyze.isEnabled)
-        for _ in 0..<6 {
-            app.coordinate(withNormalizedOffset: CGVector(dx: 0.98, dy: 0.25))
-                .press(forDuration: 0.01, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.98, dy: 0.8)))
-        }
+        scrollTo(app.textViews["ingredientTextEditor"], in: app, towardTop: true)
         enterIngredients("WATER, SALT, ZZZUNMATCHEDINGREDIENTZZZ", in: app)
         scrollTo(analyze, in: app)
         expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: analyze)
@@ -111,10 +144,7 @@ final class AppLaunchTests: XCTestCase {
         analyze.tap()
         XCTAssertTrue(app.staticTexts["noMatchingRecords"].waitForExistence(timeout: 10))
         XCTAssertFalse(app.buttons["saveResultsButton"].exists)
-        for _ in 0..<6 {
-            app.coordinate(withNormalizedOffset: CGVector(dx: 0.98, dy: 0.25))
-                .press(forDuration: 0.01, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.98, dy: 0.8)))
-        }
+        scrollTo(app.buttons["resetButton"], in: app, towardTop: true)
         app.buttons["resetButton"].tap()
         XCTAssertEqual(app.textViews["ingredientTextEditor"].value as? String, "")
         XCTAssertFalse(app.staticTexts["noMatchingRecords"].exists)

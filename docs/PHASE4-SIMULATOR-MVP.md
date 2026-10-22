@@ -139,3 +139,15 @@ This read-only helper uses Xcode's legacy object export to print XCTest failure
 summaries and source locations. Share its output. If extraction is unavailable,
 open the `.xcresult` in Xcode and copy the two failed-test assertion messages.
 Phase 4 remains pending the UI fixes and manual photo/browser checks.
+
+### UI assertion follow-up
+
+The saved result identifies two assertions: the sample editor value was empty
+immediately after tapping Random Sample, and the direct-lookup test did not find
+the ascorbic-acid row. The latter row belongs to a LazyVStack below the Analyze
+button, so waiting for existence without scrolling is insufficient. Tests now
+scroll to result rows, wait for the sample editor's populated value, verify the
+exact manually typed input, and scroll back to Reset only as needed. These
+changes retain all substantive result/sample assertions. A failing rerun records
+an accessibility hierarchy and screenshot in the result bundle for further
+diagnosis. No app behavior was changed in this follow-up; Mac rerun is pending.
