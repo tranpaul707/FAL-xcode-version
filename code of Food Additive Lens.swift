@@ -695,6 +695,12 @@ struct ContentView: View {
                 Spacer()
             }
             
+            #if targetEnvironment(simulator)
+            Text("In Simulator, Take Photo opens your photo library.")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            #endif
+
             HStack {
                 Image(systemName: "doc.text.magnifyingglass")
                     .foregroundColor(.blue)
@@ -1275,6 +1281,7 @@ struct ContentView: View {
                                                         .cornerRadius(6)
                                                     }
                                                     .buttonStyle(PlainButtonStyle())
+                                                    .accessibilityIdentifier("cfr-\(cfrData.code)")
                                                 }
                                                 
                                                 if cfrURLs.count > 1 {
@@ -1701,6 +1708,10 @@ struct ContentView: View {
     private func requestCamera() {
         guard canReset else { return }
         selectedImage = nil
+        #if targetEnvironment(simulator)
+        // A simulator may advertise camera support without a usable capture session.
+        showingPhotoPicker = true
+        #else
         guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
             showingPhotoPicker = true
             return
@@ -1717,6 +1728,7 @@ struct ContentView: View {
         default:
             operationError = "Camera access is unavailable. Choose Photo or allow camera access in Settings."
         }
+        #endif
     }
 
     private func processImageWithOCR(_ image: UIImage) {

@@ -114,6 +114,10 @@ final class AppLaunchTests: XCTestCase {
         scrollTo(ascorbic, in: app)
         XCTAssertTrue(ascorbic.waitForExistence(timeout: 10))
         scrollTo(app.staticTexts["additive-CALCIUM PROPIONATE"], in: app)
+        let cfrLink = app.buttons["cfr-184.1221"]
+        scrollTo(cfrLink, in: app)
+        XCTAssertTrue(cfrLink.isEnabled, "The sourced calcium-propionate regulation must be visible as a link.")
+        XCTAssertTrue(cfrLink.label.contains("21 CFR 184.1221"))
         let explanations = app.buttons["generateExplanationsButton"]
         scrollTo(explanations, in: app)
         XCTAssertFalse(explanations.isEnabled)

@@ -1,7 +1,8 @@
 # Phase 4 — Functional simulator lookup
 
 Status: the user reports the full Mac regression command passed after the latest
-input fix. Manual photo/browser and entry/example validation remain pending. The cloud workspace is
+input fix. The user confirmed Example and valid/invalid entry selection. Manual
+photo/browser validation and the simulator camera fallback follow-up remain pending. The cloud workspace is
 Linux and cannot build Apple frameworks, run Vision, or launch an iOS simulator.
 Phase 3's six Mac tests passed before these changes. Phase 5 remains paused.
 
@@ -223,3 +224,25 @@ Remaining user checks are the manual items above: built-in Example and entry IDs
 0/19/invalid 20, real-label photo import and OCR through the picker, cancellation,
 no-text recovery and simulator camera fallback, and external CFR navigation.
 Phase 4 remains open until those results are reviewed. Phase 5 is paused.
+
+### Manual input confirmed; photo and CFR follow-up
+
+The user confirmed the Example/entry-ID checkpoint. They had no ingredient-label
+photos, observed a camera screen/error from Take Photo, and could not locate a
+CFR link. Simulator builds now route Take Photo directly to the scoped photo
+picker before any camera availability/authorization API; physical builds retain
+the existing permission/camera path. The simulator UI explains this behavior.
+
+`Tests/Fixtures/ingredient-label.png` and `no-text.png` provide controlled import
+inputs; see [fixture instructions](../Tests/Fixtures/README.md). The label is
+explicitly synthetic and uses the same three ingredients as the passing lookup
+UI test. This removes the need to obtain a real label just to test picker/OCR
+integration, but real-world photo validation remains unverified.
+
+CFR links appear within additive knowledge results after analysis, not in a
+separate screen. The short fixture input produces only two result cards. In
+Calcium Propionate, scroll to CFR Links and choose 21 CFR 184.1221. The existing
+lookup/history UI test now also requires that specific rendered link to be
+present and enabled; it does not open the external browser. This added assertion
+and the explicit simulator fallback have not run on the Mac yet; previous full
+suite success predates this change.

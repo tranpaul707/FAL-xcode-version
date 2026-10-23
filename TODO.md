@@ -122,12 +122,14 @@ See [implementation and validation steps](docs/PHASE4-SIMULATOR-MVP.md). The use
 unit suite passed, and the UI lookup/history and unmatched-input checks passed.
 The focused sample/reset/history rerun and the subsequent full `test` command
 both report `TEST SUCCEEDED` after `4b69bd2` (expected suite inventory: 8 unit
-tests and 3 UI tests). Manual photo/browser and entry/example checks remain
-pending. Pause before Phase 5.
+tests and 3 UI tests). The user confirmed Example and valid/invalid entry-ID checks. Photo/OCR, camera
+fallback, and CFR browser checks remain pending; the user observed a simulator
+camera screen/error and could not locate a CFR link. Pause before Phase 5.
 
 - [x] Decouple direct ingredient matching/knowledge retrieval from LLM readiness. Reuse the existing parser, aliases, color/flavor mappings, and technical-effect lookup. Make capability/readiness states reflect which operations actually work.
 - [x] Replace the hardware-name gate with destination/backend capability checks. Avoid eager unsupported MLX initialization and keep input, OCR, knowledge lookup, and history usable when inference is unavailable.
-- [ ] Verify manual paste/edit, the built-in ingredient example, reset, authentic sample/entry selection when available, additive results, and empty/no-match input. Preserve the original feature sequence and UI intent.
+- [x] User confirmed the built-in Example and entry IDs 0, 19, and invalid 20. Automated input, sample/product card, reset, additive results, and empty/no-match scenarios passed in the full suite. Preserve the original feature sequence and UI intent.
+- [ ] Manually verify editing an analyzed ingredient list clears its prior results and sample metadata.
 - [ ] Exercise the existing photo-library path with a real ingredient-label image and Vision OCR on simulator. Preserve the camera-unavailable fallback; handle picker cancellation and permission denial. Validate actual camera capture later on an iPhone.
 - [x] Verify lookup with supplied records such as `CALCIUM PROPIONATE` and `ASCORBIC ACID`, showing their actual stored technical effects. Handle missing/malformed JSON and zero embedding dimensions without forced-cast/modulo crashes or indefinite loading.
 - [x] Verify save, history expansion, delete, and persistence after app termination/relaunch through the passing UI and persistence suites. Save/delete errors are surfaced; forced error-path UI behavior has not been manually exercised. Retain original history fields/stage semantics.
