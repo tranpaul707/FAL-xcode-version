@@ -172,3 +172,24 @@ bash scripts/build-simulator.sh 89CA5AC4-8662-4AB0-8D53-0F1B7A355A30 sample-test
 ```
 
 Expected inventory for this command is one test. Mac validation remains pending.
+
+### Sample input event handling
+
+The focused rerun still failed: the editor was hittable but empty and the product
+card was absent. Visibility/wait changes alone did not resolve it. Source review
+found an ancestor tap-to-dismiss gesture covering controls and a custom TextEditor
+binding that cleared sample metadata on every write, including potential UIKit
+writebacks. The view now uses a standard state binding, clears sample metadata
+only during focused manual editing, and dismisses the keyboard via scrolling or
+the Ingredient List title. Programmatic sample/example/OCR/reset updates clear
+input focus first. The sample button has an explicit plain style and minimum
+44-point height. Its accessibility value reports the actual selected entry and
+available sample count; this is state, not a fabricated test result.
+
+The focused test still requires real sample text and a product card, and now
+checks that selection state updates after the tap before checking the editor.
+A remaining failure will identify whether selection failed or selected input was
+lost. The cause is not established by the timeout alone; these app changes need
+Mac validation. Run sample-test first, then the full test suite if it passes,
+since this follow-up changes input handling used by other flows. Phase 4 remains
+open and Phase 5 is paused.

@@ -103,6 +103,7 @@ struct ContentView: View {
                                     }
                                     .padding()
                                 }
+                                .scrollDismissesKeyboard(.interactively)
                                 .onAppear {
                                     // Load CSV data first, then other models
                                     if availableIngredients.isEmpty && !isLoadingIngredients {
@@ -187,11 +188,12 @@ struct ContentView: View {
                 classificationResults = []
                 selectedFoodCategory = nil
                 showingCategorySelection = false
-            }
-            .contentShape(Rectangle())
-            .onTapGesture {
-                isTextEditorFocused = false
-                isEntryIdFocused = false
+                // Only a manual edit invalidates the selected sample's metadata.
+                // UIKit may write the binding during programmatic editor updates.
+                if isTextEditorFocused {
+                    currentFoodRecord = nil
+                    showingEntryId = nil
+                }
             }
         }
         .preferredColorScheme(.light) // Force light mode to avoid black background
@@ -415,7 +417,16 @@ struct ContentView: View {
         }
         .padding(.vertical)
     }
+    private var sampleSelectionDescription: String {
+        if let entry = showingEntryId, entry >= 0 {
+            return "Entry \(entry) selected from \(availableFoodRecords.count) samples"
+        }
+        return "\(availableFoodRecords.count) samples available"
+    }
+
     private func loadRandomSample() {
+        isTextEditorFocused = false
+        isEntryIdFocused = false
         guard !availableFoodRecords.isEmpty else {
             ingredientText = sampleIngredient
             showingEntryId = -1
@@ -438,6 +449,8 @@ struct ContentView: View {
         print("📝 Random sample: Entry ID \(actualIndex), \(selectedRecord.ingredients.count) characters")
     }
     private func loadSpecificEntry() {
+        isTextEditorFocused = false
+        isEntryIdFocused = false
         guard let entryId = Int(selectedEntryId.trimmingCharacters(in: .whitespacesAndNewlines)) else {
             entryIdError = "Invalid ID format"
             return
@@ -687,6 +700,10 @@ struct ContentView: View {
                     .foregroundColor(.blue)
                 Text("Ingredient List")
                     .font(.headline)
+                    .onTapGesture {
+                        isTextEditorFocused = false
+                        isEntryIdFocused = false
+                    }
                 
                 Spacer()
                 
@@ -702,20 +719,20 @@ struct ContentView: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
+                    .frame(minHeight: 44)
                     .background(isLoadingIngredients ? Color.gray : Color.blue)
                     .cornerRadius(20)
+                    .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
                 .disabled(!canReset)
                 .accessibilityIdentifier("sampleButton")
+                .accessibilityValue(sampleSelectionDescription)
             }
             
             // Text Editor section (unchanged)
             ScrollView {
-                TextEditor(text: Binding(get: { ingredientText }, set: {
-                    ingredientText = $0
-                    currentFoodRecord = nil
-                    showingEntryId = nil
-                }))
+                TextEditor(text: $ingredientText)
                     .disabled(!canReset)
                     .frame(minHeight: 120, maxHeight: 200)
                     .padding(12)
@@ -740,10 +757,11 @@ struct ContentView: View {
                     .disabled(availableFoodRecords.isEmpty || selectedEntryId.isEmpty || !canReset)
                     .accessibilityIdentifier("loadEntryButton")
                 Button("Example") {
+                    isTextEditorFocused = false
+                    isEntryIdFocused = false
                     currentFoodRecord = nil
                     showingEntryId = nil
                     ingredientText = sampleIngredient
-                    isTextEditorFocused = false
                 }
                 .accessibilityIdentifier("exampleButton")
             }
@@ -1614,6 +1632,8 @@ struct ContentView: View {
 
     private func resetAppContent() {
         guard canReset else { return }
+        isTextEditorFocused = false
+        isEntryIdFocused = false
         // Clear all text content
         ingredientText = ""
         additiveExplanations = ""
@@ -1725,6 +1745,8 @@ struct ContentView: View {
                     operationError = "No ingredient text was recognized. Try a clearer photo or enter the ingredients."
                     return
                 }
+                isTextEditorFocused = false
+                isEntryIdFocused = false
                 ingredientText = text
                 currentFoodRecord = nil
                 showingEntryId = nil

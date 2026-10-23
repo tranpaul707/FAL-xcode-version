@@ -35,7 +35,13 @@ final class AppLaunchTests: XCTestCase {
         expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: sample)
         waitForExpectations(timeout: 10)
         scrollTo(sample, in: app)
+        XCTAssertEqual(sample.value as? String, "20 samples available", "The real bundled samples must load before selection.")
         sample.tap()
+        let selected = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "value BEGINSWITH %@", "Entry "), object: sample
+        )
+        XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 5), .completed,
+                       "Random Sample did not retain a selected entry. Button value: \(String(describing: sample.value)); editor value: \(String(describing: editor.value))")
         // The sample control can be visible while the editor is still below the viewport.
         // Reveal the UITextView before querying its accessibility value.
         scrollTo(editor, in: app)
@@ -45,7 +51,7 @@ final class AppLaunchTests: XCTestCase {
         )
         let populatedResult = XCTWaiter.wait(for: [populated], timeout: 10)
         XCTAssertEqual(populatedResult, .completed,
-                       "Random Sample did not populate the visible editor. Value: \(String(describing: editor.value)); editor hittable: \(editor.isHittable); product card exists: \(app.staticTexts["Sample Food Product"].exists)")
+                       "Random Sample did not populate the visible editor. Value: \(String(describing: editor.value)); editor hittable: \(editor.isHittable); product card exists: \(app.staticTexts["Sample Food Product"].exists); sample selection: \(String(describing: sample.value))")
         let ingredients = editor.value as? String ?? ""
         XCTAssertGreaterThan(ingredients.count, 50)
         XCTAssertTrue(ingredients.contains(","))
