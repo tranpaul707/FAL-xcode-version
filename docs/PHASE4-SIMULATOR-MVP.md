@@ -1,6 +1,7 @@
 # Phase 4 — Functional simulator lookup
 
-Status: implementation ready for the Mac checkpoint. The cloud workspace is
+Status: individual Mac suites/scenarios have passed; full regression after the
+latest input fix and manual photo/browser validation remain pending. The cloud workspace is
 Linux and cannot build Apple frameworks, run Vision, or launch an iOS simulator.
 Phase 3's six Mac tests passed before these changes. Phase 5 remains paused.
 
@@ -193,3 +194,19 @@ lost. The cause is not established by the timeout alone; these app changes need
 Mac validation. Run sample-test first, then the full test suite if it passes,
 since this follow-up changes input handling used by other flows. Phase 4 remains
 open and Phase 5 is paused.
+
+### Focused sample rerun passed
+
+After `4b69bd2`, the user reports `TEST SUCCEEDED` for `sample-test`. This confirms
+sample selection, populated ingredients/product card, Reset, and History
+navigation passed together in the focused test. Earlier unit and other UI
+scenarios passed before this shared input change; they need one complete
+regression run against the latest app source:
+
+```bash
+bash scripts/build-simulator.sh 89CA5AC4-8662-4AB0-8D53-0F1B7A355A30 test
+```
+
+Expected inventory is 8 unit tests and 3 UI tests. Manual real-photo import/OCR,
+picker cancellation/fallback, entry/example checks, and CFR browser navigation
+remain pending. Phase 4 is not yet marked complete and Phase 5 stays paused.

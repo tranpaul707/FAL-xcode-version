@@ -119,9 +119,10 @@ and reuse terms; a complete original sample CSV is optional.
 
 **Status:** user authorized Phase 4; implementation ready for the Mac checkpoint.
 See [implementation and validation steps](docs/PHASE4-SIMULATOR-MVP.md). The user reports the
-unit suite passed. The later UI rerun passed lookup/history and unmatched-input
-checks; only sample/reset/history still failed. Its focused visibility correction
-and manual photo/browser checks remain pending. Pause before Phase 5.
+unit suite passed, and the UI lookup/history and unmatched-input checks passed.
+The focused sample/reset/history rerun now also reports `TEST SUCCEEDED` after
+`4b69bd2`. A full regression run after the shared input-handling changes and
+manual photo/browser checks remain pending. Pause before Phase 5.
 
 - [x] Decouple direct ingredient matching/knowledge retrieval from LLM readiness. Reuse the existing parser, aliases, color/flavor mappings, and technical-effect lookup. Make capability/readiness states reflect which operations actually work.
 - [x] Replace the hardware-name gate with destination/backend capability checks. Avoid eager unsupported MLX initialization and keep input, OCR, knowledge lookup, and history usable when inference is unavailable.
