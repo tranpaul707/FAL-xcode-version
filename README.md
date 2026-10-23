@@ -22,7 +22,8 @@ after adding an explicit type to the diagnostic tuple array. Genuine inference
 still requires the missing model resources. Phase 3 now supplies knowledge data,
 20 authentic logged food samples, and sourced CFR mappings. All six Phase 3 Mac tests
 passed. Phase 4 now connects direct ingredient lookup; its expanded Mac checks
-are pending.
+passed in the user-reported full test command after the input-handling fix.
+Manual photo/browser and entry/example validation remains pending.
 The original source credit and Apache license are retained.
 
 The MLX target also needs Xcode's **Metal Toolchain** component. If its compiler
@@ -79,7 +80,8 @@ diagnostics are absent from the supplied log. Those are Phase 2 results. Phase 3
 resource/parity/CFR and updated sample tests subsequently passed: **5 unit
 tests and 1 UI test**, zero failures. Phase 4 adds lookup, resource-failure, Vision,
 and history UI coverage: expect **8 unit tests and 3 UI tests** in the next run.
-The Phase 4 Mac results are pending.
+The user reports the full Phase 4 test command passed after the input-handling fix.
+Manual photo/browser and entry/example validation remains pending.
 
 The shared **FoodAdditiveLens-MLX** scheme builds the same UI with the original MLX
 implementation for supported physical hardware. On an Apple silicon Mac, try the

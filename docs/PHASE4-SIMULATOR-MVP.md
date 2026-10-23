@@ -1,7 +1,7 @@
 # Phase 4 — Functional simulator lookup
 
-Status: individual Mac suites/scenarios have passed; full regression after the
-latest input fix and manual photo/browser validation remain pending. The cloud workspace is
+Status: the user reports the full Mac regression command passed after the latest
+input fix. Manual photo/browser and entry/example validation remain pending. The cloud workspace is
 Linux and cannot build Apple frameworks, run Vision, or launch an iOS simulator.
 Phase 3's six Mac tests passed before these changes. Phase 5 remains paused.
 
@@ -210,3 +210,16 @@ bash scripts/build-simulator.sh 89CA5AC4-8662-4AB0-8D53-0F1B7A355A30 test
 Expected inventory is 8 unit tests and 3 UI tests. Manual real-photo import/OCR,
 picker cancellation/fallback, entry/example checks, and CFR browser navigation
 remain pending. Phase 4 is not yet marked complete and Phase 5 stays paused.
+
+### Full regression passed
+
+The user subsequently reports `TEST SUCCEEDED` for the full simulator `test`
+command after the input-handling fix. The source suite inventory is 8 unit tests
+and 3 UI tests. This supersedes the earlier failed UI results and pending full
+regression checkpoint. The final per-test counts were not pasted separately;
+the recorded evidence is the user-reported successful full command.
+
+Remaining user checks are the manual items above: built-in Example and entry IDs
+0/19/invalid 20, real-label photo import and OCR through the picker, cancellation,
+no-text recovery and simulator camera fallback, and external CFR navigation.
+Phase 4 remains open until those results are reviewed. Phase 5 is paused.

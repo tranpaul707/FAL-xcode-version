@@ -120,16 +120,17 @@ and reuse terms; a complete original sample CSV is optional.
 **Status:** user authorized Phase 4; implementation ready for the Mac checkpoint.
 See [implementation and validation steps](docs/PHASE4-SIMULATOR-MVP.md). The user reports the
 unit suite passed, and the UI lookup/history and unmatched-input checks passed.
-The focused sample/reset/history rerun now also reports `TEST SUCCEEDED` after
-`4b69bd2`. A full regression run after the shared input-handling changes and
-manual photo/browser checks remain pending. Pause before Phase 5.
+The focused sample/reset/history rerun and the subsequent full `test` command
+both report `TEST SUCCEEDED` after `4b69bd2` (expected suite inventory: 8 unit
+tests and 3 UI tests). Manual photo/browser and entry/example checks remain
+pending. Pause before Phase 5.
 
 - [x] Decouple direct ingredient matching/knowledge retrieval from LLM readiness. Reuse the existing parser, aliases, color/flavor mappings, and technical-effect lookup. Make capability/readiness states reflect which operations actually work.
 - [x] Replace the hardware-name gate with destination/backend capability checks. Avoid eager unsupported MLX initialization and keep input, OCR, knowledge lookup, and history usable when inference is unavailable.
 - [ ] Verify manual paste/edit, the built-in ingredient example, reset, authentic sample/entry selection when available, additive results, and empty/no-match input. Preserve the original feature sequence and UI intent.
 - [ ] Exercise the existing photo-library path with a real ingredient-label image and Vision OCR on simulator. Preserve the camera-unavailable fallback; handle picker cancellation and permission denial. Validate actual camera capture later on an iPhone.
-- [ ] Verify lookup with supplied records such as `CALCIUM PROPIONATE` and `ASCORBIC ACID`, showing their actual stored technical effects. Handle missing/malformed JSON and zero embedding dimensions without forced-cast/modulo crashes or indefinite loading.
-- [ ] Verify save, history expansion, delete, and persistence after app termination/relaunch. Report store/save errors correctly; retain original history fields/stage semantics.
+- [x] Verify lookup with supplied records such as `CALCIUM PROPIONATE` and `ASCORBIC ACID`, showing their actual stored technical effects. Handle missing/malformed JSON and zero embedding dimensions without forced-cast/modulo crashes or indefinite loading.
+- [x] Verify save, history expansion, delete, and persistence after app termination/relaunch through the passing UI and persistence suites. Save/delete errors are surfaced; forced error-path UI behavior has not been manually exercised. Retain original history fields/stage semantics.
 - [x] Show genuine feature availability: no classifier predictions without a classifier, no generated explanations without the LLM, and no CFR citations without source data. Distinguish an unavailable analysis from a successful analysis finding no additives. Do not substitute canned AI output as proof of functionality.
 
 **MVP acceptance:** clean install → enter or OCR real ingredients → retrieve real additive knowledge → save → terminate/relaunch → reopen/delete history, on at least one documented iPhone simulator. This is useful working functionality, with any remaining original-feature gaps recorded explicitly. Implementation now supports this flow; Mac execution is still required for acceptance.
