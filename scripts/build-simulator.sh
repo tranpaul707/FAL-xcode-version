@@ -4,12 +4,13 @@ set -euo pipefail
 
 usage() {
     cat <<'USAGE'
-Usage: bash scripts/build-simulator.sh SIMULATOR_UDID [build|test|unit-test|ui-test]
+Usage: bash scripts/build-simulator.sh SIMULATOR_UDID [build|test|unit-test|ui-test|sample-test]
 
 Run on a Mac with full Xcode and an installed compatible iOS Simulator runtime.
 Find a UDID with: xcrun simctl list devices available
 The default action is build. Use test for all tests, unit-test for unit tests,
-or ui-test for UI tests. Test execution has a 120-second default and a
+ui-test for all UI tests, or sample-test for the sample/reset/history test.
+Test execution has a 120-second default and a
 180-second maximum allowance per test; simulator startup/build time is separate.
 This builds the FoodAdditiveLens scheme with signing disabled for the simulator.
 Build output goes to the ignored DerivedData/ directory in the checkout.
@@ -32,9 +33,9 @@ if [[ ! "$simulator_udid" =~ ^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A
     exit 64
 fi
 case "$action" in
-    build|test|unit-test|ui-test) ;;
+    build|test|unit-test|ui-test|sample-test) ;;
     *)
-        printf '%s\n' 'Action must be build, test, unit-test, or ui-test.' >&2
+        printf '%s\n' 'Action must be build, test, unit-test, ui-test, or sample-test.' >&2
         exit 64
         ;;
 esac
@@ -64,6 +65,7 @@ if [ "$action" != 'build' ]; then
     case "$action" in
         unit-test) xcodebuild_arguments+=(-only-testing:FoodAdditiveLensTests) ;;
         ui-test) xcodebuild_arguments+=(-only-testing:FoodAdditiveLensUITests) ;;
+        sample-test) xcodebuild_arguments+=(-only-testing:FoodAdditiveLensUITests/AppLaunchTests/testLaunchSampleResetAndHistoryWithoutModels) ;;
     esac
     action=test
 fi

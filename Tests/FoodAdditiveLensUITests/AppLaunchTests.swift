@@ -36,19 +36,27 @@ final class AppLaunchTests: XCTestCase {
         waitForExpectations(timeout: 10)
         scrollTo(sample, in: app)
         sample.tap()
-        expectation(for: NSPredicate { _, _ in
-            let value = editor.value as? String ?? ""
-            return value.count > 50 && value.contains(",")
-        }, evaluatedWith: editor)
-        waitForExpectations(timeout: 10)
+        // The sample control can be visible while the editor is still below the viewport.
+        // Reveal the UITextView before querying its accessibility value.
+        scrollTo(editor, in: app)
+        let populated = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "value MATCHES %@", "(?s).{51,}"),
+            object: editor
+        )
+        let populatedResult = XCTWaiter.wait(for: [populated], timeout: 10)
+        XCTAssertEqual(populatedResult, .completed,
+                       "Random Sample did not populate the visible editor. Value: \(String(describing: editor.value)); editor hittable: \(editor.isHittable); product card exists: \(app.staticTexts["Sample Food Product"].exists)")
         let ingredients = editor.value as? String ?? ""
         XCTAssertGreaterThan(ingredients.count, 50)
         XCTAssertTrue(ingredients.contains(","))
-        XCTAssertTrue(app.staticTexts["Sample Food Product"].exists)
+        let productCard = app.staticTexts["Sample Food Product"]
+        scrollTo(productCard, in: app)
+        XCTAssertTrue(productCard.exists)
 
         let reset = app.buttons["resetButton"]
         scrollTo(reset, in: app, towardTop: true)
         reset.tap()
+        scrollTo(editor, in: app)
         expectation(for: NSPredicate(format: "value == %@", ""), evaluatedWith: editor)
         waitForExpectations(timeout: 5)
         XCTAssertEqual(editor.value as? String, "")

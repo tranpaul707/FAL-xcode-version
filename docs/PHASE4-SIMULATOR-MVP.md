@@ -151,3 +151,24 @@ exact manually typed input, and scroll back to Reset only as needed. These
 changes retain all substantive result/sample assertions. A failing rerun records
 an accessibility hierarchy and screenshot in the result bundle for further
 diagnosis. No app behavior was changed in this follow-up; Mac rerun is pending.
+
+### Remaining sample UI check
+
+The later user result confirms the lookup/save/relaunch/delete and unmatched-input
+UI tests passed; only the sample/reset/history test still failed while waiting
+for the editor value. The exported failure-only attachment manifest was empty.
+The run summary and repeated timeout alone do not establish whether the tap or
+editor update failed. The sample test previously revealed only the sample button;
+it now also reveals the editor before reading its value, reveals the product
+card before checking it, and reveals the editor again after Reset. A remaining
+failure now includes the actual editor value, hit-test visibility, and product
+card presence in its assertion message. Substantive assertions are unchanged.
+No app behavior change or confirmed app fix is claimed.
+
+Run only the remaining test after pulling:
+
+```bash
+bash scripts/build-simulator.sh 89CA5AC4-8662-4AB0-8D53-0F1B7A355A30 sample-test
+```
+
+Expected inventory for this command is one test. Mac validation remains pending.
